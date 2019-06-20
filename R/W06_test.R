@@ -9,7 +9,7 @@ library(ggplot2)
 
 
 
-dat <- read.csv("data/RMNPwolf.csv") 
+dat <- read.csv("data/RMNPwolf_rarified.csv") 
   #drop_na() %>%     #####filter !is.na did not work
 dat$datetime <- paste(dat$gmtDate, dat$gmtTime)
 dat$datetime <- as.POSIXct(dat$datetime, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
