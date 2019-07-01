@@ -6,7 +6,7 @@
 ### Packages ----
 # remotes::install_github('bbolker/broom.mixed')
 # remotes::install_github('ropensci/spatsoc')
-libs <- c('data.table', 'spatsoc', 'dplyr', 'amt', 'lubridate', 'raster')
+libs <- c('data.table', 'spatsoc', 'dplyr', 'amt', 'lubridate', 'raster', 'tidyr', 'ggplot')
 lapply(libs, require, character.only = TRUE)
 
 ### Input data ----
@@ -24,7 +24,7 @@ dat.meta$end_date<- as.POSIXct(dat.meta$end_date, tz = 'UTC', "%Y-%m-%d")
 #### determining nearest neighbor (nn) at orginal point ####
 dat.grptimes <- group_times(DT=dat, datetime = "datetime", threshold = "2 hours")
 
-dat.nn <- edge_nn(
+enn <- edge_nn(
   DT = dat.grptimes,
   id = 'WolfID',
   coords = c('X', 'Y'),
@@ -33,11 +33,28 @@ dat.nn <- edge_nn(
   splitBy = 'PackID'
 )
 
+### calculating distances and original point
+edist1 <- edge_dist(
+  DT = dat.grptimes,
+  threshold = 10000000, # I don't know how to pick this
+  id = 'WolfID',
+  coords = c('X', 'Y'),
+  timegroup = 'timegroup',
+  returnDist = TRUE,
+  splitBy = 'PackID'
+)
+
+dat.nn <- merge(enn, edist1, by.x = c('ID', 'NN','PackID', 'timegroup'), 
+                by.y = c('ID1', 'ID2', 'PackID', 'timegroup'))
+
+#colnames(dat.nn)[colnames(dat.nn)=="distance"] <- "distance1"
+
+
 dat.nn <- merge(dat.grptimes,dat.nn, by.x = c('WolfID','PackID', 'timegroup'), 
                 by.y = c('ID','PackID', 'timegroup'), all.x = T)
 
 ### OBJECTIVE: determine nn first from actual data, then create (random) steps
-### determin nn dist only from actual data, not who may be nearest at new random step
+### determine nn dist only from actual data, not who may be nearest at new random step
 
 # utm zone 14n
 # wgs84 32614
@@ -45,7 +62,7 @@ dat.nn <- merge(dat.grptimes,dat.nn, by.x = c('WolfID','PackID', 'timegroup'),
 # project raster
 
 #### test w/ W06 ####
-DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN') %>%
+DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance') %>%
   filter(id == "W06") %>%
   filter(t >= as.POSIXct("2016-06-26 23:59:59", tz = 'UTC', "%Y-%m-%d %H:%M:%S") %m-% months(1))
 
@@ -92,8 +109,8 @@ stps.park <- stps %>% extract_covariates(parkYN, where = "both") %>%
 
 p1.park <- stps.park %>% dplyr::select(parkYN_end, tod = tod_end_, sl_, ta_) %>%
   
-  gather(key, val, -parkYN_end, -tod) %>%
-  filter(key == "sl_") %>%
+  tidyr::gather(key, val, -parkYN_end, -tod) %>%
+  dplyr::filter(key == "sl_") %>%
   ggplot(., aes(val, group = tod, fill = tod)) + geom_density(alpha = 0.5) +
   facet_wrap(~ parkYN_end, nrow = 2) +
   xlab("Step length [m]") + theme_light() +
@@ -115,7 +132,7 @@ stps.land <- stps %>% extract_covariates(land, where = "both") %>%
 
 p1.land <- stps.land %>% dplyr::select(land_end, tod = tod_end_, sl_, ta_) %>%
   
-  gather(key, val, -land_end, -tod) %>%
+  tidyr::gather(key, val, -land_end, -tod) %>%
   filter(key == "sl_") %>%
   ggplot(., aes(val, group = tod, fill = tod)) + geom_density(alpha = 0.5) +
   facet_wrap(~ land_end, nrow = 2) +
@@ -146,17 +163,18 @@ ssf1 <- stps %>% random_steps(n = 9) %>%
 ssf1[,'ttd1'] <- as.duration(ssf1$t1_ %--% as.POSIXct("2016-06-26 23:59:59", tz = 'UTC', "%Y-%m-%d %H:%M:%S"))/ddays(1) 
 ssf1[,'ttd2'] <- as.duration(ssf1$t2_ %--% as.POSIXct("2016-06-26 23:59:59", tz = 'UTC', "%Y-%m-%d %H:%M:%S"))/ddays(1) 
 # adding nn at point 1 and 2
-DT.nn <- dplyr::select(DT.prep, t, id, nn)
-ssf <- merge(ssf1, DT.nn, by.x = 't1_', by.y = 't', all.x = T)
+DT.nn.dist <- dplyr::select(DT.prep, t, id, nn, distance1)
+ssf <- merge(ssf1, DT.nn.dist, by.x = 't1_', by.y = 't', all.x = T)
 colnames(ssf)[colnames(ssf)=="nn"] <- "nn1"
+DT.nn <- dplyr::select(DT.prep, t, id, nn)
 ssf <- merge(ssf, DT.nn, by.x = c('t2_', 'id'), by.y = c('t', 'id'), all.x = T)
 colnames(ssf)[colnames(ssf)=="nn"] <- "nn2"
 
 
 
-### calculate all distances ###
+### calculate all distances for step 2 ###
 # need to combine all the distance data with the (random) steps for the focal indiv so neighbor dists can be calculated
-dat.grp <- select(dat.grptimes, WolfID, PackID, X, Y, datetime, timegroup)
+dat.grp <- dplyr::select(dat.grptimes, WolfID, PackID, X, Y, datetime, timegroup)
 dat.randpts <- merge(ssf, dat.grp, by.y = c('datetime', 'WolfID'), 
                      by.x = c('t2_', 'id'), all =T)
 # use the gps pts from the track unless missing (as with all non focal indivs)
@@ -206,6 +224,7 @@ edist2.ww.sep<- edist2.ww.sep[,.(timegroup, step, id1, id2, distance)]
 
 
 # making the times match the ones amt made for the track
+DT.grp <- dplyr::select(dat.grp, datetime, timegroup)
 DT.grp[,'round.t'] <- as.POSIXct(round(DT.grp$datetime, units = 'hours'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
 DT.grp2 <- setDT(DT.grp)[,.(round.t), by = .(timegroup)] 
 
