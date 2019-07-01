@@ -244,12 +244,20 @@ ssf.soc <- merge(ssf.soc, edist2.ww.sep, by.x = c('id','nn2', 'step_id_rank', 't
 colnames(ssf.soc)[colnames(ssf.soc)=="distance"] <- "distance2"
 
 
-ssf.W06 <- ssf.soc[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_end_, 
+ssf.W06 <- ssf.soc[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
                       parkYN_start, parkYN_end, lnparkdist_start, lnparkdist_end, land_start, land_end, 
                       id, nn1, nn2, distance1, distance2, timegroup1, timegroup2,
                       ttd1, ttd2)]
 
-saveRDS(ssf.W06, 'data/derived-data/ssfW06.Rds')
+#saveRDS(ssf.W06, 'data/derived-data/ssfW06.Rds')
+
+#### fit models ####
+
+m.core <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl: + strata(step_id_))
+
+
+
+
 
 
 
