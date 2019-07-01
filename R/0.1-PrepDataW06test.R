@@ -225,7 +225,7 @@ edist2.ww.sep<- edist2.ww.sep[,.(timegroup, step, id1, id2, distance)]
 
 # making the times match the ones amt made for the track
 DT.grp <- dplyr::select(dat.grp, datetime, timegroup)
-DT.grp[,'round.t'] <- as.POSIXct(round(DT.grp$datetime, units = 'hours'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
+DT.grp[,'round.t'] <- as.POSIXct(round(DT.grp$datetime, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
 DT.grp2 <- setDT(DT.grp)[,.(round.t), by = .(timegroup)] 
 
 # getting a list of all timegroups and associated times to help match points correctly
@@ -244,7 +244,12 @@ ssf.soc <- merge(ssf.soc, edist2.ww.sep, by.x = c('id','nn2', 'step_id_rank', 't
 colnames(ssf.soc)[colnames(ssf.soc)=="distance"] <- "distance2"
 
 
+ssf.W06 <- ssf.soc[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_end_, 
+                      parkYN_start, parkYN_end, lnparkdist_start, lnparkdist_end, land_start, land_end, 
+                      id, nn1, nn2, distance1, distance2, timegroup1, timegroup2,
+                      ttd1, ttd2)]
 
+saveRDS(ssf.W06, 'data/derived-data/ssfW06.Rds')
 
 
 
