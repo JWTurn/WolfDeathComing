@@ -149,7 +149,7 @@ ssf1 <- stps %>% random_steps(n = 9) %>%
   amt::extract_covariates(land, where = "both")  %>%
   amt::extract_covariates(parkYN, where = "both") %>%
   amt::extract_covariates(parkbound_dist, where = "both") %>%
-  amt::time_of_day(include.crepuscule = T) %>%
+  amt::time_of_day(include.crepuscule = T, where = 'start') %>%
   mutate(land_start = factor(RMNPlandcover_start, levels = 1:3, labels = c("closed", "open", 'wet')),
         land_end = factor(RMNPlandcover_end, levels = 1:3, labels = c("closed", "open", 'wet')),
         parkYN_start = factor(parkYN_start, levels = c(0, 1), labels = c("park", "out-park")),
@@ -253,11 +253,42 @@ ssf.W06 <- ssf.soc[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_
 
 #### fit models ####
 
-m.core <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl: + strata(step_id_))
+### questions
+  # if I'm using ttd1, do I need all interactions to be with the other start points?
+  # do I need to log transform distance to conspecifics? or ttd? (looks like need to do for ttd)
+  # do I need cos_ta or cos_ta:tod
+
+m.core <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + strata(step_id_))
+
+m.full <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + 
+                                      ttd1:log_sl + ttd1:cos_ta +
+                                      ttd1:land_start + ttd1:lnparkdist_start:parkYN_start + 
+                                      ttd1:distance2 + 
+                                      strata(step_id_))
+# full not converging
+
+m.move <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + 
+                                      ttd1:log_sl + ttd1:cos_ta +
+                                      strata(step_id_))
 
 
+m.habitat.parkdist <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + 
+                                      log(ttd1):land_end + log(ttd1):lnparkdist_start  + 
+                                      strata(step_id_))
+
+# ttd1:lnparkdist_start:parkYN_start won't converge
+
+m.habitat.parkYN <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + 
+                                                  log(ttd1):land_end + log(ttd1):parkYN_start  + 
+                                                  strata(step_id_))
+## didn't converge
 
 
+m.social <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + 
+                                      log(ttd1):log(distance2) + 
+                                      strata(step_id_))
 
+
+bbmle::AICtab(m.core$model, m.move$model, m.habitat.parkdist$model, m.social$model)
 
 
