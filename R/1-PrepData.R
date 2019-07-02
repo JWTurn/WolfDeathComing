@@ -402,6 +402,7 @@ ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 
 ssf.soc <- rbind(ssfW02, ssfW04, ssfW05, ssfW06, ssfW09, ssfW10, ssfW11, ssfW12, ssfW13, ssfW15, ssfW19, ssfW20, ssfW22, ssfW26, ssfW27)
 
+# saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
 
 ### W08 ###
 ssf.W08[,'round.t2'] <- as.POSIXct(round(ssf.w08$t2_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
