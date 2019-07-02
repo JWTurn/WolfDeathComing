@@ -1,4 +1,4 @@
-### Data ====
+### Test with W06 ====
 # Julie Turner
 # Started: June 20 2019
 
@@ -71,7 +71,7 @@ DT <- amt::make_track(DT.prep, x, y, t, crs = sp::CRS("+init=epsg:32614")) # %>%
 # amt::transform_coords(sp::CRS("+init=epsg:26914")) # may not need to transform
 
 
-summarize_sampling_rate(dat)
+summarize_sampling_rate(DT)
 
 # making steps from track
 stps <- amt::track_resample(DT, rate = minutes(120), tolerance = minutes(10)) %>%
