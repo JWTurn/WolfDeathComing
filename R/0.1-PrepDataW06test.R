@@ -254,9 +254,9 @@ ssf.W06 <- ssf.soc[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_
 #### fit models ####
 
 ### questions
-  # if I'm using ttd1, do I need all interactions to be with the other start points?
-  # do I need to log transform distance to conspecifics? or ttd? (looks like need to do for ttd)
-  # do I need cos_ta or cos_ta:tod
+  # if I'm using ttd1, do I need all interactions to be with the other start points?  --- no
+  # do I need to log transform distance to conspecifics? or ttd? (looks like need to do for ttd) --- yes
+  # do I need cos_ta or cos_ta:tod --- not necessarily
 
 m.core <- ssf.W06 %>% amt::fit_issf(case_ ~ log_sl:tod_start_ + cos_ta:tod_start_ + land_end + log_sl:land_end + strata(step_id_))
 
