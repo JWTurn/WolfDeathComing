@@ -74,6 +74,8 @@ crs14 <- sp::CRS("+init=epsg:32614")
 
 #### filter to those that die ####
 dat.focal <- setDT(dat.meta)[status == 'dead' & !is.na(PackID)]
+dat.focal[,'packbound'] <- ifelse(dat.focal$PackID == 'RC', 'GL', dat.focal$PackID)
+dat.focal <- dat.focal[WolfID != 'W08'] #doesn't have enough data
 focals <- dat.focal$WolfID
 
 DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
@@ -258,6 +260,7 @@ ssfW26 <- createSSFnnbyFocal(ssf.all, "W26")
 ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 
 ssf.soc <- rbind(ssfW02, ssfW04, ssfW05, ssfW06, ssfW09, ssfW10, ssfW11, ssfW12, ssfW13, ssfW15, ssfW19, ssfW20, ssfW22, ssfW26, ssfW27)
+ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 # saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
 
