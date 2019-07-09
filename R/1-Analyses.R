@@ -16,5 +16,5 @@ lapply(libs, require, character.only = TRUE)
 raw <- 'data/raw-data/'
 derived <- 'data/derived-data/'
 
-### rarified data ----
-dat <- fread(paste0(raw, 'RMNPwolf_rarified.csv'))
+### SSF data with all covariates ----
+dat <- readRDS('data/derived-data/ssfAllCov.Rds')
