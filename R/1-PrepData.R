@@ -21,6 +21,7 @@ dat <- fread(paste0(raw, 'RMNPwolf_rarified.csv'))
 dat$datetime <- paste(dat$gmtDate, dat$gmtTime)
 dat$datetime <- as.POSIXct(dat$datetime, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
 
+
 dat.meta <- fread(paste0(raw, 'wolf_metadata.csv'))
 dat.meta$end_date <- paste(dat.meta$end_date, '23:59:59', sep = ' ')
 dat.meta$end_date<- as.POSIXct(dat.meta$end_date, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
@@ -113,6 +114,28 @@ names(wet) <- "wet"
 parkYN <- raster(paste0(raw, 'parkYN.tif'))
 parkbound_dist <- raster(paste0(raw, 'boundary_dist.tif'))
 roads <- raster(paste0(raw, 'roadall_LinFeat_dist.tif'))
+AD <- raster(paste0(raw, 'AD_kde.tif'))
+AD <- reclassify(AD, cbind(NA, 0))
+AD_dist <- raster(paste0(raw, 'AD_kde_dist.tif'))
+BD <- raster(paste0(raw, 'BD_kde.tif'))
+BD <- reclassify(BD, cbind(NA, 0))
+BD_dist <- raster(paste0(raw, 'BD_kde_dist.tif'))
+BL <- raster(paste0(raw, 'BL_kde.tif'))
+BL <- reclassify(BL, cbind(NA, 0))
+BL_dist <- raster(paste0(raw, 'BL_kde_dist.tif'))
+BT <- raster(paste0(raw, 'BT_kde.tif'))
+BT <- reclassify(BT, cbind(NA, 0))
+BT_dist <- raster(paste0(raw, 'BT_kde_dist.tif'))
+GL <- raster(paste0(raw, 'GL_kde.tif'))
+GL <- reclassify(GL, cbind(NA, 0))
+GL_dist <- raster(paste0(raw, 'GL_kde_dist.tif'))
+WW <- raster(paste0(raw, 'WW_kde.tif'))
+WW <- reclassify(WW, cbind(NA, 0))
+WW_dist <- raster(paste0(raw, 'WW_kde_dist.tif'))
+
+
+
+
 
 
 #### making steps from track and extracting covariates ####
@@ -125,11 +148,35 @@ ssf <- dat_all %>%
       amt::extract_covariates(parkYN, where = "both") %>%
       amt::extract_covariates(parkbound_dist, where = "both") %>%
       amt::extract_covariates(roads, where = "both") %>%
+      amt::extract_covariates(AD, where = "both") %>%
+      amt::extract_covariates(AD_dist, where = "both") %>%
+      amt::extract_covariates(BD, where = "both") %>%
+      amt::extract_covariates(BD_dist, where = "both") %>%
+      amt::extract_covariates(BL, where = "both") %>%
+      amt::extract_covariates(BL_dist, where = "both") %>%
+      amt::extract_covariates(BT, where = "both") %>%
+      amt::extract_covariates(BT_dist, where = "both") %>%
+      amt::extract_covariates(GL, where = "both") %>%
+      amt::extract_covariates(GL_dist, where = "both") %>%
+      amt::extract_covariates(WW, where = "both") %>%
+      amt::extract_covariates(WW_dist, where = "both") %>%
       amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
       mutate(land_start = factor(RMNPlandcover_start, levels = 1:3, labels = c("closed", "open", 'wet')),
              land_end = factor(RMNPlandcover_end, levels = 1:3, labels = c("closed", "open", 'wet')),
              parkYN_start = factor(parkYN_start, levels = c(0, 1), labels = c("park", "out-park")),
              parkYN_end = factor(parkYN_end, levels = c(0, 1), labels = c("park", "out-park")),
+             AD_kde_start = factor(AD_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             AD_kde_end = factor(AD_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             BD_kde_start = factor(BD_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             BD_kde_end = factor(BD_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             BL_kde_start = factor(BL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             BL_kde_end = factor(BL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             BT_kde_start = factor(BT_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             BT_kde_end = factor(BT_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             GL_kde_start = factor(GL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             GL_kde_end = factor(GL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             WW_kde_start = factor(WW_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             WW_kde_end = factor(WW_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              lnparkdist_start = log(boundary_dist_start + 1),
              lnparkdist_end = log(boundary_dist_end + 1),
              log_sl = log(sl_),
@@ -171,12 +218,21 @@ dat.grp[,'round.t'] <- as.POSIXct(round(dat.grp$datetime, units = 'mins'), tz = 
 DT.grp <- dplyr::select(dat.grp, round.t, timegroup)
 DT.grp2 <- unique(DT.grp)
 
+DT.pack <- setDT(dat.focal)[,.(WolfID, packbound)]
+
 
 # ssf.df = ssf.all
 # wolf = 'W02'
 
 createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub <- subset(ssf.df, id == wolf)
+  pack <- dat.focal[WolfID == wolf, .(packbound)]$packbound
+  
+  ssf.sub[,'packYN_start'] <- ssf.sub[,paste(pack,"kde_start", sep = '_')]
+  ssf.sub[,'packYN_end'] <- ssf.sub[,paste(pack,"kde_end", sep = '_')]
+  
+  ssf.sub[,'packDist_start'] <- ssf.sub[,paste(pack,"kde_dist_start", sep = '_')]
+  ssf.sub[,'packDist_end'] <- ssf.sub[,paste(pack,"kde_dist_end", sep = '_')]
   
   ssf.sub[,'round.t2'] <- as.POSIXct(round(ssf.sub$t2_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
   dat.rand.sub <- merge(ssf.sub, dat.grp, by.y = c('round.t', 'WolfID'), 
@@ -236,7 +292,7 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   
   ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
                             parkYN_start, parkYN_end, roadDist_start, roadDist_end, lnparkdist_start, lnparkdist_end, land_start, land_end, 
-                            id, nn1, nn2, distance1, distance2, timegroup1, timegroup2,
+                            id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, 
                             ttd1, ttd2)]
   return(ssf.wolf)
 }
