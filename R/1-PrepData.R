@@ -143,7 +143,7 @@ ssf <- dat_all %>%
   mutate(steps = map(trk, function(x) {
     x %>% amt::track_resample(rate = minutes(120), tolerance = minutes(10)) %>%
       amt::filter_min_n_burst(min_n = 3) %>%
-      amt::steps_by_burst() %>% amt::random_steps(n=9) %>%
+      amt::steps_by_burst() %>% amt::random_steps(n=10) %>%
       amt::extract_covariates(land, where = "both")  %>%
       amt::extract_covariates(parkYN, where = "both") %>%
       amt::extract_covariates(parkbound_dist, where = "both") %>%
