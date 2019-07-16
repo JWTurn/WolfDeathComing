@@ -20,11 +20,11 @@ derived <- 'data/derived-data/'
 dat <- fread(paste0(raw, 'RMNPwolf_rarified.csv'))
 dat$datetime <- paste(dat$gmtDate, dat$gmtTime)
 dat$datetime <- as.POSIXct(dat$datetime, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
-
+dat[,.(min=min(gmtDate),max=max(gmtDate)), by=.(WolfID)]
 
 dat.meta <- fread(paste0(raw, 'wolf_metadata.csv'))
-dat.meta$end_date <- paste(dat.meta$end_date, '23:59:59', sep = ' ')
-dat.meta$end_date<- as.POSIXct(dat.meta$end_date, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
+dat.meta$death_date <- paste(dat.meta$death_date, '23:59:59', sep = ' ')
+dat.meta$death_date<- as.POSIXct(dat.meta$death_date, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
 
 #### determining nearest neighbor (nn) at orginal point ####
 dat.grptimes <- group_times(DT=dat, datetime = "datetime", threshold = "2 hours")
@@ -74,7 +74,7 @@ utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 crs14 <- sp::CRS("+init=epsg:32614")
 
 #### filter to those that die ####
-dat.focal <- setDT(dat.meta)[status == 'dead' & !is.na(PackID)]
+dat.focal <- setDT(dat.meta)[!is.na(death_date) & !is.na(PackID)]
 dat.focal[,'packbound'] <- ifelse(dat.focal$PackID == 'RC', 'GL', dat.focal$PackID)
 dat.focal <- dat.focal[WolfID != 'W08'] #doesn't have enough data
 focals <- dat.focal$WolfID
@@ -111,6 +111,16 @@ open <- land == 2
 names(open) <- "open"
 wet <- land == 3
 names(wet) <- "wet"
+## This creates an object which can be used to make a layer of specified diameter
+# The d value is what determines the buffer size if you want to change it.
+## If you're doing multiple landcover classes, you only need to run this line once, as long as each of the habitat variables has the same resolution
+# (e.g., the "Wetland" here could be any cover type)
+Buff100 <- focalWeight(closed, d=100, type = 'circle')
+## This generates a new raster where each cell corresponds to the mean wetland within a 100m buffer.
+# Since it's all 1s and 0s, this is the same as the proportion of wetland surrounding the focal variable
+propwet <- focal(wet, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
+propclosed <- focal(closed, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
+propopen <- focal(open, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 parkYN <- raster(paste0(raw, 'parkYN.tif'))
 parkbound_dist <- raster(paste0(raw, 'boundary_dist.tif'))
 roads <- raster(paste0(raw, 'roadall_LinFeat_dist.tif'))
@@ -145,6 +155,9 @@ ssf <- dat_all %>%
       amt::filter_min_n_burst(min_n = 3) %>%
       amt::steps_by_burst() %>% amt::random_steps(n=10) %>%
       amt::extract_covariates(land, where = "both")  %>%
+      # amt::extract_covariates(propwet, where = "both")  %>%
+      # amt::extract_covariates(propopen, where = "both")  %>%
+      # amt::extract_covariates(propclosed, where = "both")  %>%
       amt::extract_covariates(parkYN, where = "both") %>%
       amt::extract_covariates(parkbound_dist, where = "both") %>%
       amt::extract_covariates(roads, where = "both") %>%
@@ -187,10 +200,22 @@ ssf <- dat_all %>%
 
 ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest
 
+## proportions didn't pull right because of layer name, don't know how to fix
+locs_start <- sp::SpatialPoints(data.frame(ssf.all$x1_, ssf.all$y1_))
+locs_end <- sp::SpatialPoints(data.frame(ssf.all$x2_, ssf.all$y2_))
+
+ssf.all[,'propwet_start'] <- raster::extract(propwet, locs_start)
+ssf.all[,'propclosed_start'] <- raster::extract(propclosed, locs_start)
+ssf.all[,'propopen_start'] <- raster::extract(propopen, locs_start)
+
+ssf.all[,'propwet_end'] <- raster::extract(propwet, locs_end)
+ssf.all[,'propclosed_end'] <- raster::extract(propclosed, locs_end)
+ssf.all[,'propopen_end'] <- raster::extract(propopen, locs_end)
+
 # adding nn and dist for step 1, also adding attributed data about death
 ssf.all <- merge(ssf.all, DT.prep, by.x = c('x1_', 'y1_', 't1_', 'id'), by.y = c('x', 'y', 't', 'id'), all.x = T)
 colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn1"
-colnames(ssf.all)[colnames(ssf.all)=="end_date"] <- "death_date"
+#colnames(ssf.all)[colnames(ssf.all)=="end_date"] <- "death_date"
 
 # adding nn at step 2
 DT.nn <- dplyr::select(DT.prep, t, id, nn)
@@ -255,8 +280,8 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   # calculates distances for all individuals within the same pack at each timegroup (this is just for step 2 right now)
   
   #DT.rand.w02.dates <- DT.rand.w02[round.t2>=death_date-ddays(ttd) & round.t2 <= death_date]
-  lower.date <- dat.focal[WolfID== wolf, end_date-ddays(ttd)]
-  upper.date <- dat.focal[WolfID== wolf, end_date]
+  lower.date <- dat.focal[WolfID== wolf, death_date-ddays(ttd)]
+  upper.date <- dat.focal[WolfID== wolf, death_date]
   edist2.sub <- DT.rand.sub[round.t2>=lower.date & round.t2 <= upper.date, edge_dist(
     DT = .SD,
     threshold = 1000000, # I don't know how to pick this
@@ -291,31 +316,36 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   
   
   ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
-                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, lnparkdist_start, lnparkdist_end, land_start, land_end, 
+                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, lnparkdist_start, lnparkdist_end, 
+                            land_start, land_end, propwet_start, propwet_end, propopen_start, propopen_end, propclosed_start, propclosed_end,
                             id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, 
                             ttd1, ttd2)]
   return(ssf.wolf)
 }
 
-
+unique(dat.focal$WolfID)
 ssfW02 <- createSSFnnbyFocal(ssf.all, "W02")
+ssfW03 <- createSSFnnbyFocal(ssf.all, "W03")
 ssfW04 <- createSSFnnbyFocal(ssf.all, "W04")
 ssfW05 <- createSSFnnbyFocal(ssf.all, "W05")
 ssfW06 <- createSSFnnbyFocal(ssf.all, "W06")
-# ssfW08 <- createSSFnnbyFocal(ssf.all, "W08") #prob -- missing from data, but had collar?
+ssfW07 <- createSSFnnbyFocal(ssf.all, "W07") 
 ssfW09 <- createSSFnnbyFocal(ssf.all, "W09")
 ssfW10 <- createSSFnnbyFocal(ssf.all, "W10")
 ssfW11 <- createSSFnnbyFocal(ssf.all, "W11")
 ssfW12 <- createSSFnnbyFocal(ssf.all, "W12")
 ssfW13 <- createSSFnnbyFocal(ssf.all, "W13")
+ssfW14 <- createSSFnnbyFocal(ssf.all, "W14")
 ssfW15 <- createSSFnnbyFocal(ssf.all, "W15")
+# ssfW16 <- createSSFnnbyFocal(ssf.all, "W16") # don't have this one's pack set up yet
 ssfW19 <- createSSFnnbyFocal(ssf.all, "W19")
 ssfW20 <- createSSFnnbyFocal(ssf.all, "W20")
 ssfW22 <- createSSFnnbyFocal(ssf.all, "W22")
+ssfW25 <- createSSFnnbyFocal(ssf.all, "W25")
 ssfW26 <- createSSFnnbyFocal(ssf.all, "W26")
 ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 
-ssf.soc <- rbind(ssfW02, ssfW04, ssfW05, ssfW06, ssfW09, ssfW10, ssfW11, ssfW12, ssfW13, ssfW15, ssfW19, ssfW20, ssfW22, ssfW26, ssfW27)
+ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW13, ssfW14, ssfW15, ssfW19, ssfW20, ssfW22, ssfW25, ssfW26, ssfW27)
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 # saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
