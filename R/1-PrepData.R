@@ -80,7 +80,7 @@ dat.focal <- dat.focal[WolfID != 'W08'] #doesn't have enough data
 focals <- dat.focal$WolfID
 
 DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
-                                    'status', 'end_date', 'COD') %>%
+                                    'status', 'end_date', 'COD', 'death_date') %>%
   filter(id %in% focals) 
   
   
@@ -314,11 +314,18 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
                        by.y = c('id1','id2', 'step', 'timegroup'), all.x = T)
   colnames(ssf.soc.sub)[colnames(ssf.soc.sub)=="distance"] <- "distance2"
   
+  ssf.soc.sub[,'wet_end'] <- ifelse(ssf.soc.sub$land_end =='wet', 1,0)
+  ssf.soc.sub[,'open_end'] <- ifelse(ssf.soc.sub$land_end =='open', 1,0)
+  ssf.soc.sub[,'closed_end'] <- ifelse(ssf.soc.sub$land_end =='closed', 1,0)
+  ssf.soc.sub[,'packDistadj_end'] <-ifelse(ssf.soc.sub$packYN_end == 'pack', ssf.soc.sub$packDist_end, (-1)*ssf.soc.sub$packDist_end)
+  ssf.soc.sub[,'parkDistadj_end'] <-ifelse(ssf.soc.sub$parkYN_end == 'park', ssf.soc.sub$boundary_dist_end, (-1)*ssf.soc.sub$boundary_dist_end)
+  
+  
   
   ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
-                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, lnparkdist_start, lnparkdist_end, 
-                            land_start, land_end, propwet_start, propwet_end, propopen_start, propopen_end, propclosed_start, propclosed_end,
-                            id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, 
+                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end = boundary_dist_end, lnparkdist_start, lnparkdist_end, parkDistadj_end,
+                            land_start, land_end, propwet_start, propwet_end, propopen_start, propopen_end, propclosed_start, propclosed_end, wet_end, open_end, closed_end,
+                            id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, packDistadj_end,
                             ttd1, ttd2)]
   return(ssf.wolf)
 }
