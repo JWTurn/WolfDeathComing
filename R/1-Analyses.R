@@ -20,15 +20,23 @@ derived <- 'data/derived-data/'
 set.seed(53)
 dat <- readRDS('data/derived-data/ssfAllCov.Rds')
 
-dat <- dat[, stepjum := forcats::fct_shuffle(as.character(step_id_)), by = .(id)]
+dat <- dat[, stepjum := forcats::fct_shuffle(as.factor(step_id_)), by = .(id)]
 
 dat[,.(nstep = uniqueN(as.character(step_id_)), nstepjum = uniqueN(stepjum)), by = .(id)]
+
+dat.steps <-dat[id=='W06',.(step_id_, stepjum)]
+
+dat<-dat[ttd1>=0 & ttd2>=0]
+
+dat[,'wtd1'] <- as.integer(dat$ttd1/7)
 
 dat.meta <- fread(paste0(raw, 'wolf_metadata.csv'))
 
 
 
 dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
+dat[,'ttd1_adj'] <- ifelse(dat$COD =='none', dat$ttd1*730, dat$ttd1)
+
 # dat[,'wet'] <- ifelse(dat$land_end == 'wet', 'wet', 'not')
 # dat.wet<-dat[land_end=='wet', .(id, ttd1, ua, propwet_end)]
 # dat.wet[, .(id, .N), by= c('ua', 'id')]
@@ -79,8 +87,41 @@ model <- clogit(case_ ~ log_sl:ToD_start + land_end +
 sum.mod <- summary(model)
 sum.mod$conf.int
 
+### dummy vars didn't
+Core.land <- function(y, sl, ToD, closed, open, wet, strata1) {
+  # Make the model
+  model <- clogit(y ~ sl:ToD + closed + open + wet +
+                    sl:closed + sl:open + sl:wet +
+                    strata(strata1))
+  sum.model <- summary(model)$coefficients
+  # Transpose the coef of the model and cast as data.table
+  term <- c('coef','hr','se','z','p')
+  coefOut <- data.table(t(sum.model))
+  
+  # Return combined columns
+  # print(summary(model))
+  print(AIC(model))
+  return(data.table(term, coefOut, AIC=AIC(model)))
+}
 
-Core <- function(y, sl, ToD, wet, open, strata1) {
+Core <- function(y, sl, ToD, land, strata1) {
+  # Make the model
+  model <- clogit(y ~ sl:ToD + land +
+                    sl:land +
+                    strata(strata1))
+  sum.model <- summary(model)$coefficients
+  # Transpose the coef of the model and cast as data.table
+  term <- c('coef','hr','se','z','p')
+  coefOut <- data.table(t(sum.model))
+  
+  # Return combined columns
+  # print(summary(model))
+  print(AIC(model))
+  return(data.table(term, coefOut, AIC=AIC(model)))
+}
+
+
+Core.prop <- function(y, sl, ToD, wet, open, strata1) {
     # Make the model
     model <- clogit(y ~ sl:ToD + wet + open +
                       sl:wet + sl:open +
@@ -98,22 +139,60 @@ Core <- function(y, sl, ToD, wet, open, strata1) {
 
 #run iSSA model by ID
 # Core Model
-coreOUT<- dat[, Core(case_, log_sl, ToD_start, propwet_end, propopen_end, stepjum), by = id]
+corelandOUT<- dat[, Core.land(case_, log_sl, ToD_start, closed_end, open_end, wet_end, as.integer(stepjum)), by = id]
+m.coreland <- merge(corelandOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+m.coreland.p<-m.coreland[term=='coef' | term=='p']
+m.coreland.coef<- m.coreland[term=='coef' ]
+
+
+
+coreOUT<- dat[, Core(case_, log_sl, ToD_start, land_end, as.integer(stepjum)), by = id]
 m.core <- merge(coreOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
-m.core.p<-m.core[term=='coef' | term=='p']
+
+
+m.core.co <- coreOUT[term=='coef',-'AIC']
+m.core.co <-merge(m.core.co, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+
+ggplot(melt(m.core.co)) + aes(variable, value) +
+  geom_boxplot() +
+  geom_jitter() +
+  ylim(-1,1)
+
+ggplot(melt(coreOUT)) +
+  geom_density(aes(value), fill = 'dodgerblue', alpha =0.5) +
+  geom_vline(xintercept = 0, color = "black", lty = 2) +
+  facet_wrap(~variable, scale = "free")
 
 
 
-m.full <- data.all %>% amt::fit_issf(case_ ~ log_sl:ToD_start + land_end + log_sl:land_end + 
-                                      ttd1:log_sl + ttd1:cos_ta +
-                                      ttd1:land_start + ttd1:lnparkdist_start:parkYN_start + 
-                                      ttd1:distance2 + 
-                                      strata(step_id_))
-# full not converging based on 1 indiv
+
+corepropOUT<- dat[, Core.prop(case_, log_sl, ToD_start, propwet_end, propopen_end, as.integer(stepjum)), by = id]
+m.coreprop <- merge(corepropOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+m.coreprop.p<-m.coreprop[term=='coef' | term=='p']
+
+
+
 
 #### MOVEMENT ####
 
-Move <- function(y, sl, ToD, wet, open, ttd, ta, strata1) {
+Move <- function(y, sl, ToD, land, ttd, ta, strata1) {
+  # Make the model
+  model <- clogit(y ~ sl:ToD + land +
+                    sl:land +
+                   # log(ttd+1):sl + log(ttd+1):ta + strata(strata1))
+                    ttd:sl + ttd:ta + strata(strata1))
+  sum.model <- summary(model)$coefficients
+  # Transpose the coef of the model and cast as data.table
+  term <- c('coef','hr','se','z','p')
+  coefOut <- data.table(t(sum.model))
+  
+  # Return combined columns
+  # print(summary(model))
+  print(AIC(model))
+  return(data.table(term, coefOut, AIC=AIC(model)))
+}
+
+Move.prop <- function(y, sl, ToD, wet, open, ttd, ta, strata1) {
   # Make the model
   model <- clogit(y ~ sl:ToD + wet + open +
                     sl:wet + sl:open +
@@ -129,15 +208,52 @@ Move <- function(y, sl, ToD, wet, open, ttd, ta, strata1) {
   return(data.table(term, coefOut, AIC=AIC(model)))
 }
 
-moveOUT <- dat[, Move(case_, log_sl, ToD_start, propwet_end, propopen_end, ttd1, cos_ta, stepjum), by = id]
+unique(dat$id)
+moveOUT <- dat[wtd1==0 | wtd1==4, Move(case_, log_sl, ToD_start, land_end, as.factor(wtd1), cos_ta, stepjum), by = id]
 m.move <- merge(moveOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
 m.move.p<-m.move[term=='coef' | term=='p', .(id, term, `sl:log(ttd + 1)`, `log(ttd + 1):ta`, COD)]
+m.move.aic<-m.move[term=='coef' | term=='se']
+m.move.coef<-m.move[term=='coef']
+
+m.move.coef <- moveOUT[term=='coef',-'AIC']
+m.move.coef <- merge(m.move.coef, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+
+ggplot(melt(m.move.coef)) + aes(variable, value) +
+  geom_boxplot() +
+  geom_jitter(aes(color=COD)) +
+  ylim(-1,1)
+
+ggplot(melt(moveOUT)) +
+  geom_density(aes(value), fill = 'dodgerblue', alpha =0.5) +
+  geom_vline(xintercept = 0, color = "black", lty = 2) +
+  facet_wrap(~variable, scale = "free")
+
+
+movepropOUT <- dat[, Move.prop(case_, log_sl, ToD_start, propwet_end, propopen_end, ttd1, cos_ta, as.integer(stepjum)), by = id]
+m.moveprop <- merge(movepropOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+m.moveprop.p<-m.moveprop[term=='coef' | term=='p', .(id, term, `sl:log(ttd + 1)`, `log(ttd + 1):ta`, COD)]
 
 
 
 #### HABITAT ####
+Habitat <- function(y, sl, ToD, land, ttd, parkdist, parkYN, strata1) {
+  # Make the model
+  model <- clogit(y ~ sl:ToD + land +
+                    sl:land +
+                    ttd:land + ttd:parkdist + strata(strata1))
+                    #log(ttd+1):land + log(ttd+1):parkdist:parkYN + strata(strata1))
+  sum.model <- summary(model)$coefficients
+  # Transpose the coef of the model and cast as data.table
+  term <- c('coef','hr','se','z','p')
+  coefOut <- data.table(t(sum.model))
+  
+  # Return combined columns
+  # print(summary(model))
+  print(AIC(model))
+  return(data.table(term, coefOut, AIC=AIC(model)))
+}
 
-Habitat <- function(y, sl, ToD, wet, open, ttd, parkdist, parkYN, strata1) {
+Habitat.prop <- function(y, sl, ToD, wet, open, ttd, parkdist, parkYN, strata1) {
   # Make the model
   model <- clogit(y ~ sl:ToD + wet + open +
                     sl:wet + sl:open +
@@ -153,10 +269,46 @@ Habitat <- function(y, sl, ToD, wet, open, ttd, parkdist, parkYN, strata1) {
   return(data.table(term, coefOut, AIC=AIC(model)))
 }
 
-habOUT <- dat[, Habitat(case_, log_sl, ToD_start, propwet_end, propopen_end, ttd1, lnparkdist_end, parkYN_end, stepjum), by = id]
+habOUT <- dat[, Habitat(case_, log_sl, ToD_start, land_end, as.factor(wtd1), parkDistAdj_end, parkYN_end, stepjum), by = id]
 m.habitat <- merge(habOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
-m.habitat.p <- m.habitat[term=='coef'|term=='p', .(id, term, `wet:log(ttd + 1)`, `open:log(ttd + 1)`, 
+m.habitat.p <- m.habitat[term=='coef'|term=='p', .(id, term, `landclosed:log(ttd + 1)`, `landopen:log(ttd + 1)`, `landwet:log(ttd + 1)`, 
                        `log(ttd + 1):parkdist:parkYNpark`, `log(ttd + 1):parkdist:parkYNout-park`, COD)]
+m.habitat.aic <- m.habitat[term=='coef'|term=='se', .(id, term, `landclosed:log(ttd + 1)`, `landopen:log(ttd + 1)`, `landwet:log(ttd + 1)`, 
+                                                   `log(ttd + 1):parkdist:parkYNpark`, `log(ttd + 1):parkdist:parkYNout-park`, AIC, COD)]
+m.habitat.coef <- m.habitat[term=='coef']
+m.hab.coef <- habOUT[term=='coef',-'AIC']
+m.hab.coef<- merge(m.hab.coef, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+
+
+ggplot(melt(m.hab.coef)) + aes(variable, value) +
+  geom_boxplot() +
+  geom_jitter(aes(color=COD)) +
+  ylim(-1,1)
+
+ggplot(melt(m.hab.coef)) + aes(variable, value) +
+  geom_boxplot() +
+  geom_jitter() +
+  ylim(-10,5)
+
+ggplot(melt(habOUT)) +
+  geom_density(aes(value), fill = 'dodgerblue', alpha =0.5) +
+  geom_vline(xintercept = 0, color = "black", lty = 2) +
+  facet_wrap(~variable, scale = "free")
+
+
+habpropOUT <- dat[, Habitat.prop(case_, log_sl, ToD_start, propwet_end, propopen_end, ttd1, lnparkdist_end, parkYN_end, stepjum), by = id]
+m.habitatprop <- merge(habpropOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+m.habitatprop.p <- m.habitatprop[term=='coef'|term=='p', .(id, term, `wet:log(ttd + 1)`, `open:log(ttd + 1)`, 
+                                                  `log(ttd + 1):parkdist:parkYNpark`, `log(ttd + 1):parkdist:parkYNout-park`, COD)]
+m.habitatprop.coef <- m.habitatprop[term=='coef']
+m.habprop.coef <- habpropOUT[term=='coef',-'AIC']
+
+
+ggplot(melt(m.habprop.coef)) + aes(variable, value) +
+  geom_boxplot() +
+  geom_jitter() +
+  ylim(-10,5)
+
 
 Habitat.land <- function(y, sl, ToD, land, ttd, strata1) {
   # Make the model
@@ -207,7 +359,24 @@ m.social <- data.all %>% amt::fit_issf(case_ ~ log_sl:ToD_start + land_end + log
                                         log(ttd1):log(distance2) + 
                                         strata(step_id_))
 
-Social <- function(y, sl, ToD, wet, open, ttd, nndist, packYN, packdist, strata1) {
+Social <- function(y, sl, ToD, land, ttd, nndist, packYN, packdist, strata1) {
+  # Make the model
+  model <- clogit(y ~ sl:ToD + land +
+                    sl:land +
+                    log(ttd+1):log(nndist+1) + log(ttd+1):log(packdist+1):packYN + strata(strata1))
+  sum.model <- summary(model)$coefficients
+  # Transpose the coef of the model and cast as data.table
+  term <- c('coef','hr','se','z','p')
+  coefOut <- data.table(t(sum.model))
+  
+  # Return combined columns
+  # print(summary(model))
+  print(AIC(model))
+  return(data.table(term, coefOut, AIC=AIC(model)))
+}
+
+
+Social.prop <- function(y, sl, ToD, wet, open, ttd, nndist, packYN, packdist, strata1) {
   # Make the model
   model <- clogit(y ~ sl:ToD + wet + open +
                     sl:wet + sl:open +
@@ -227,9 +396,35 @@ dat[,unique(id)]
 dat[id !='W05' & id != 'W03' & id != 'W07' & id != 'W19' & id != 'W15' & id != 'W14',unique(id)]
 # W13, W11, W27,  not converge
 
-socOUT <- dat[id !='W05' & id != 'W03' & id != 'W07' & id != 'W19' & id != 'W15' & id != 'W14', Social(case_, log_sl, ToD_start, propwet_end, propopen_end, ttd1, distance2, packYN_end, packDist_end, as.integer(stepjum)), by = id]
+socOUT <- dat[id !='W05' & id != 'W03' & id != 'W07' & id != 'W19' & id != 'W15' & id != 'W14', Social(case_, log_sl, ToD_start, land_end, ttd1, distance2, packYN_end, packDist_end, stepjum), by = id]
 m.social <- merge(socOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
 m.social.p <- m.social[term=='coef' |term=='p', .(id, term, `log(ttd + 1):log(nndist + 1)`, `log(ttd + 1):log(packdist + 1):packYNpack`, `log(ttd + 1):log(packdist + 1):packYNout-pack`, COD)]
+m.social.aic <- m.social[term=='coef' |term=='se']
+m.social.coef <- m.social[term=='coef']
+m.soc.coef <- socOUT[term=='coef',-'AIC']
+
+m.soc.coef<- merge(m.soc.coef, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+
+ggplot(melt(m.soc.coef)) + aes(variable, value) +
+  geom_boxplot() +
+  geom_jitter(aes(color=COD)) +
+  ylim(-1,1)
+
+
+plot(term)
+ggplot(melt(m.soc.coef)) + aes(variable, value) +
+       geom_boxplot() +
+       geom_jitter() +
+      ylim(-10,5)
+
+socpropOUT <- dat[id !='W05' & id != 'W03' & id != 'W07' & id != 'W19' & id != 'W15' & id != 'W14', Social.prop(case_, log_sl, ToD_start, propwet_end, propopen_end, ttd1, distance2, packYN_end, packDist_end, as.integer(stepjum)), by = id]
+m.socialprop <- merge(socpropOUT, dat.meta, by.x = 'id', by.y = 'WolfID', all.x = T)
+m.socialprop.p <- m.socialprop[term=='coef' |term=='p', .(id, term, `log(ttd + 1):log(nndist + 1)`, `log(ttd + 1):log(packdist + 1):packYNpack`, `log(ttd + 1):log(packdist + 1):packYNout-pack`, COD)]
+
+ggplot(melt(socOUT)) +
+  geom_density(aes(value), fill = 'dodgerblue', alpha =0.5) +
+  geom_vline(xintercept = 0, color = "black", lty = 2) +
+  facet_wrap(~variable, scale = "free")
 
 dat.focal<- dat.meta[status=='dead',.(WolfID, death=as.Date(end_date))]
 dat.focal <- dat.focal[WolfID %chin% unique(dat$id)] 
