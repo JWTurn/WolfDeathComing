@@ -103,23 +103,33 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 #### layers ####
 
 land <- raster(paste0(raw, 'RMNPlandcover.tif'), )
-cland <- fread(paste0(raw, 'rcl_cowu.csv'))
-land <- raster::reclassify(land, cland)
-closed <- land == 1
-names(closed) <- "closed"
-open <- land == 2
+#cland <- fread(paste0(raw, 'rcl_cowu.csv'))
+cland2 <- fread(paste0(raw, 'rcl_ConMixOpWet.csv'))
+land <- raster::reclassify(land, cland2)
+# closed <- land == 1
+# names(closed) <- "closed"
+# open <- land == 2
+# names(open) <- "open"
+# wet <- land == 3
+# names(wet) <- "wet"
+coniferous <- land == 1
+names(coniferous) <- "coniferous"
+mixed <- land == 2
+names(mixed) <- "mixed"
+open <- land == 3
 names(open) <- "open"
-wet <- land == 3
+wet <- land == 4
 names(wet) <- "wet"
 ## This creates an object which can be used to make a layer of specified diameter
 # The d value is what determines the buffer size if you want to change it.
 ## If you're doing multiple landcover classes, you only need to run this line once, as long as each of the habitat variables has the same resolution
 # (e.g., the "Wetland" here could be any cover type)
-Buff100 <- focalWeight(closed, d=100, type = 'circle')
+Buff100 <- focalWeight(mixed, d=100, type = 'circle')
 ## This generates a new raster where each cell corresponds to the mean wetland within a 100m buffer.
 # Since it's all 1s and 0s, this is the same as the proportion of wetland surrounding the focal variable
 propwet <- focal(wet, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
-propclosed <- focal(closed, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
+propconif <- focal(coniferous, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
+propmixed <- focal(mixed, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 propopen <- focal(open, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 parkYN <- raster(paste0(raw, 'parkYN.tif'))
 parkbound_dist <- raster(paste0(raw, 'boundary_dist.tif'))
@@ -174,8 +184,8 @@ ssf <- dat_all %>%
       amt::extract_covariates(WW, where = "both") %>%
       amt::extract_covariates(WW_dist, where = "both") %>%
       amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
-      mutate(land_start = factor(RMNPlandcover_start, levels = 1:3, labels = c("closed", "open", 'wet')),
-             land_end = factor(RMNPlandcover_end, levels = 1:3, labels = c("closed", "open", 'wet')),
+      mutate(land_start = factor(RMNPlandcover_start, levels = 1:4, labels = c("coniferous", "mixed", "open", 'wet')),
+             land_end = factor(RMNPlandcover_end, levels = 1:4, labels = c("coniferous", "mixed", "open", 'wet')),
              parkYN_start = factor(parkYN_start, levels = c(0, 1), labels = c("park", "out-park")),
              parkYN_end = factor(parkYN_end, levels = c(0, 1), labels = c("park", "out-park")),
              AD_kde_start = factor(AD_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
@@ -205,11 +215,15 @@ locs_start <- sp::SpatialPoints(data.frame(ssf.all$x1_, ssf.all$y1_))
 locs_end <- sp::SpatialPoints(data.frame(ssf.all$x2_, ssf.all$y2_))
 
 ssf.all[,'propwet_start'] <- raster::extract(propwet, locs_start)
-ssf.all[,'propclosed_start'] <- raster::extract(propclosed, locs_start)
+#ssf.all[,'propclosed_start'] <- raster::extract(propclosed, locs_start)
+ssf.all[,'propconif_start'] <- raster::extract(propconif, locs_start)
+ssf.all[,'propmixed_start'] <- raster::extract(propmixed, locs_start)
 ssf.all[,'propopen_start'] <- raster::extract(propopen, locs_start)
 
 ssf.all[,'propwet_end'] <- raster::extract(propwet, locs_end)
-ssf.all[,'propclosed_end'] <- raster::extract(propclosed, locs_end)
+#ssf.all[,'propclosed_end'] <- raster::extract(propclosed, locs_end)
+ssf.all[,'propconif_end'] <- raster::extract(propconif, locs_end)
+ssf.all[,'propmixed_end'] <- raster::extract(propmixed, locs_end)
 ssf.all[,'propopen_end'] <- raster::extract(propopen, locs_end)
 
 # adding nn and dist for step 1, also adding attributed data about death
@@ -316,7 +330,9 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   
   ssf.soc.sub[,'wet_end'] <- ifelse(ssf.soc.sub$land_end =='wet', 1,0)
   ssf.soc.sub[,'open_end'] <- ifelse(ssf.soc.sub$land_end =='open', 1,0)
-  ssf.soc.sub[,'closed_end'] <- ifelse(ssf.soc.sub$land_end =='closed', 1,0)
+  #ssf.soc.sub[,'closed_end'] <- ifelse(ssf.soc.sub$land_end =='closed', 1,0)
+  ssf.soc.sub[,'conif_end'] <- ifelse(ssf.soc.sub$land_end =='coniferous', 1,0)
+  ssf.soc.sub[,'mixed_end'] <- ifelse(ssf.soc.sub$land_end =='mixed', 1,0)
   ssf.soc.sub[,'packDistadj_end'] <-ifelse(ssf.soc.sub$packYN_end == 'pack', ssf.soc.sub$packDist_end, (-1)*ssf.soc.sub$packDist_end)
   ssf.soc.sub[,'parkDistadj_end'] <-ifelse(ssf.soc.sub$parkYN_end == 'park', ssf.soc.sub$boundary_dist_end, (-1)*ssf.soc.sub$boundary_dist_end)
   
@@ -324,13 +340,13 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   
   ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
                             parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end = boundary_dist_end, lnparkdist_start, lnparkdist_end, parkDistadj_end,
-                            land_start, land_end, propwet_start, propwet_end, propopen_start, propopen_end, propclosed_start, propclosed_end, wet_end, open_end, closed_end,
+                            land_start, land_end, propwet_end, propopen_end, propconif_end, propmixed_end, wet_end, open_end, conif_end, mixed_end,
                             id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, packDistadj_end,
                             ttd1, ttd2)]
   return(ssf.wolf)
 }
 
-unique(dat.focal$WolfID)
+unique(sort(dat.focal$WolfID))
 ssfW02 <- createSSFnnbyFocal(ssf.all, "W02")
 ssfW03 <- createSSFnnbyFocal(ssf.all, "W03")
 ssfW04 <- createSSFnnbyFocal(ssf.all, "W04")
