@@ -22,6 +22,7 @@ dat <- readRDS('data/derived-data/ssfAllCov.Rds')
 
 dat <- dat[, stepjum := forcats::fct_shuffle(as.factor(step_id_)), by = .(id)]
 
+
 dat[,.(nstep = uniqueN(as.character(step_id_)), nstepjum = uniqueN(stepjum)), by = .(id)]
 
 dat.steps <-dat[id=='W06',.(step_id_, stepjum)]
