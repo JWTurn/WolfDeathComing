@@ -14,50 +14,72 @@ derived <- 'data/derived-data/'
 maps_out <- 'data/map-output/'
 
 utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+utm15N <- "+proj=utm +zone=15 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 
 ### rarified data ----
-dat <- fread(paste0(raw, 'RMNPwolfpts_boundary.csv'))
-dat$datetime <- paste(dat$gmtDate, dat$gmtTime)
-dat$datetime <- as.POSIXct(dat$datetime, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
+dat.RMNP <- fread(paste0(raw, 'RMNPwolfpts_boundary.csv'))
+dat.RMNP$datetime <- paste(dat.RMNP$gmtDate, dat.RMNP$gmtTime)
+dat.RMNP$datetime <- as.POSIXct(dat.RMNP$datetime, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
 
 
 ### clusters data ----
-dat.clusters <- fread(paste0(raw, 'InvestigatedPoints0131_cleaned20180614.csv'))
-dat.clusters[,'packID'] <- factor(dat.clusters$Pack_ID, c('Baldy Lake', 'No Collar', 'Whitewater Lake', 'Gunn Lake',
+dat.clusters.RMNP <- fread(paste0(raw, 'InvestigatedPoints0131_cleaned20180614.csv'))
+dat.clusters.RMNP[,'packID'] <- factor(dat.clusters.RMNP$Pack_ID, c('Baldy Lake', 'No Collar', 'Whitewater Lake', 'Gunn Lake',
                            'Deep Lake', 'Ranck Creek', 'Lake Audy', 'Spruce Lake', 'Birdtail Valley', 'Block'),
                            labels = c('BD', 'NA', 'WW', 'GL', 'DL', 'RC', 'AD', 'SL', 'BT', 'BL'))
-dat.clusters$Clstr_Strt <- as.POSIXct(dat.clusters$Clstr_Strt, tz = 'UTC', "%Y-%m-%d")
-dat.clusters$Clstr_End <- as.POSIXct(dat.clusters$Clstr_End, tz = 'UTC', "%Y-%m-%d")
-dat.clusters[,'year'] <- lubridate::year(dat.clusters$Clstr_Strt)
-dat.clusters <- dat.clusters[packID != 'NA']
-dat.clusters$packID <- factor(dat.clusters$packID)
+dat.clusters.RMNP$Clstr_Strt <- as.POSIXct(dat.clusters.RMNP$Clstr_Strt, tz = 'UTC', "%Y-%m-%d")
+dat.clusters.RMNP$Clstr_End <- as.POSIXct(dat.clusters.RMNP$Clstr_End, tz = 'UTC', "%Y-%m-%d")
+dat.clusters.RMNP[,'year'] <- lubridate::year(dat.clusters.RMNP$Clstr_Strt)
+dat.clusters.RMNP <- dat.clusters.RMNP[packID != 'NA']
+dat.clusters.RMNP$packID <- factor(dat.clusters.RMNP$packID)
 
-#dat$PackID <- factor(dat$PackID)
+
+dat.clusters.GHA26 <- fread(paste0(raw, 'GHA26_Cluster_PackBound.csv'))
+dat.clusters.GHA26 <- dat.clusters.GHA26[packID!='NA' & packID!='SS']
+dat.clusters.GHA26$Center_UTMN <- as.numeric(dat.clusters.GHA26$Center_UTMN)
+dat.clusters.GHA26 <- dat.clusters.GHA26[!is.na(Center_UTMN)]
+
+dat.clusters.GHA26.14N <- dat.clusters.GHA26[Center_UTMZ ==14]
+dat.clusters.GHA26.14N <- dat.clusters.GHA26.14N[, c('Long', 'Lat') := as.data.table(proj4::project(cbind(Center_UTME, Center_UTMN), utm14N, inverse= T))]
+
+dat.clusters.GHA26.15N <- dat.clusters.GHA26[Center_UTMZ ==15]
+dat.clusters.GHA26.15N <- dat.clusters.GHA26.15N[, c('Long', 'Lat') := as.data.table(proj4::project(cbind(Center_UTME, Center_UTMN), utm15N, inverse= T))]
+
+dat.clusters.GHA26 <- rbind(dat.clusters.GHA26.14N, dat.clusters.GHA26.15N)
+dat.clusters.GHA26 <- dat.clusters.GHA26[,.(ID, ClusterID, ClusterDay=`Cluster Day`, ClusterMonth = `Cluster Month`, 
+                                           ClusterYear = `Cluster Year`, Center_UTMZ, Center_UTME, Center_UTMN, Long, Lat,
+                                         SiteCategory, packID, Pack, no_pts=`#_Cluster_Points`)]
+dat.clusters.GHA26 <- dat.clusters.GHA26[, c('X_proj', 'Y_proj') := as.data.table(rgdal::project(cbind(Long, Lat), utm14N))]
+
 
 #### 2016-2017 ####
-pack <- SpatialPointsDataFrame(coords=as.data.frame(cbind(dat.clusters$X_proj, dat.clusters$Y_proj)), data=dat.clusters, 
+pack.RMNP <- SpatialPointsDataFrame(coords=as.data.frame(cbind(dat.clusters.RMNP$X_proj, dat.clusters.RMNP$Y_proj)), data=dat.clusters.RMNP, 
+                                proj4string = 
+                                  CRS("+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"))
+
+pack.GHA26 <- SpatialPointsDataFrame(coords=as.data.frame(cbind(dat.clusters.GHA26$X_proj, dat.clusters.GHA26$Y_proj)), data=dat.clusters.GHA26, 
                                     proj4string = 
                                       CRS("+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"))
 
-dat.clusters[,.(.N), packID]
+dat.clusters.GHA26[,.(.N), packID]
 
 
-plot(pack, col = c(1:8))
+plot(pack.GHA26, col = c(1:12))
 
 
 
-pack.kde<- kernelUD(pack[,'packID'], h="href", grid=30)
-image(pack.kde)
-packrange <- getverticeshr(pack.kde, percent = 95)
-plot(packrange, col = 1:8)
+pack.GHA26.kde<- kernelUD(pack.GHA26[,'packID'], h="href", grid=50)
+image(pack.GHA26.kde)
+packrange.GHA26 <- getverticeshr(pack.GHA26.kde, percent = 95) # not working because of weird year stuff
+plot(packrange.GHA26, col = 1:12)
 
-writeOGR(packrange, dsn = 'data/map-output/RMNPkde', layer = 'RMNPkde', driver = "ESRI Shapefile")
+writeOGR(packrange.GHA26, dsn = 'data/map-output/GHA26kde', layer = 'GHA26kde', driver = "ESRI Shapefile")
 
 
-pack.mcp <- mcp(pack[, "packID"], percent = 95, unin = "m", unout = "km2")
-plot(pack.mcp, col = c(1:8))
-paste0(raw, 'RMNPwolfpts_boundary.csv')
-writeOGR(pack.mcp, dsn = paste0(maps_out, 'RMNPmcp'), layer = 'RMNPmcp', driver = "ESRI Shapefile")
+pack.GHA26.mcp <- mcp(pack.GHA26[, "packID"], percent = 95, unin = "m", unout = "km2")
+plot(pack.GHA26.mcp, col = c(1:8))
+
+writeOGR(pack.GHA26.mcp, dsn = paste0(maps_out, 'GHA26mcp'), layer = 'GHA26mcp', driver = "ESRI Shapefile")
 
 
 #### by pack ####
@@ -83,19 +105,32 @@ makePackRange <- function(dat, pack){
   writeOGR(mcp, dsn = paste0(maps_out, paste(pack, 'mcp', sep = '_')), layer = paste(pack, 'mcp', sep = '_'), driver = "ESRI Shapefile")
 }
 
-makePackRange(dat.clusters, 'AD')
-makePackRange(dat.clusters, 'BD')
-makePackRange(dat.clusters, 'BL')
-makePackRange(dat.clusters, 'BT')
-makePackRange(dat.clusters, 'DL')
-makePackRange(dat.clusters, 'GL')
-makePackRange(dat.clusters, 'SL')
-makePackRange(dat.clusters, 'WW')
+## RMNP
+makePackRange(dat.clusters.RMNP, 'AD')
+makePackRange(dat.clusters.RMNP, 'BD')
+makePackRange(dat.clusters.RMNP, 'BL')
+makePackRange(dat.clusters.RMNP, 'BT')
+makePackRange(dat.clusters.RMNP, 'DL')
+makePackRange(dat.clusters.RMNP, 'GL')
+makePackRange(dat.clusters.RMNP, 'SL')
+makePackRange(dat.clusters.RMNP, 'WW')
+
+## GHA26
+makePackRange(dat.clusters.GHA26, 'GF')
+makePackRange(dat.clusters.GHA26, 'QB')
+makePackRange(dat.clusters.GHA26, 'PO')
+makePackRange(dat.clusters.GHA26, 'MA')
+makePackRange(dat.clusters.GHA26, 'FM')
+makePackRange(dat.clusters.GHA26, 'SA') 
+makePackRange(dat.clusters.GHA26[`ClusterYear` == '2018'], 'HL') # works for 2018
+makePackRange(dat.clusters.GHA26, 'TU') 
+makePackRange(dat.clusters.GHA26, 'GR') # not working --- None w/ death
+makePackRange(dat.clusters.GHA26, 'MW') # not working --- only heart worm deaths
+
+dat.clusters.GHA26[,.(.N), packID]
 
 
-
-
-
+#### by year --- Not using right now ####
 #### 2016 ####
 dat.2016 <- dat.clusters[year == 2016]
 dat.2016$packID <- as.factor(dat.2016$packID)
