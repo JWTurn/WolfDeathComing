@@ -32,7 +32,15 @@ dat2018 <- dat2018[,.(Collar_ID, MBts, Latitude, Longitude)]
 
 dat <- rbind(dat2014_15, dat2016, dat2016_st, dat2017, dat2018)
 
+# utm zone 14n
+# wgs84 32614
+# nad83 26914
+# project raster
+
 utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+crs14 <- sp::CRS("+init=epsg:32614")
+
+
 dat[, Longitude := as.numeric(Longitude)]
 dat[, Latitude := as.numeric(Latitude)]
 dat[, c('X', 'Y') := as.data.table(rgdal::project(cbind(Longitude, Latitude), utm14N))]
@@ -50,8 +58,12 @@ dat.collpack <- dat.meta[,.(Collar_ID, WolfID, PackID, year)]
 
 #dat.collpack <- dat.collpack[Collar_ID %chin% dat$WolfID]
 dat.all <- merge(dat, dat.collpack, by = c('Collar_ID', 'year'), all.x = T)
+dat.all[,'WolfID'] <- ifelse(dat.all$Collar_ID=='5148', 'W17', dat.all$WolfID)
+dat.all[,'PackID'] <- ifelse(dat.all$Collar_ID=='5148', 'MA', dat.all$PackID)
 
 colnames(dat.all)[colnames(dat.all)=="MBts"] <- "datetime"
+
+dat.all <- dat.all[!is.na(WolfID)]
 
   
 #### determining nearest neighbor (nn) at orginal point ####
@@ -66,6 +78,8 @@ enn <- edge_nn(
   splitBy = 'PackID'
 )
 
+enn<- unique(enn)
+
 ### calculating distances and original point
 edist1 <- edge_dist(
   DT = dat.grptimes,
@@ -77,29 +91,26 @@ edist1 <- edge_dist(
   splitBy = 'PackID'
 )
 
-dat.nn <- merge(enn, edist1, by.x = c('ID', 'NN','PackID', 'timegroup'), 
+edist1 <- unique(edist1)
+
+dat.nn.dist <- merge(enn, edist1, by.x = c('ID', 'NN','PackID', 'timegroup'), 
                 by.y = c('ID1', 'ID2', 'PackID', 'timegroup'))
 
+dat.nn.u <- unique(dat.nn.dist)
 
 
 
-dat.nn <- merge(dat.grptimes,dat.nn, by.x = c('WolfID','PackID', 'timegroup'), 
+dat.nn <- merge(dat.grptimes,dat.nn.dist, by.x = c('WolfID','PackID', 'timegroup'), 
                 by.y = c('ID','PackID', 'timegroup'), all.x = T)
+dat.nn <- dat.nn[!is.na(WolfID)]
 
-dat.nn <- merge(dat.nn,dat.meta, by.x = c('WolfID','PackID'), 
-                by.y = c('WolfID','PackID'), all.x = T)
+dat.nn <- merge(dat.nn,dat.meta, by.x = c('WolfID','Collar_ID','PackID','year'), 
+                by.y = c('WolfID','Collar_ID','PackID','year'), all.x = T)
 
 
 ### OBJECTIVE: determine nn first from actual data, then create (random) steps
 ### determine nn dist only from actual data, not who may be nearest at new random step
 
-# utm zone 14n
-# wgs84 32614
-# nad83 26914
-# project raster
-
-utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-crs14 <- sp::CRS("+init=epsg:32614")
 
 #### filter to those that die ####
 dat.focal <- setDT(dat.meta)[!is.na(death_date) & !is.na(PackID)]
@@ -107,7 +118,7 @@ dat.focal[,'packbound'] <- dat.focal$PackID
 focals <- dat.focal$WolfID
 
 DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
-                                    'status', 'end_date', 'COD', 'death_date') %>%
+                                    'COD', 'death_date') %>%
   filter(id %in% focals) 
   
   
@@ -158,9 +169,9 @@ propwet <- focal(wet, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 propconif <- focal(coniferous, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 propmixed <- focal(mixed, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 propopen <- focal(open, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
-parkYN <- raster(paste0(raw, 'parkYN.tif'))
-parkbound_dist <- raster(paste0(raw, 'boundary_dist.tif'))
-roads <- raster(paste0(raw, 'roadall_LinFeat_dist.tif'))
+
+roads <- raster(paste0(raw, 'roadall_LinFeat_dist.tif'))  # Which for GHA26?
+
 AD <- raster(paste0(raw, 'AD_kde.tif'))
 AD <- reclassify(AD, cbind(NA, 0))
 AD_dist <- raster(paste0(raw, 'AD_kde_dist.tif'))
