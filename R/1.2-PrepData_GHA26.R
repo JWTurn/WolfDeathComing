@@ -46,6 +46,8 @@ dat[, Latitude := as.numeric(Latitude)]
 dat[, c('X', 'Y') := as.data.table(rgdal::project(cbind(Longitude, Latitude), utm14N))]
 dat[,'year'] <- as.numeric(format(dat$MBts,'%Y'))
 
+#write.csv(dat, paste0(derived, 'GHA26_wolf_pts.csv'))
+
 dat.meta <- fread(paste0(raw, 'wolf_metadata_GHA26.csv'), header = T)
 dat.meta$death_date <- paste(dat.meta$death_date, '23:59:59', sep = ' ')
 dat.meta$death_date<- as.POSIXct(dat.meta$death_date, tz = 'UTC', "%Y-%m-%d %H:%M:%S")
