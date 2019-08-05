@@ -142,7 +142,7 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 
 #### layers ####
 
-land <- raster(paste0(raw, 'GHA26landcover.tif'), )
+land <- raster(paste0(raw, 'GHA26landcover_wgs84.tif'), )
 #cland <- fread(paste0(raw, 'rcl_cowu.csv'))
 cland2 <- fread(paste0(raw, 'rcl_ConMixOpWet.csv'))
 land <- raster::reclassify(land, cland2)
@@ -172,26 +172,38 @@ propconif <- focal(coniferous, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 propmixed <- focal(mixed, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 propopen <- focal(open, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
 
-roads <- raster(paste0(raw, 'roadall_LinFeat_dist.tif'))  # Which for GHA26?
+roads <- raster(paste0(raw, 'GHA26_roadsPS_dist.tif'))  
 
-AD <- raster(paste0(raw, 'AD_kde.tif'))
-AD <- reclassify(AD, cbind(NA, 0))
-AD_dist <- raster(paste0(raw, 'AD_kde_dist.tif'))
-BD <- raster(paste0(raw, 'BD_kde.tif'))
-BD <- reclassify(BD, cbind(NA, 0))
-BD_dist <- raster(paste0(raw, 'BD_kde_dist.tif'))
-BL <- raster(paste0(raw, 'BL_kde.tif'))
-BL <- reclassify(BL, cbind(NA, 0))
-BL_dist <- raster(paste0(raw, 'BL_kde_dist.tif'))
-BT <- raster(paste0(raw, 'BT_kde.tif'))
-BT <- reclassify(BT, cbind(NA, 0))
-BT_dist <- raster(paste0(raw, 'BT_kde_dist.tif'))
-GL <- raster(paste0(raw, 'GL_kde.tif'))
-GL <- reclassify(GL, cbind(NA, 0))
-GL_dist <- raster(paste0(raw, 'GL_kde_dist.tif'))
-WW <- raster(paste0(raw, 'WW_kde.tif'))
-WW <- reclassify(WW, cbind(NA, 0))
-WW_dist <- raster(paste0(raw, 'WW_kde_dist.tif'))
+FM <- raster(paste0(raw, 'FM_kde.tif'))
+FM <- reclassify(FM, cbind(NA, 0))
+FM_dist <- raster(paste0(raw, 'FM_kde_dist.tif'))
+GF <- raster(paste0(raw, 'GF_kde.tif'))
+GF <- reclassify(GF, cbind(NA, 0))
+GF_dist <- raster(paste0(raw, 'GF_kde_dist.tif'))
+GR <- raster(paste0(raw, 'GR_kde.tif'))
+GR <- reclassify(GR, cbind(NA, 0))
+GR_dist <- raster(paste0(raw, 'GR_kde_dist.tif'))
+HL <- raster(paste0(raw, 'HL_kde.tif'))
+HL <- reclassify(HL, cbind(NA, 0))
+HL_dist <- raster(paste0(raw, 'HL_kde_dist.tif'))
+MA <- raster(paste0(raw, 'MA_kde.tif'))
+MA <- reclassify(MA, cbind(NA, 0))
+MA_dist <- raster(paste0(raw, 'MA_kde_dist.tif'))
+MW <- raster(paste0(raw, 'MW_kde.tif'))
+MW <- reclassify(MW, cbind(NA, 0))
+MW_dist <- raster(paste0(raw, 'MW_kde_dist.tif'))
+PO <- raster(paste0(raw, 'PO_kde.tif'))
+PO <- reclassify(PO, cbind(NA, 0))
+PO_dist <- raster(paste0(raw, 'PO_kde_dist.tif'))
+QB <- raster(paste0(raw, 'QB_kde.tif'))
+QB <- reclassify(QB, cbind(NA, 0))
+QB_dist <- raster(paste0(raw, 'QB_kde_dist.tif'))
+SA <- raster(paste0(raw, 'SA_kde.tif'))
+SA <- reclassify(SA, cbind(NA, 0))
+SA_dist <- raster(paste0(raw, 'SA_kde_dist.tif'))
+TU <- raster(paste0(raw, 'TU_kde.tif'))
+TU <- reclassify(TU, cbind(NA, 0))
+TU_dist <- raster(paste0(raw, 'TU_kde_dist.tif'))
 
 
 
@@ -208,40 +220,50 @@ ssf <- dat_all %>%
       # amt::extract_covariates(propwet, where = "both")  %>%
       # amt::extract_covariates(propopen, where = "both")  %>%
       # amt::extract_covariates(propclosed, where = "both")  %>%
-      amt::extract_covariates(parkYN, where = "both") %>%
-      amt::extract_covariates(parkbound_dist, where = "both") %>%
       amt::extract_covariates(roads, where = "both") %>%
-      amt::extract_covariates(AD, where = "both") %>%
-      amt::extract_covariates(AD_dist, where = "both") %>%
-      amt::extract_covariates(BD, where = "both") %>%
-      amt::extract_covariates(BD_dist, where = "both") %>%
-      amt::extract_covariates(BL, where = "both") %>%
-      amt::extract_covariates(BL_dist, where = "both") %>%
-      amt::extract_covariates(BT, where = "both") %>%
-      amt::extract_covariates(BT_dist, where = "both") %>%
-      amt::extract_covariates(GL, where = "both") %>%
-      amt::extract_covariates(GL_dist, where = "both") %>%
-      amt::extract_covariates(WW, where = "both") %>%
-      amt::extract_covariates(WW_dist, where = "both") %>%
+      amt::extract_covariates(FM, where = "both") %>%
+      amt::extract_covariates(FM_dist, where = "both") %>%
+      amt::extract_covariates(GF, where = "both") %>%
+      amt::extract_covariates(GF_dist, where = "both") %>%
+      amt::extract_covariates(GR, where = "both") %>%
+      amt::extract_covariates(GR_dist, where = "both") %>%
+      amt::extract_covariates(HL, where = "both") %>%
+      amt::extract_covariates(HL_dist, where = "both") %>%
+      amt::extract_covariates(MA, where = "both") %>%
+      amt::extract_covariates(MA_dist, where = "both") %>%
+      amt::extract_covariates(MW, where = "both") %>%
+      amt::extract_covariates(MW_dist, where = "both") %>%
+      amt::extract_covariates(PO, where = "both") %>%
+      amt::extract_covariates(PO_dist, where = "both") %>%
+      amt::extract_covariates(QB, where = "both") %>%
+      amt::extract_covariates(QB_dist, where = "both") %>%
+      amt::extract_covariates(SA, where = "both") %>%
+      amt::extract_covariates(SA_dist, where = "both") %>%
+      amt::extract_covariates(TU, where = "both") %>%
+      amt::extract_covariates(TU_dist, where = "both") %>%
       amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
-      mutate(land_start = factor(RMNPlandcover_start, levels = 1:4, labels = c("coniferous", "mixed", "open", 'wet')),
-             land_end = factor(RMNPlandcover_end, levels = 1:4, labels = c("coniferous", "mixed", "open", 'wet')),
-             parkYN_start = factor(parkYN_start, levels = c(0, 1), labels = c("park", "out-park")),
-             parkYN_end = factor(parkYN_end, levels = c(0, 1), labels = c("park", "out-park")),
-             AD_kde_start = factor(AD_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
-             AD_kde_end = factor(AD_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             BD_kde_start = factor(BD_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
-             BD_kde_end = factor(BD_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             BL_kde_start = factor(BL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
-             BL_kde_end = factor(BL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             BT_kde_start = factor(BT_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
-             BT_kde_end = factor(BT_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             GL_kde_start = factor(GL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
-             GL_kde_end = factor(GL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             WW_kde_start = factor(WW_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
-             WW_kde_end = factor(WW_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             lnparkdist_start = log(boundary_dist_start + 1),
-             lnparkdist_end = log(boundary_dist_end + 1),
+      mutate(land_start = factor(GHA26landcover_wgs84_start, levels = 1:4, labels = c("coniferous", "mixed", "open", 'wet')),
+             land_end = factor(GHA26landcover_wgs84_end, levels = 1:4, labels = c("coniferous", "mixed", "open", 'wet')),
+             FM_kde_start = factor(FM_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             FM_kde_end = factor(FM_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             GF_kde_start = factor(GF_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             GF_kde_end = factor(GF_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             GR_kde_start = factor(GR_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             GR_kde_end = factor(GR_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             HL_kde_start = factor(HL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             HL_kde_end = factor(HL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             MA_kde_start = factor(MA_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             MA_kde_end = factor(MA_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             MW_kde_start = factor(MW_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             MW_kde_end = factor(MW_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             PO_kde_start = factor(PO_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             PO_kde_end = factor(PO_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             QB_kde_start = factor(QB_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             QB_kde_end = factor(QB_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             SA_kde_start = factor(SA_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             SA_kde_end = factor(SA_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             TU_kde_start = factor(TU_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             TU_kde_end = factor(TU_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              log_sl = log(sl_),
              cos_ta = cos(ta_))
   }))
@@ -281,8 +303,8 @@ ssf.all[,'ttd1'] <- as.duration(ssf.all$t1_ %--% ssf.all$death_date)/ddays(1)
 ssf.all[,'ttd2'] <- as.duration(ssf.all$t2_  %--% ssf.all$death_date)/ddays(1) 
 
 
-colnames(ssf.all)[colnames(ssf.all)=="roadall_LinFeat_dist_start"] <- "roadDist_start"
-colnames(ssf.all)[colnames(ssf.all)=="roadall_LinFeat_dist_end"] <- "roadDist_end"
+colnames(ssf.all)[colnames(ssf.all)=="GHA26_roadsPS_dist_start"] <- "roadDist_start"
+colnames(ssf.all)[colnames(ssf.all)=="GHA26_roadsPS_dist_end"] <- "roadDist_end"
 
 
 #### setting time to death ####
@@ -374,12 +396,12 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.soc.sub[,'conif_end'] <- ifelse(ssf.soc.sub$land_end =='coniferous', 1,0)
   ssf.soc.sub[,'mixed_end'] <- ifelse(ssf.soc.sub$land_end =='mixed', 1,0)
   ssf.soc.sub[,'packDistadj_end'] <-ifelse(ssf.soc.sub$packYN_end == 'pack', ssf.soc.sub$packDist_end, (-1)*ssf.soc.sub$packDist_end)
-  ssf.soc.sub[,'parkDistadj_end'] <-ifelse(ssf.soc.sub$parkYN_end == 'park', ssf.soc.sub$boundary_dist_end, (-1)*ssf.soc.sub$boundary_dist_end)
+  
   
   
   
   ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
-                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end = boundary_dist_end, lnparkdist_start, lnparkdist_end, parkDistadj_end,
+                            roadDist_start, roadDist_end,
                             land_start, land_end, propwet_end, propopen_end, propconif_end, propmixed_end, wet_end, open_end, conif_end, mixed_end,
                             id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, packDistadj_end,
                             ttd1, ttd2)]
@@ -389,29 +411,18 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
 unique(sort(dat.focal$WolfID))
 ssfW02 <- createSSFnnbyFocal(ssf.all, "W02")
 ssfW03 <- createSSFnnbyFocal(ssf.all, "W03")
-ssfW04 <- createSSFnnbyFocal(ssf.all, "W04")
-ssfW05 <- createSSFnnbyFocal(ssf.all, "W05")
-ssfW06 <- createSSFnnbyFocal(ssf.all, "W06")
-ssfW07 <- createSSFnnbyFocal(ssf.all, "W07") 
+# ssfW08 <- createSSFnnbyFocal(ssf.all, "W08") # not enough data?
 ssfW09 <- createSSFnnbyFocal(ssf.all, "W09")
-ssfW10 <- createSSFnnbyFocal(ssf.all, "W10")
-ssfW11 <- createSSFnnbyFocal(ssf.all, "W11")
-ssfW12 <- createSSFnnbyFocal(ssf.all, "W12")
-ssfW13 <- createSSFnnbyFocal(ssf.all, "W13")
-ssfW14 <- createSSFnnbyFocal(ssf.all, "W14")
 ssfW15 <- createSSFnnbyFocal(ssf.all, "W15")
-# ssfW16 <- createSSFnnbyFocal(ssf.all, "W16") # don't have this one's pack set up yet
-ssfW19 <- createSSFnnbyFocal(ssf.all, "W19")
-ssfW20 <- createSSFnnbyFocal(ssf.all, "W20")
-ssfW22 <- createSSFnnbyFocal(ssf.all, "W22")
-ssfW25 <- createSSFnnbyFocal(ssf.all, "W25")
-ssfW26 <- createSSFnnbyFocal(ssf.all, "W26")
-ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
+ssfW18 <- createSSFnnbyFocal(ssf.all, "W18")
+ssfW31 <- createSSFnnbyFocal(ssf.all, "W31")
+ssfW37 <- createSSFnnbyFocal(ssf.all, "W37")
 
-ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW13, ssfW14, ssfW15, ssfW19, ssfW20, ssfW22, ssfW25, ssfW26, ssfW27)
+
+ssf.soc <- rbind(ssfW02, ssfW03, ssfW09, ssfW15, ssfW18, ssfW31, ssfW37)
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
-# saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
+# saveRDS(ssf.soc, 'data/derived-data/ssfAll_GHA26.Rds')
 
 
 
