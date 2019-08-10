@@ -633,6 +633,14 @@ ggplot(m.movewet.coef) + aes(variable, value, fill=ttd) +
   geom_jitter(aes(color=COD)) + ylim(-.3,.3)
 
 
+m.movewet.coef.cdv <- m.movewet.coef[COD=='cdv']
+
+ggplot(m.movewet.coef.cdv) + aes(variable, value, fill=ttd) +
+  geom_boxplot() +
+  geom_dotplot(binaxis = 'y', stackdir='center',
+               position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.25,.2)
+
+
 ggplot(m.movewet1mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
@@ -665,13 +673,25 @@ ggplot(m.habwet.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_jitter(aes(color=COD)) + ylim(-1,1)
 
+
+m.habwet.coef.cdv <- m.habwet.coef[COD=='cdv']
+
+ggplot(m.habwet.coef.cdv) + aes(variable, value, fill=ttd) +
+  geom_boxplot() +
+  geom_dotplot(binaxis = 'y', stackdir='center',
+               position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.75,.85)
+
+
+
+
 ggplot(m.habwet1mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD)) +
   ylim(-.7,.5)
 
-ggplot(m.habwet2mo.coef, aes(variable, value)) +
+m.habwet2mo.coef.g <- m.habwet2mo.coef[COD!='human']
+ggplot(m.habwet2mo.coef.g, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD))+
@@ -699,7 +719,16 @@ ggplot(m.socwet.coef) + aes(variable, value, fill=ttd) +
   geom_jitter(aes(color=COD)) + ylim(-.5,.5)
 
 
-ggplot(m.socwet1mo.coef, aes(variable, value)) +
+m.socwet.coef.cdv <- m.socwet.coef[COD=='cdv']
+
+ggplot(m.socwet.coef.cdv) + aes(variable, value, fill=ttd) +
+  geom_boxplot() +
+  geom_dotplot(binaxis = 'y', stackdir='center',
+               position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.4,.75)
+
+
+m.socwet1mo.coef.g <- m.socwet1mo.coef[COD!='wolf']
+ggplot(m.socwet1mo.coef.g, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD)) +
@@ -709,6 +738,6 @@ ggplot(m.socwet2mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD))+
-  ylim(-.3,.25)
+  ylim(-.3,.2)
 
 
