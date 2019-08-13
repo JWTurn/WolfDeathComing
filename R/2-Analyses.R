@@ -741,3 +741,35 @@ ggplot(m.socwet2mo.coef, aes(variable, value)) +
   ylim(-.3,.2)
 
 
+
+#### moveVis ####
+require(moveVis)
+require(move)
+
+move_df <- unique(dat[wolfID == 'RMNP_W06'| wolfID == 'RMNP_W02'| wolfID == 'RMNP_W12',
+                .(wolfID, x1_, y1_, t1_)])
+
+utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+
+move_df <- move_df[, c('Long', 'Lat') := as.data.table(proj4::project(cbind(x1_, y1_), utm14N, inverse= T))]
+
+
+move_dat <- df2move(move_df, proj = utm14N, x = 'Long', y = 'Lat', time = 't1_', track_id = 'wolfID')
+m <- align_move(move_dat, unit = 'hours')
+
+frames <- frames_spatial(m, path_colours = c("purple", "green", "blue"),
+                         map_service = "osm",
+                         map_type = "watercolor")
+                         #map_service = "mapbox",
+                         #map_token = 'pk.eyJ1Ijoiand0dXJuZXIiLCJhIjoiY2p6NXJtbDNzMGFpMTNjb3V0eG00MzNuaCJ9.gYv2XPxEGbcFGO3OMu948Q', 
+                         #map_type = "satellite")# %>% 
+  # add_labels(x = "Longitude", y = "Latitude") %>% # add some customizations, such as axis labels
+  # add_northarrow() %>% 
+  # add_scalebar() %>% 
+  # add_timestamps(m, type = "label") %>% 
+  # add_progress()
+
+
+
+
+
