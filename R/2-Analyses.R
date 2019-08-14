@@ -50,6 +50,8 @@ dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 
 dat[,'ttd1_adj'] <- ifelse(dat$COD =='none', dat$ttd1*730, dat$ttd1)
 
+dat.meta[,uniqueN(wolfpop), by= .(status, COD)]
+
 # dat[,'wet'] <- ifelse(dat$land_end == 'wet', 'wet', 'not')
 # dat.wet<-dat[land_end=='wet', .(id, ttd1, ua, propwet_end)]
 # dat.wet[, .(id, .N), by= c('ua', 'id')]
@@ -627,6 +629,36 @@ m.movewet1mo.coef<- melt(m.movewet1mo.coef)
 m.movewet1mo.coef[,'ttd'] <- '1mo'
 
 m.movewet.coef <- rbind(m.movewet1mo.coef, m.movewet2mo.coef)
+m.movewet.coef[,'test'] <- ifelse(m.movewet.coef$ttd =='1mo', 'case', 'control')
+m.movewet.coef$test <- factor(m.movewet.coef$test, levels = c('control','case'))
+
+m.movewet.coef.cdv <- m.movewet.coef[COD=='cdv']
+
+color = c("#0072B2", "#D55E00", "#009E73")
+
+ggplot(m.movewet.coef.cdv, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+        axis.title = element_text(size = 16, color = 'black'),
+        axis.text = element_text(size = 14, color = 'black'),
+        plot.title=element_text(size = 16, hjust=0),
+        axis.line = element_line(colour = "black"),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.background = element_rect(colour="black", size = 1, fill = "white"),
+        strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Beta coefficient (selection)') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) +
+  ylim(-.25,.25)
 
 ggplot(m.movewet.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
@@ -654,6 +686,7 @@ ggplot(m.movewet2mo.coef, aes(variable, value)) +
   ylim(-.25,.2)
 
 
+#### habitat graphs ####
 
 m.habwet2mo.coef <- habwet2moOUT[term=='coef',-'AIC']
 m.habwet2mo.coef <- m.habwet2mo.coef[, .( wolfID , wet = `land:log(ttd + 1)`, parkDist = `log(ttd + 1):log(parkdist + 1)`)]
@@ -668,6 +701,64 @@ m.habwet1mo.coef<- melt(m.habwet1mo.coef)
 m.habwet1mo.coef[,'ttd'] <- '1mo'
 
 m.habwet.coef <- rbind(m.habwet1mo.coef, m.habwet2mo.coef)
+m.habwet.coef[,'test'] <- ifelse(m.habwet.coef$ttd =='1mo', 'case', 'control')
+m.habwet.coef$test <- factor(m.habwet.coef$test, levels = c('control','case'))
+
+m.habwet.coef.wet <- m.habwet.coef[variable=='wet' & COD == 'cdv']
+m.habwet.coef.park <- m.habwet.coef[variable=='parkDist' & COD == 'cdv']
+
+
+#color = c("#0072B2", "#D55E00", "#009E73")
+
+ggplot(m.habwet.coef.wet, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Beta coefficient (selection)') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) +
+  ylim(-1,1)
+
+
+ggplot(m.habwet.coef.park, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), # notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Beta coefficient (selection)') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) +
+  ylim(-.1,.15)
+
 
 ggplot(m.habwet.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
@@ -698,21 +789,79 @@ ggplot(m.habwet2mo.coef.g, aes(variable, value)) +
   ylim(-.7,1)
 
 
-
+#### social graphs ####
 
 m.socwet2mo.coef <- socwet2moOUT[term=='coef',-'AIC']
-m.socwet2mo.coef <- m.socwet2mo.coef[, .( wolfID ,nn = `log(ttd + 1):log(nndist + 1)`, packDist = `log(ttd + 1):log(packdist + 1)`)]
+m.socwet2mo.coef <- m.socwet2mo.coef[, .( wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
 m.socwet2mo.coef<- merge(m.socwet2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.socwet2mo.coef <- melt(m.socwet2mo.coef)
 m.socwet2mo.coef[,'ttd'] <- '2mo'
 
 m.socwet1mo.coef <- socwet1moOUT[term=='coef',-'AIC']
-m.socwet1mo.coef <- m.socwet1mo.coef[, .( wolfID ,nn = `log(ttd + 1):log(nndist + 1)`, packDist = `log(ttd + 1):log(packdist + 1)`)]
+m.socwet1mo.coef <- m.socwet1mo.coef[, .(wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
 m.socwet1mo.coef<- merge(m.socwet1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.socwet1mo.coef<- melt(m.socwet1mo.coef)
 m.socwet1mo.coef[,'ttd'] <- '1mo'
 
 m.socwet.coef <- rbind(m.socwet1mo.coef, m.socwet2mo.coef)
+m.socwet.coef[,'test'] <- ifelse(m.socwet.coef$ttd =='1mo', 'case', 'control')
+m.socwet.coef$test <- factor(m.socwet.coef$test, levels = c('control','case'))
+
+m.socwet.coef.nn <- m.socwet.coef[variable =='nnXttd' & COD == 'cdv']
+m.socwet.coef.pack <- m.socwet.coef[variable =='packDistXttd' & COD == 'cdv']
+
+
+#color = c("#0072B2", "#D55E00", "#009E73")
+
+ggplot(m.socwet.coef.nn, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Beta coefficient (selection)') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) +
+  ylim(-.25,.05)
+
+
+ggplot(m.socwet.coef.pack, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Beta coefficient (selection)') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) +
+  ylim(-.3,.75)
+
 
 ggplot(m.socwet.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
