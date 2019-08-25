@@ -638,7 +638,7 @@ m.movewet.coef.cdv <- m.movewet.coef[COD=='cdv']
 color = c("darkviolet", "aquamarine4")
 
 ggplot(m.movewet.coef.cdv, aes(variable, value, fill = test)) +
-  geom_boxplot(aes(fill = test), notch = TRUE, notchwidth = 0.7,
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
   geom_jitter(aes(color = test),
@@ -712,7 +712,7 @@ m.habwet.coef.park <- m.habwet.coef[variable=='parkDist' & COD == 'cdv']
 #color = c("#0072B2", "#D55E00", "#009E73")
 
 ggplot(m.habwet.coef.wet, aes(variable, value, fill = test)) +
-  geom_boxplot(aes(fill = test), notch = TRUE, notchwidth = 0.7,
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
   geom_jitter(aes(color = test),
@@ -737,7 +737,7 @@ ggplot(m.habwet.coef.wet, aes(variable, value, fill = test)) +
 
 
 ggplot(m.habwet.coef.park, aes(variable, value, fill = test)) +
-  geom_boxplot(aes(fill = test), notch = TRUE, notchwidth = 0.7,
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
   geom_jitter(aes(color = test),
@@ -815,7 +815,7 @@ m.socwet.coef.pack <- m.socwet.coef[variable =='packDistXttd' & COD == 'cdv']
 #color = c("#0072B2", "#D55E00", "#009E73")
 
 ggplot(m.socwet.coef.nn, aes(variable, value, fill = test)) +
-  geom_boxplot(aes(fill = test), notch = TRUE, notchwidth = 0.7,
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
   geom_jitter(aes(color = test),
@@ -840,7 +840,7 @@ ggplot(m.socwet.coef.nn, aes(variable, value, fill = test)) +
 
 
 ggplot(m.socwet.coef.pack, aes(variable, value, fill = test)) +
-  geom_boxplot(aes(fill = test), notch = TRUE, notchwidth = 0.7,
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
   geom_jitter(aes(color = test),
