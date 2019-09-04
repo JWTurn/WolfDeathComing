@@ -104,7 +104,7 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 
 land <- raster(paste0(raw, 'RMNPlandcover.tif'), )
 #cland <- fread(paste0(raw, 'rcl_cowu.csv'))
-cland2 <- fread(paste0(raw, 'rcl_ConMixOpWet.csv'))
+cland2 <- fread(paste0(raw, 'rcl_fine.csv'))
 land <- raster::reclassify(land, cland2)
 # closed <- land == 1
 # names(closed) <- "closed"
@@ -114,12 +114,18 @@ land <- raster::reclassify(land, cland2)
 # names(wet) <- "wet"
 coniferous <- land == 1
 names(coniferous) <- "coniferous"
-mixed <- land == 2
+deciduous <- land == 2
+names(deciduous) <- "deciduous"
+mixed <- land == 3
 names(mixed) <- "mixed"
-open <- land == 3
+shrub <- land == 4
+names(shrub) <- "shrub"
+open <- land == 5
 names(open) <- "open"
-wet <- land == 4
+wet <- land == 6
 names(wet) <- "wet"
+urban <- land == 7
+names(urban) <- "urban"
 ## This creates an object which can be used to make a layer of specified diameter
 # The d value is what determines the buffer size if you want to change it.
 ## If you're doing multiple landcover classes, you only need to run this line once, as long as each of the habitat variables has the same resolution
