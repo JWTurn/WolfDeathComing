@@ -212,6 +212,17 @@ m.coreprop.p<-m.coreprop[term=='coef' | term=='p']
 
 #### MOVEMENT ####
 
+#### testing probs ####
+# dat$wolfID <- as.factor(dat$wolfID)
+# dat <- dat.RMNP[, stepjum := forcats::fct_shuffle(as.factor(step_id_)), by = .(id)]
+# 
+# W06 <- dat[id=='W06', .(case_, log_sl, ToD_start, land_end, ttd1, cos_ta, stepjum, step_id_)]
+# W06 <- select(W06, case_, log_sl, ToD_start, land_end, ttd1_adj, cos_ta, stepjum, step_id_)
+# write.csv(W06, file = paste0(derived, 'W06_troubleshoot_dat.csv'))
+# W06.model <- W06[ttd1>31, clogit(case_ ~ log_sl:ToD_start + land_end +
+#                   log_sl:land_end +
+#                   log(ttd1+1):log_sl + log(ttd1+1):cos_ta + strata(stepjum))]
+
 Move <- function(y, sl, ToD, land, ttd, ta, strata1) {
   # Make the model
   model <- clogit(y ~ sl:ToD + land +
