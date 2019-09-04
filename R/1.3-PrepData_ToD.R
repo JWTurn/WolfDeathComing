@@ -21,8 +21,10 @@ derived <- 'data/derived-data/'
 
 
 # Read in Sunset/Sunrise times
-day <- readRDS('data/derived-data/sunsetsunriseRMNP_2016-2017.Rds')
+day.RMNP <- readRDS('data/derived-data/sunsetsunriseRMNP_2016-2017.Rds')
+day.GHA26 <- readRDS('data/derived-data/sunsetsunriseGHA26_2014-2018.Rds')
 
+### CONTINUE UPDATING FOR GHA26 AND RMNP DIFF TIME ONCE COVARIATES FIXED ****
 daymst <- day[,.(Date, TwiStartDate, SunriseDate, SunsetDate, TwiEndDate)]
 
 # Read in SSF
