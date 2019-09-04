@@ -13,7 +13,7 @@ derived <- 'data/derived-data/'
 
 
 
-# Read in Sunset/Sunrise times
+# Read in Sunset/Sunrise times RMNP ####
 ss2016 <- fread(paste0(raw,"sunset_sunrise2016.csv"), header=TRUE)
 ss2016[,'year'] <- 2016
 ss2017 <- fread(paste0(raw,"sunset_sunrise2017.csv"),header=TRUE)
@@ -37,6 +37,41 @@ day[,'gmtTwiEndDate'] <- day$TwiEndDate + hours(6)
 day[,'gmtDate'] <-  as.POSIXct(format(day$gmtTwiStartDate, "%Y-%m-%d"), tz = 'UTC', "%Y-%m-%d")
 
 # saveRDS(day, 'data/derived-data/sunsetsunriseRMNP_2016-2017.Rds')
+
+
+#### Read in Sunset/Sunrise times GHA26 ####
+ss2014.GHA26 <- fread(paste0(raw,"sunset_sunrise_GHA26_2014.csv"), header=TRUE)
+ss2014.GHA26 [,'year'] <- 2016
+ss2015.GHA26 <- fread(paste0(raw,"sunset_sunrise_GHA26_2014.csv"), header=TRUE)
+ss2015.GHA26 [,'year'] <- 2015
+ss2016.GHA26 <- fread(paste0(raw,"sunset_sunrise_GHA26_2016.csv"), header=TRUE)
+ss2016.GHA26 [,'year'] <- 2016
+ss2017.GHA26  <- fread(paste0(raw,"sunset_sunrise_GHA26_2017.csv"),header=TRUE)
+ss2017.GHA26 [,'year'] <- 2017
+ss2018.GHA26  <- fread(paste0(raw,"sunset_sunrise_GHA26_2018.csv"),header=TRUE)
+ss2018.GHA26 [,'year'] <- 2018
+day <- rbind(ss2014.GHA26, ss2015.GHA26, ss2016.GHA26, ss2017.GHA26, ss2018.GHA26)
+
+day[,'dateyear'] <- paste(day$year, day$Date, sep = '-')
+day <- day[, .(Date = dateyear, TwiStart = `Civil Twilight Start`, Sunrise = Sunrise, Sunset = Sunset, TwiEnd = `Civil Twilight End`)]
+day[,'Date'] <- as.POSIXct(day$Date, tz = 'UTC', "%Y-%m-%d")
+day[,'TwiStartDate'] <- as.POSIXct(paste(day$Date, day$TwiStart, sep = ' '), tz = 'UTC', "%Y-%m-%d %H:%M")
+day[,'SunriseDate'] <- as.POSIXct(paste(day$Date, day$Sunrise, sep = ' '), tz = 'UTC', "%Y-%m-%d %H:%M")
+day[,'SunsetDate'] <- as.POSIXct(paste(day$Date, day$Sunset, sep = ' '), tz = 'UTC', "%Y-%m-%d %H:%M")
+day[,'TwiEndDate'] <- as.POSIXct(paste(day$Date, day$TwiEnd, sep = ' '), tz = 'UTC', "%Y-%m-%d %H:%M")
+
+
+day[,'gmtTwiStartDate'] <- day$TwiStartDate + hours(6)
+day[,'gmtSunriseDate'] <- day$SunriseDate + hours(6)
+day[,'gmtSunsetDate'] <- day$SunsetDate + hours(6)
+day[,'gmtTwiEndDate'] <- day$TwiEndDate + hours(6)
+day[,'gmtDate'] <-  as.POSIXct(format(day$gmtTwiStartDate, "%Y-%m-%d"), tz = 'UTC', "%Y-%m-%d")
+
+# saveRDS(day, 'data/derived-data/sunsetsunriseGHA26_2014-2018.Rds')
+
+
+
+#################
 
 
 
