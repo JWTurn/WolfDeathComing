@@ -41,7 +41,7 @@ day[,'gmtDate'] <-  as.POSIXct(format(day$gmtTwiStartDate, "%Y-%m-%d"), tz = 'UT
 
 #### Read in Sunset/Sunrise times GHA26 ####
 ss2014.GHA26 <- fread(paste0(raw,"sunset_sunrise_GHA26_2014.csv"), header=TRUE)
-ss2014.GHA26 [,'year'] <- 2016
+ss2014.GHA26 [,'year'] <- 2014
 ss2015.GHA26 <- fread(paste0(raw,"sunset_sunrise_GHA26_2014.csv"), header=TRUE)
 ss2015.GHA26 [,'year'] <- 2015
 ss2016.GHA26 <- fread(paste0(raw,"sunset_sunrise_GHA26_2016.csv"), header=TRUE)
