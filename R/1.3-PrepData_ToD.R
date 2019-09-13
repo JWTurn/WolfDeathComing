@@ -53,8 +53,8 @@ fullmst.GHA26 <- merge(ssf.GHA26, daymst.GHA26, by.x = 'date1mst', by.y = 'Date'
 fullmst.RMNP[,'ToD_start'] <- ifelse((fullmst.RMNP$SunriseDate + hours(1)) < fullmst.RMNP$t1mst & fullmst.RMNP$t1mst < (fullmst.RMNP$SunsetDate - hours(1)), 'day',
                                 ifelse(fullmst.RMNP$TwiStart > fullmst.RMNP$t1mst | fullmst.RMNP$t1mst > fullmst.RMNP$TwiEnd, 'night', 'twilight'))
 
-fullmst.GHA26[,'ToD_start'] <- ifelse((fullmst.GHA26$SunriseDate + hours(1)) < fullmst.GHA26$t1mst & fullmst.GHA26$t1mst < (fullmst.GHA26$SunsetDate - hours(1)), 'day',
-                                     ifelse(fullmst.GHA26$TwiStart > fullmst.GHA26$t1mst | fullmst.GHA26$t1mst > fullmst.GHA26$TwiEnd, 'night', 'twilight'))
+fullmst.GHA26[,'ToD_start'] <- ifelse((fullmst.GHA26$SunriseDate + hours(1)) < fullmst.GHA26$t1_ & fullmst.GHA26$t1_ < (fullmst.GHA26$SunsetDate - hours(1)), 'day',
+                                     ifelse(fullmst.GHA26$TwiStart > fullmst.GHA26$t1_ | fullmst.GHA26$t1_ > fullmst.GHA26$TwiEnd, 'night', 'twilight'))
 
 
 # get rid of now unneeded columns
