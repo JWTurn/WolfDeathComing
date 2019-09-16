@@ -499,28 +499,28 @@ m.all.aic <- merge(m.all.aic, soc.aic, by=c('wolfID', 'COD'), all = T)
 
 
 #### GRAPHS ####
-m.movewet2mo.coef <- movewet2moOUT[term=='coef',-'AIC']
-m.movewet2mo.coef <- m.movewet2mo.coef[, .( wolfID , lnSL = `sl:log(ttd + 1)`, cosTA = `log(ttd + 1):ta`)]
-m.movewet2mo.coef<- merge(m.movewet2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-m.movewet2mo.coef <- melt(m.movewet2mo.coef)
-m.movewet2mo.coef[,'ttd'] <- '2mo'
+m.move2mo.coef <- move2moOUT[term=='coef',-'AIC']
+m.move2mo.coef <- m.move2mo.coef[, .( wolfID , lnSL = `sl:log(ttd + 1)`, cosTA = `log(ttd + 1):ta`)]
+m.move2mo.coef<- merge(m.move2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.move2mo.coef <- melt(m.move2mo.coef)
+m.move2mo.coef[,'ttd'] <- '2mo'
 
-m.movewet1mo.coef <- movewet1moOUT[term=='coef',-'AIC']
-m.movewet1mo.coef <- m.movewet1mo.coef[, .( wolfID , lnSL = `sl:log(ttd + 1)`, cosTA = `log(ttd + 1):ta`)]
-m.movewet1mo.coef<- merge(m.movewet1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-m.movewet1mo.coef<- melt(m.movewet1mo.coef)
-m.movewet1mo.coef[,'ttd'] <- '1mo'
+m.move1mo.coef <- move1moOUT[term=='coef',-'AIC']
+m.move1mo.coef <- m.move1mo.coef[, .( wolfID , lnSL = `sl:log(ttd + 1)`, cosTA = `log(ttd + 1):ta`)]
+m.move1mo.coef<- merge(m.move1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.move1mo.coef<- melt(m.move1mo.coef)
+m.move1mo.coef[,'ttd'] <- '1mo'
 
-m.movewet.coef <- rbind(m.movewet1mo.coef, m.movewet2mo.coef)
-m.movewet.coef[,'test'] <- ifelse(m.movewet.coef$ttd =='1mo', 'case', 'control')
-m.movewet.coef$test <- factor(m.movewet.coef$test, levels = c('control','case'))
+m.move.coef <- rbind(m.move1mo.coef, m.move2mo.coef)
+m.move.coef[,'test'] <- ifelse(m.move.coef$ttd =='1mo', 'case', 'control')
+m.move.coef$test <- factor(m.move.coef$test, levels = c('control','case'))
 
-m.movewet.coef.cdv <- m.movewet.coef[COD=='cdv']
+m.move.coef.cdv <- m.move.coef[COD=='cdv']
 
 #color = c("#0072B2", "#D55E00", "#009E73")
 color = c("darkviolet", "aquamarine4")
 
-ggplot(m.movewet.coef.cdv, aes(variable, value, fill = test)) +
+ggplot(m.move.coef.cdv, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -544,26 +544,26 @@ ggplot(m.movewet.coef.cdv, aes(variable, value, fill = test)) +
   scale_color_manual(values = color) +
   ylim(-.25,.25)
 
-ggplot(m.movewet.coef) + aes(variable, value, fill=ttd) +
+ggplot(m.move.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_jitter(aes(color=COD)) + ylim(-.3,.3)
 
 
-m.movewet.coef.cdv <- m.movewet.coef[COD=='cdv']
+m.move.coef.cdv <- m.move.coef[COD=='cdv']
 
-ggplot(m.movewet.coef.cdv) + aes(variable, value, fill=ttd) +
+ggplot(m.move.coef.cdv) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.25,.2)
 
 
-ggplot(m.movewet1mo.coef, aes(variable, value)) +
+ggplot(m.move1mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD)) +
   ylim(-.25,.2)
 
-ggplot(m.movewet2mo.coef, aes(variable, value)) +
+ggplot(m.move2mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD))+
@@ -572,29 +572,30 @@ ggplot(m.movewet2mo.coef, aes(variable, value)) +
 
 #### habitat graphs ####
 
-m.habwet2mo.coef <- habwet2moOUT[term=='coef',-'AIC']
-m.habwet2mo.coef <- m.habwet2mo.coef[, .( wolfID , wet = `land:log(ttd + 1)`, parkDist = `log(ttd + 1):log(parkdist + 1)`)]
-m.habwet2mo.coef<- merge(m.habwet2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-m.habwet2mo.coef <- melt(m.habwet2mo.coef)
-m.habwet2mo.coef[,'ttd'] <- '2mo'
+m.hab2mo.coef <- hab2moOUT[term=='coef',-'AIC']
+m.hab2mo.coef <- m.hab2mo.coef[, .( wolfID, closed = `landclosed:log(ttd + 1)`, open =`landopen:log(ttd + 1)` , wet=`landwet:log(ttd + 1)`, roads = `log(ttd + 1):log(rddist + 1)`)]
+m.hab2mo.coef<- merge(m.hab2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.hab2mo.coef <- melt(m.hab2mo.coef)
+m.hab2mo.coef[,'ttd'] <- '2mo'
 
-m.habwet1mo.coef <- habwet1moOUT[term=='coef',-'AIC']
-m.habwet1mo.coef <- m.habwet1mo.coef[, .( wolfID , wet = `land:log(ttd + 1)`, parkDist = `log(ttd + 1):log(parkdist + 1)`)]
-m.habwet1mo.coef<- merge(m.habwet1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-m.habwet1mo.coef<- melt(m.habwet1mo.coef)
-m.habwet1mo.coef[,'ttd'] <- '1mo'
+m.hab1mo.coef <- hab1moOUT[term=='coef',-'AIC']
+m.hab1mo.coef <- m.hab1mo.coef[, .(  wolfID, closed = `landclosed:log(ttd + 1)`, open =`landopen:log(ttd + 1)` , wet=`landwet:log(ttd + 1)`, roads = `log(ttd + 1):log(rddist + 1)`)]
+m.hab1mo.coef<- merge(m.hab1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.hab1mo.coef<- melt(m.hab1mo.coef)
+m.hab1mo.coef[,'ttd'] <- '1mo'
 
-m.habwet.coef <- rbind(m.habwet1mo.coef, m.habwet2mo.coef)
-m.habwet.coef[,'test'] <- ifelse(m.habwet.coef$ttd =='1mo', 'case', 'control')
-m.habwet.coef$test <- factor(m.habwet.coef$test, levels = c('control','case'))
+m.hab.coef <- rbind(m.hab1mo.coef, m.hab2mo.coef)
+m.hab.coef[,'test'] <- ifelse(m.hab.coef$ttd =='1mo', 'case', 'control')
+m.hab.coef$test <- factor(m.hab.coef$test, levels = c('control','case'))
 
-m.habwet.coef.wet <- m.habwet.coef[variable=='wet' & COD == 'cdv']
-m.habwet.coef.park <- m.habwet.coef[variable=='parkDist' & COD == 'cdv']
+m.hab.coef.cdv <- m.hab.coef[COD == 'cdv']
+m.hab.coef.land <- m.hab.coef[variable=='closed' | variable=='open' | variable=='wet' & COD == 'cdv']
+m.hab.coef.rd <- m.hab.coef[variable=='roads' & COD == 'cdv']
 
 
 #color = c("#0072B2", "#D55E00", "#009E73")
 
-ggplot(m.habwet.coef.wet, aes(variable, value, fill = test)) +
+ggplot(m.hab.coef.land, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -616,10 +617,10 @@ ggplot(m.habwet.coef.wet, aes(variable, value, fill = test)) +
   ylab('Selection') +
   scale_fill_manual(values = color) +
   scale_color_manual(values = color) +
-  ylim(-1,1)
+  ylim(-5,5)
 
 
-ggplot(m.habwet.coef.park, aes(variable, value, fill = test)) +
+ggplot(m.hab.coef.rd, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -644,14 +645,14 @@ ggplot(m.habwet.coef.park, aes(variable, value, fill = test)) +
   ylim(-.1,.15)
 
 
-ggplot(m.habwet.coef) + aes(variable, value, fill=ttd) +
+ggplot(m.hab.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_jitter(aes(color=COD)) + ylim(-1,1)
 
 
-m.habwet.coef.cdv <- m.habwet.coef[COD=='cdv']
+m.hab.coef.cdv <- m.hab.coef[COD=='cdv']
 
-ggplot(m.habwet.coef.cdv) + aes(variable, value, fill=ttd) +
+ggplot(m.hab.coef.cdv) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.75,.85)
@@ -659,14 +660,14 @@ ggplot(m.habwet.coef.cdv) + aes(variable, value, fill=ttd) +
 
 
 
-ggplot(m.habwet1mo.coef, aes(variable, value)) +
+ggplot(m.hab1mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD)) +
   ylim(-.7,.5)
 
-m.habwet2mo.coef.g <- m.habwet2mo.coef[COD!='human']
-ggplot(m.habwet2mo.coef.g, aes(variable, value)) +
+m.hab2mo.coef.g <- m.hab2mo.coef[COD!='human']
+ggplot(m.hab2mo.coef.g, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD))+
@@ -675,29 +676,29 @@ ggplot(m.habwet2mo.coef.g, aes(variable, value)) +
 
 #### social graphs ####
 
-m.socwet2mo.coef <- socwet2moOUT[term=='coef',-'AIC']
-m.socwet2mo.coef <- m.socwet2mo.coef[, .( wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
-m.socwet2mo.coef<- merge(m.socwet2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-m.socwet2mo.coef <- melt(m.socwet2mo.coef)
-m.socwet2mo.coef[,'ttd'] <- '2mo'
+m.soc2mo.coef <- soc2moOUT[term=='coef',-'AIC']
+m.soc2mo.coef <- m.soc2mo.coef[, .( wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
+m.soc2mo.coef<- merge(m.soc2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.soc2mo.coef <- melt(m.soc2mo.coef)
+m.soc2mo.coef[,'ttd'] <- '2mo'
 
-m.socwet1mo.coef <- socwet1moOUT[term=='coef',-'AIC']
-m.socwet1mo.coef <- m.socwet1mo.coef[, .(wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
-m.socwet1mo.coef<- merge(m.socwet1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-m.socwet1mo.coef<- melt(m.socwet1mo.coef)
-m.socwet1mo.coef[,'ttd'] <- '1mo'
+m.soc1mo.coef <- soc1moOUT[term=='coef',-'AIC']
+m.soc1mo.coef <- m.soc1mo.coef[, .(wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
+m.soc1mo.coef<- merge(m.soc1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.soc1mo.coef<- melt(m.soc1mo.coef)
+m.soc1mo.coef[,'ttd'] <- '1mo'
 
-m.socwet.coef <- rbind(m.socwet1mo.coef, m.socwet2mo.coef)
-m.socwet.coef[,'test'] <- ifelse(m.socwet.coef$ttd =='1mo', 'case', 'control')
-m.socwet.coef$test <- factor(m.socwet.coef$test, levels = c('control','case'))
+m.soc.coef <- rbind(m.soc1mo.coef, m.soc2mo.coef)
+m.soc.coef[,'test'] <- ifelse(m.soc.coef$ttd =='1mo', 'case', 'control')
+m.soc.coef$test <- factor(m.soc.coef$test, levels = c('control','case'))
 
-m.socwet.coef.nn <- m.socwet.coef[variable =='nnXttd' & COD == 'cdv']
-m.socwet.coef.pack <- m.socwet.coef[variable =='packDistXttd' & COD == 'cdv']
+m.soc.coef.nn <- m.soc.coef[variable =='nnXttd' & COD == 'cdv']
+m.soc.coef.pack <- m.soc.coef[variable =='packDistXttd' & COD == 'cdv']
 
 
 #color = c("#0072B2", "#D55E00", "#009E73")
 
-ggplot(m.socwet.coef.nn, aes(variable, value, fill = test)) +
+ggplot(m.soc.coef, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -718,11 +719,11 @@ ggplot(m.socwet.coef.nn, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) +
-  ylim(-.25,.05)
+  scale_color_manual(values = color)# +
+  #ylim(-.25,.05)
 
 
-ggplot(m.socwet.coef.pack, aes(variable, value, fill = test)) +
+ggplot(m.soc.coef.pack, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -747,27 +748,27 @@ ggplot(m.socwet.coef.pack, aes(variable, value, fill = test)) +
   ylim(-.3,.75)
 
 
-ggplot(m.socwet.coef) + aes(variable, value, fill=ttd) +
+ggplot(m.soc.coef) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_jitter(aes(color=COD)) + ylim(-.5,.5)
 
 
-m.socwet.coef.cdv <- m.socwet.coef[COD=='cdv']
+m.soc.coef.cdv <- m.soc.coef[COD=='cdv']
 
-ggplot(m.socwet.coef.cdv) + aes(variable, value, fill=ttd) +
+ggplot(m.soc.coef.cdv) + aes(variable, value, fill=ttd) +
   geom_boxplot() +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.4,.75)
 
 
-m.socwet1mo.coef.g <- m.socwet1mo.coef[COD!='wolf']
-ggplot(m.socwet1mo.coef.g, aes(variable, value)) +
+m.soc1mo.coef.g <- m.soc1mo.coef[COD!='wolf']
+ggplot(m.soc1mo.coef.g, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD)) +
   ylim(-.3,.75)
 
-ggplot(m.socwet2mo.coef, aes(variable, value)) +
+ggplot(m.soc2mo.coef, aes(variable, value)) +
   geom_boxplot(aes( fill=COD)) +
   geom_dotplot(binaxis = 'y', stackdir='center',
                position=position_dodge(1) , aes( fill= COD, color = COD))+
