@@ -145,23 +145,26 @@ dat[,mean(propopen_end), by=.(wolfID,ua)]
 unique(dat$land_end)
 
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
-                               ifelse(dat$land_end == 'coniferous'|dat$land_end == 'deciduous'| dat$land_end == 'mixed'|dat$land_end == 'shrub', 'closed', 'open'))
+                               ifelse(dat$land_end == 'coniferous', 'coniferous',
+                                      ifelse(dat$land_end == 'deciduous'| dat$land_end == 'mixed'|dat$land_end == 'shrub', 'mixed','open')))
 unique(dat$land_end_adj)
-dat[,'closed_end_adj'] <- ifelse(dat$land_end_adj == 'closed', 1, 0)
+dat[,'conif_end_adj'] <- ifelse(dat$land_end_adj == 'coniferous', 1, 0)
+dat[,'mixed_end_adj'] <- ifelse(dat$land_end_adj == 'mixed', 1, 0)
 dat[,'open_end_adj'] <- ifelse(dat$land_end_adj == 'open', 1, 0)
 dat[,'wet_end_adj'] <- ifelse(dat$land_end_adj == 'wet', 1, 0)
 
-unique(dat[,.(wolfID)])
+unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' &  wolfID!='RMNP_W15',.(wolfID)])
 #id!='W13', id!='W03' & id!='W14' & id!='W25' 
 #wolfID!='GHA26_W03' & wolfID!='RMNP_W03' & wolfID!='GHA26_W09' & wolfID!='RMNP_W12'
 
 # Maybe add RMNPW11 back in? (wet doesn't work right)
+#
 
-core2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
+core2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24', 
                 Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
 
 
-core1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
+core1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24', 
                  Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
 
 
@@ -241,28 +244,14 @@ Move.land <- function(y, sl, ToD, closed, open, wet, ttd, ta, strata1) {
 
 
 
-move2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                    Move(case_, log_sl, ToD_start, land_end_adj, ttd1_adj, cos_ta, stepjum), by = .(wolfID)]
+move2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24', 
+                    Move.td(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
-move1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                    Move(case_, log_sl, ToD_start, land_end_adj, ttd1_adj, cos_ta, stepjum), by = .(wolfID)]
+move1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24', 
+                    Move.td(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
-movetd2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                 Move.td(case_, log_sl, ToD_start, land_end_adj, wtd1, cos_ta, stepjum), by = .(wolfID)]
-
-
-movetd1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                 Move.td(case_, log_sl, ToD_start, land_end_adj, wtd1, cos_ta, stepjum), by = .(wolfID)]
-
-
-movettd2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                   Move.td(case_, log_sl, ToD_start, land_end_adj, ttd1_adj, cos_ta, stepjum), by = .(wolfID)]
-
-
-movettd1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                   Move.td(case_, log_sl, ToD_start, land_end_adj, ttd1_adj, cos_ta, stepjum), by = .(wolfID)]
 
 
 moveland2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
@@ -348,32 +337,24 @@ Habitat.land<- function(y, sl, ToD, closed, open, wet, ttd, rddist, strata1) {
 
 
 
-hab2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                 Habitat(case_, log_sl, ToD_start, land_end_adj, ttd1_adj, roadDist_end, stepjum), by = .(wolfID)]
+hab2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24', 
+                 Habitat(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), roadDist_end, stepjum), by = .(wolfID)]
 
 
   
-hab1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                 Habitat(case_, log_sl, ToD_start, land_end_adj, ttd1_adj, roadDist_end, stepjum), by = .(wolfID)]
+hab1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24', 
+                 Habitat(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), roadDist_end, stepjum), by = .(wolfID)]
 
 
-
-habtd2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                Habitat.td(case_, log_sl, ToD_start, land_end_adj, wtd1, roadDist_end, stepjum), by = .(wolfID)]
-
-
-
-habtd1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11', 
-                Habitat.td(case_, log_sl, ToD_start, land_end_adj, wtd1, roadDist_end, stepjum), by = .(wolfID)]
 
 unique(dat[ pop != 'GHA26' & wolfID!='RMNP_W09',.(wolfID)])
-habpark2moOUT<- dat[ttd1>31 & pop != 'GHA26' & wolfID!='RMNP_W11', 
-                Habitat.park(case_, log_sl, ToD_start, land_end_adj, wtd1, parkDistadj_end, roadDist_end, stepjum), by = .(wolfID)]
+habpark2moOUT<- dat[ttd1>31 & pop != 'GHA26' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15', 
+                Habitat.park(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), parkDistadj_end, roadDist_end, stepjum), by = .(wolfID)]
 
 # wolfID!='RMNP_W09' &
 
-habpark1moOUT<- dat[ttd1<=31 & pop != 'GHA26' & wolfID!='RMNP_W11', 
-                Habitat.park(case_, log_sl, ToD_start, land_end_adj, wtd1, parkDistadj_end, roadDist_end, stepjum), by = .(wolfID)]
+habpark1moOUT<- dat[ttd1<=31 & pop != 'GHA26' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15', 
+                Habitat.park(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), parkDistadj_end, roadDist_end, stepjum), by = .(wolfID)]
 
 
 
@@ -438,29 +419,31 @@ Social.land <- function(y, sl, ToD, closed, open, wet, ttd, nndist, packdist, st
 
 
 unique(dat[wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
-           & wolfID!='GHA26_W01' & wolfID!='GHA26_W03'& wolfID!='GHA26_W05' & wolfID!='RMNP_W05' & wolfID!='GHA26_W06' & wolfID!='RMNP_W15'
-   ,.(wolfID)])
-
-soc2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
-                & wolfID!='GHA26_W01' & wolfID!='GHA26_W03'& wolfID!='GHA26_W05'& wolfID!='GHA26_W06' & wolfID!='RMNP_W05' 
-                & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16', 
-                 Social(case_, log_sl, ToD_start, land_end_adj, wtd1, distance1, packDistadj_end, stepjum), by = .(wolfID)]
-
-
- unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'
-           & wolfID!='GHA26_W01' & wolfID!='GHA26_W03'& wolfID!='GHA26_W05'& wolfID!='GHA26_W06' & wolfID!='RMNP_W06' & wolfID!='RMNP_W15'
-           & wolfID!='GHA26_W15'& wolfID!='GHA26_W16'& wolfID!='RMNP_W19'& wolfID!='RMNP_W16'& wolfID!='GHA26_W23'
-           & wolfID!='GHA26_W25'& wolfID!='GHA26_W26'& wolfID!='GHA26_W36' & wolfID!='GHA26_W38'& wolfID!='GHA26_W39'
-           & wolfID!='GHA26_W14'& wolfID!='RMNP_W14'& wolfID!='GHA26_W31'
+           & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05'  & wolfID!='RMNP_W05' & wolfID!='GHA26_W06'
+           & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16'& wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
+           & wolfID!='GHA26_W23'& wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W39'
            ,.(wolfID)])
 
+soc2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24'
+                & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05'  & wolfID!='RMNP_W05' & wolfID!='GHA26_W06'
+                & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16'& wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
+                & wolfID!='GHA26_W23' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W39'
+                 ,Social(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), distance1, packDistadj_end, stepjum), by = .(wolfID)]
 
-soc1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'
-                & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05' & wolfID!='GHA26_W06' & wolfID!='GHA26_W15'
-                & wolfID!='RMNP_W15' & wolfID!='GHA26_W16' & wolfID!='RMNP_W19' & wolfID!='RMNP_W16' & wolfID!='GHA26_W23'
-                & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W38' & wolfID!='GHA26_W39'
-                & wolfID!='GHA26_W14' & wolfID!='RMNP_W14' & wolfID!='GHA26_W31', 
-                 Social(case_, log_sl, ToD_start, land_end_adj, wtd1, distance1, packDistadj_end, stepjum), by = .(wolfID)]
+
+unique(dat[wolfID!='GHA26_W24' & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
+           & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05'  & wolfID!='RMNP_W05' & wolfID!='GHA26_W06'
+           & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16'& wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
+           & wolfID!='GHA26_W23'& wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W39'
+           & wolfID!='GHA26_W14' & wolfID!='RMNP_W14' & wolfID!='GHA26_W31'
+           ,.(wolfID)])
+
+soc1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11' & wolfID!='RMNP_W15' & wolfID!='GHA26_W24'
+                & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05'  & wolfID!='RMNP_W05' & wolfID!='GHA26_W06'
+                & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16'& wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
+                & wolfID!='GHA26_W23' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W39'
+                & wolfID!='GHA26_W14' & wolfID!='RMNP_W14' & wolfID!='GHA26_W31'
+                ,Social(case_, log_sl, ToD_start, land_end_adj, (1/ttd1), distance1, packDistadj_end, stepjum), by = .(wolfID)]
 
 
 socland2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'
@@ -523,7 +506,7 @@ m.all.aic <- merge(m.all.aic, soc.aic, by=c('wolfID', 'COD'), all = T)
 
 
 #### GRAPHS ####
-m.move2mo.coef <- movetd2moOUT[term=='coef',-'AIC']
+m.move2mo.coef <- move2moOUT[term=='coef',-'AIC']
 #m.move2mo.coef <- m.move2mo.coef[, .( wolfID , lnSL = `sl:log(ttd + 1)`, cosTA = `log(ttd + 1):ta`)]
 m.move2mo.coef <- m.move2mo.coef[, .( wolfID , lnSL = `sl:ttd`, cosTA = `ttd:ta`)]
 
@@ -531,7 +514,7 @@ m.move2mo.coef<- merge(m.move2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpo
 m.move2mo.coef <- melt(m.move2mo.coef)
 m.move2mo.coef[,'ttd'] <- '2mo'
 
-m.move1mo.coef <- movetd1moOUT[term=='coef',-'AIC']
+m.move1mo.coef <- move1moOUT[term=='coef',-'AIC']
 #m.move1mo.coef <- m.move1mo.coef[, .( wolfID , lnSL = `sl:log(ttd + 1)`, cosTA = `log(ttd + 1):ta`)]
 m.move1mo.coef <- m.move1mo.coef[, .( wolfID , lnSL = `sl:ttd`, cosTA = `ttd:ta`)]
 
@@ -544,6 +527,8 @@ m.move.coef[,'test'] <- ifelse(m.move.coef$ttd =='1mo', 'case', 'control')
 m.move.coef$test <- factor(m.move.coef$test, levels = c('control','case'))
 
 m.move.coef.cdv <- m.move.coef[COD=='cdv']
+m.move.coef.human <- m.move.coef[COD=='human']
+m.move.coef.none <- m.move.coef[COD=='none']
 
 #color = c("#0072B2", "#D55E00", "#009E73")
 color = c("darkviolet", "aquamarine4")
@@ -567,47 +552,72 @@ ggplot(m.move.coef.cdv, aes(variable, value, fill = test)) +
         strip.background = element_rect(colour="black", size = 1, fill = "white"),
         strip.text = element_text(size = 14)) +
   xlab('') +
-  ylab('Selection') +
+  ylab('Movement') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) +
-  ylim(-.25,.25)
-
-ggplot(m.move.coef) + aes(variable, value, fill=ttd) +
-  geom_boxplot() +
-  geom_jitter(aes(color=COD)) + ylim(-.3,.3)
+  scale_color_manual(values = color) #+ ylim(-.25,.25)
 
 
-m.move.coef.cdv <- m.move.coef[COD=='cdv']
+ggplot(m.move.coef.human, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Movement') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) + ylim(-10,15)
 
-ggplot(m.move.coef.cdv) + aes(variable, value, fill=ttd) +
-  geom_boxplot() +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.25,.2)
 
 
-ggplot(m.move1mo.coef, aes(variable, value)) +
-  geom_boxplot(aes( fill=COD)) +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= COD, color = COD)) +
-  ylim(-.25,.2)
 
-ggplot(m.move2mo.coef, aes(variable, value)) +
-  geom_boxplot(aes( fill=COD)) +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= COD, color = COD))+
-  ylim(-.25,.2)
+ggplot(m.move.coef.none, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Movement') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) #+ ylim(-.25,.25)
+
 
 
 #### habitat graphs ####
 
 m.hab2mo.coef <- hab2moOUT[term=='coef',-'AIC']
-m.hab2mo.coef <- m.hab2mo.coef[, .( wolfID, closed = `landclosed:log(ttd + 1)`, open =`landopen:log(ttd + 1)` , wet=`landwet:log(ttd + 1)`, roads = `log(ttd + 1):log(rddist + 1)`)]
+m.hab2mo.coef <- m.hab2mo.coef[, .( wolfID, coniferous = `landconiferous:ttd`, mixed = `landmixed:ttd`, open =`landopen:ttd` , wet=`landwet:ttd`, roads = `ttd:log(rddist + 1)`)]
 m.hab2mo.coef<- merge(m.hab2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.hab2mo.coef <- melt(m.hab2mo.coef)
 m.hab2mo.coef[,'ttd'] <- '2mo'
 
 m.hab1mo.coef <- hab1moOUT[term=='coef',-'AIC']
-m.hab1mo.coef <- m.hab1mo.coef[, .(  wolfID, closed = `landclosed:log(ttd + 1)`, open =`landopen:log(ttd + 1)` , wet=`landwet:log(ttd + 1)`, roads = `log(ttd + 1):log(rddist + 1)`)]
+m.hab1mo.coef <- m.hab1mo.coef[, .(  wolfID, coniferous = `landconiferous:ttd`, mixed = `landmixed:ttd`, open =`landopen:ttd` , wet=`landwet:ttd`, roads = `ttd:log(rddist + 1)`)]
 m.hab1mo.coef<- merge(m.hab1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.hab1mo.coef<- melt(m.hab1mo.coef)
 m.hab1mo.coef[,'ttd'] <- '1mo'
@@ -617,13 +627,15 @@ m.hab.coef[,'test'] <- ifelse(m.hab.coef$ttd =='1mo', 'case', 'control')
 m.hab.coef$test <- factor(m.hab.coef$test, levels = c('control','case'))
 
 m.hab.coef.cdv <- m.hab.coef[COD == 'cdv']
+m.hab.coef.human <- m.hab.coef[COD == 'human']
+m.hab.coef.none <- m.hab.coef[COD == 'none']
 m.hab.coef.land <- m.hab.coef[variable=='closed' | variable=='open' | variable=='wet' & COD == 'cdv']
 m.hab.coef.rd <- m.hab.coef[variable=='roads' & COD == 'cdv']
 
 
 #color = c("#0072B2", "#D55E00", "#009E73")
 
-ggplot(m.hab.coef.land, aes(variable, value, fill = test)) +
+ggplot(m.hab.coef.cdv, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -644,12 +656,36 @@ ggplot(m.hab.coef.land, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) +
-  ylim(-5,5)
+  scale_color_manual(values = color) + ylim(-35,20)
 
 
-ggplot(m.hab.coef.rd, aes(variable, value, fill = test)) +
-  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+# ggplot(m.hab.coef.rd, aes(variable, value, fill = test)) +
+#   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+#                outlier.color = NA, lwd = 0.6,
+#                alpha = 0.25) +
+#   geom_jitter(aes(color = test),
+#               position = position_jitterdodge(.35),
+#               size = 2, alpha = 0.4) +
+#   #ggtitle('Interaction with community identity') +
+#   geom_hline(aes(yintercept = 0), lty = 2) +
+#   theme(#legend.position = 'none',
+#     axis.title = element_text(size = 16, color = 'black'),
+#     axis.text = element_text(size = 14, color = 'black'),
+#     plot.title=element_text(size = 16, hjust=0),
+#     axis.line = element_line(colour = "black"),
+#     panel.grid.minor = element_blank(),
+#     panel.background = element_blank(),
+#     strip.background = element_rect(colour="black", size = 1, fill = "white"),
+#     strip.text = element_text(size = 14)) +
+#   xlab('') +
+#   ylab('Selection') +
+#   scale_fill_manual(values = color) +
+#   scale_color_manual(values = color) +
+#   ylim(-.1,.15)
+# 
+
+ggplot(m.hab.coef.human, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
   geom_jitter(aes(color = test),
@@ -669,49 +705,41 @@ ggplot(m.hab.coef.rd, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) +
-  ylim(-.1,.15)
+  scale_color_manual(values = color) + ylim(-75,30)
 
 
-ggplot(m.hab.coef) + aes(variable, value, fill=ttd) +
-  geom_boxplot() +
-  geom_jitter(aes(color=COD)) + ylim(-1,1)
-
-
-m.hab.coef.cdv <- m.hab.coef[COD=='cdv']
-
-ggplot(m.hab.coef.cdv) + aes(variable, value, fill=ttd) +
-  geom_boxplot() +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.75,.85)
-
-
-
-
-ggplot(m.hab1mo.coef, aes(variable, value)) +
-  geom_boxplot(aes( fill=COD)) +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= COD, color = COD)) +
-  ylim(-.7,.5)
-
-m.hab2mo.coef.g <- m.hab2mo.coef[COD!='human']
-ggplot(m.hab2mo.coef.g, aes(variable, value)) +
-  geom_boxplot(aes( fill=COD)) +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= COD, color = COD))+
-  ylim(-.7,1)
-
-
+ggplot(m.hab.coef.none, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) + ylim(-100,100)
 #### social graphs ####
 
 m.soc2mo.coef <- soc2moOUT[term=='coef',-'AIC']
-m.soc2mo.coef <- m.soc2mo.coef[, .( wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
+m.soc2mo.coef <- m.soc2mo.coef[, .( wolfID , nnXttd = `ttd:scale(nndist)`, packDistXttd = `ttd:scale(packdist)`)]
 m.soc2mo.coef<- merge(m.soc2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.soc2mo.coef <- melt(m.soc2mo.coef)
 m.soc2mo.coef[,'ttd'] <- '2mo'
 
 m.soc1mo.coef <- soc1moOUT[term=='coef',-'AIC']
-m.soc1mo.coef <- m.soc1mo.coef[, .(wolfID , nnXttd = `log(ttd + 1):log(nndist + 1)`, packDistXttd = `log(ttd + 1):log(packdist + 1)`)]
+m.soc1mo.coef <- m.soc1mo.coef[, .(wolfID , nnXttd = `ttd:scale(nndist)`, packDistXttd = `ttd:scale(packdist)`)]
 m.soc1mo.coef<- merge(m.soc1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.soc1mo.coef<- melt(m.soc1mo.coef)
 m.soc1mo.coef[,'ttd'] <- '1mo'
@@ -720,13 +748,17 @@ m.soc.coef <- rbind(m.soc1mo.coef, m.soc2mo.coef)
 m.soc.coef[,'test'] <- ifelse(m.soc.coef$ttd =='1mo', 'case', 'control')
 m.soc.coef$test <- factor(m.soc.coef$test, levels = c('control','case'))
 
+m.soc.coef.cdv <- m.soc.coef[COD == 'cdv']
+m.soc.coef.human <- m.soc.coef[COD == 'human']
+m.soc.coef.none <- m.soc.coef[COD == 'none']
+
 m.soc.coef.nn <- m.soc.coef[variable =='nnXttd' & COD == 'cdv']
 m.soc.coef.pack <- m.soc.coef[variable =='packDistXttd' & COD == 'cdv']
 
 
 #color = c("#0072B2", "#D55E00", "#009E73")
 
-ggplot(m.soc.coef, aes(variable, value, fill = test)) +
+ggplot(m.soc.coef.cdv, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -747,8 +779,7 @@ ggplot(m.soc.coef, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color)# +
-  #ylim(-.25,.05)
+  scale_color_manual(values = color)# + ylim(-.25,.05)
 
 
 ggplot(m.soc.coef.pack, aes(variable, value, fill = test)) +
