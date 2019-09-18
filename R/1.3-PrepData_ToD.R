@@ -56,6 +56,8 @@ fullmst.RMNP[,'ToD_start'] <- ifelse((fullmst.RMNP$SunriseDate + hours(1)) < ful
 fullmst.GHA26[,'ToD_start'] <- ifelse((fullmst.GHA26$SunriseDate + hours(1)) < fullmst.GHA26$t1_ & fullmst.GHA26$t1_ < (fullmst.GHA26$SunsetDate - hours(1)), 'day',
                                      ifelse(fullmst.GHA26$TwiStart > fullmst.GHA26$t1_ | fullmst.GHA26$t1_ > fullmst.GHA26$TwiEnd, 'night', 'twilight'))
 
+#fullmst.GHA26[,'packDistadj_end'] <-ifelse(fullmst.GHA26$packYN_end == 'pack', fullmst.GHA26$packDist_end, (-1)*fullmst.GHA26$packDist_end)
+
 
 # get rid of now unneeded columns
 ssf.wolf.RMNP <- fullmst.RMNP[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, ToD_start,
