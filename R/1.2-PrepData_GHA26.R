@@ -336,15 +336,16 @@ DT.grp2 <- unique(DT.grp)
 DT.pack <- setDT(dat.focal)[,.(WolfID, packbound)]
 
 
-# ssf.df = ssf.all
-# wolf = 'W02'
+ssf.df = as.data.frame(ssf.all)
+wolf = 'W01'
 
 createSSFnnbyFocal <- function(ssf.df, wolf){
-  ssf.sub <- subset(ssf.df, id == wolf)
+  ssf.sub <- as.data.frame(subset(ssf.df, id == wolf))
   pack <- dat.focal[WolfID == wolf, .(packbound)]$packbound
+  pack_kde_start <-paste(pack,"kde_start", sep = '_')
   
-  ssf.sub[,'packYN_start'] <- ssf.sub[,paste(pack,"kde_start", sep = '_')]
-  ssf.sub[,'packYN_end'] <- ssf.sub[,paste(pack,"kde_end", sep = '_')]
+  ssf.sub[,'packYN_start'] <- ssf.sub[,(paste(pack,"kde_start", sep = '_'))]
+  ssf.sub[,'packYN_end'] <- ssf.sub[,(paste(pack,"kde_end", sep = '_'))]
   
   ssf.sub[,'packDist_start'] <- ssf.sub[,paste(pack,"kde_dist_start", sep = '_')]
   ssf.sub[,'packDist_end'] <- ssf.sub[,paste(pack,"kde_dist_end", sep = '_')]
@@ -427,6 +428,9 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
 }
 
 unique(sort(dat.focal$WolfID))
+
+unique(setDT(ssf.all)[!is.na(distance1), .(id)])
+
 
 ssfW01 <- createSSFnnbyFocal(ssf.all, "W01")
 ssfW03 <- createSSFnnbyFocal(ssf.all, "W03")
