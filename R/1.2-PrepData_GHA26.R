@@ -139,7 +139,7 @@ dat_all <- dat_all %>%
   }))  
 
 dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
-  dplyr::select(id, sr) %>% unnest
+  dplyr::select(id, sr) %>% unnest(cols = c(sr))
 
 
 
@@ -252,7 +252,7 @@ ssf <- dat_all %>%
       amt::extract_covariates(SA_dist, where = "both") %>%
       amt::extract_covariates(TU, where = "both") %>%
       amt::extract_covariates(TU_dist, where = "both") %>%
-      amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
+     # amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
       mutate(land_start = factor(GHA26landcover_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              land_end = factor(GHA26landcover_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              FM_kde_start = factor(FM_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
@@ -281,7 +281,7 @@ ssf <- dat_all %>%
 
 
 
-ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest
+ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 
 ## proportions didn't pull right because of layer name, don't know how to fix
 locs_start <- sp::SpatialPoints(data.frame(ssf.all$x1_, ssf.all$y1_))
@@ -336,8 +336,8 @@ DT.grp2 <- unique(DT.grp)
 DT.pack <- setDT(dat.focal)[,.(WolfID, packbound)]
 
 
-ssf.df = as.data.frame(ssf.all)
-wolf = 'W01'
+#ssf.df = as.data.frame(ssf.all)
+#wolf = 'W01'
 
 createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub <- as.data.frame(subset(ssf.df, id == wolf))
@@ -418,7 +418,7 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   
   
   
-  ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
+  ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta,# tod_start_, 
                             roadDist_start, roadDist_end,
                             land_start, land_end, propwet_end, propopen_end, propconif_end, propmixed_end, propdecid_end, propshrub_end, propurban_end,
                             wet_end, open_end, conif_end, mixed_end, decid_end, shrub_end, urban_end,

@@ -99,7 +99,7 @@ dat_all <- dat_all %>%
   }))  
 
 dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
-  dplyr::select(id, sr) %>% unnest
+  dplyr::select(id, sr) %>% unnest(cols = c(sr))
 
 
 
@@ -200,7 +200,7 @@ ssf <- dat_all %>%
       amt::extract_covariates(SL_dist, where = "both") %>%
       amt::extract_covariates(WW, where = "both") %>%
       amt::extract_covariates(WW_dist, where = "both") %>%
-      amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
+     # amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
       mutate(land_start = factor(RMNPlandcover_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              land_end = factor(RMNPlandcover_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              parkYN_start = factor(parkYN_start, levels = c(0, 1), labels = c("park", "out-park")),
@@ -219,15 +219,15 @@ ssf <- dat_all %>%
              SL_kde_end = factor(SL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              WW_kde_start = factor(WW_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
              WW_kde_end = factor(WW_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             lnparkdist_start = log(boundary_dist_start + 1),
-             lnparkdist_end = log(boundary_dist_end + 1),
+             # lnparkdist_start = log(boundary_dist_start + 1),
+             # lnparkdist_end = log(boundary_dist_end + 1),
              log_sl = log(sl_),
              cos_ta = cos(ta_))
   }))
 
 
 
-ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest
+ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 
 ## proportions didn't pull right because of layer name, don't know how to fix
 locs_start <- sp::SpatialPoints(data.frame(ssf.all$x1_, ssf.all$y1_))
@@ -363,8 +363,8 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   
   
   
-  ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, tod_start_, 
-                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end = boundary_dist_end, lnparkdist_start, lnparkdist_end, parkDistadj_end,
+  ssf.wolf <- ssf.soc.sub[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, #tod_start_, 
+                            parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end = boundary_dist_end, parkDistadj_end,
                             land_start, land_end, propwet_end, propopen_end, propconif_end, propmixed_end, propdecid_end, propshrub_end, propurban_end,
                             wet_end, open_end, conif_end, mixed_end, decid_end, shrub_end, urban_end,
                             id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, packDistadj_end,

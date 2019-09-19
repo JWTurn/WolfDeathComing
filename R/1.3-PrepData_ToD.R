@@ -61,7 +61,7 @@ fullmst.GHA26[,'ToD_start'] <- ifelse((fullmst.GHA26$SunriseDate + hours(1)) < f
 
 # get rid of now unneeded columns
 ssf.wolf.RMNP <- fullmst.RMNP[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, t1_, t2_, dt_, sl_, log_sl, ta_, cos_ta, ToD_start,
-                           parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end, lnparkdist_start, lnparkdist_end, parkDistadj_end,
+                           parkYN_start, parkYN_end, roadDist_start, roadDist_end, parkDist_end, parkDistadj_end,
                        land_start, land_end, propwet_end, propopen_end, propconif_end, propmixed_end, wet_end, open_end, conif_end, mixed_end,
                        id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, packDistadj_end,
                            ttd1, ttd2)]
