@@ -21,6 +21,7 @@ set.seed(53)
 dat.RMNP <- readRDS('data/derived-data/ssfAllCov_RMNP.Rds')
 dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_GHA26.Rds')
 
+
 dat.RMNP[,'pop'] <- 'RMNP'
 dat.RMNP$wolfID <- paste(dat.RMNP$pop, dat.RMNP$id, sep = '_')
 dat.GHA26[,'pop'] <- 'GHA26'
@@ -419,7 +420,7 @@ soc2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='R
                 & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05' & wolfID!='RMNP_W05' & wolfID!='GHA26_W06'
                 & wolfID!='GHA26_W15'  & wolfID!='RMNP_W15' & wolfID!='GHA26_W16'& wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
                 & wolfID!='GHA26_W23' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W38' & wolfID!='GHA26_W39'
-                 ,Social(case_, log_sl, ToD_start, wet_end_adj, log(1+ttd1), log(1+distance1), log(1+packDistadj_end), stepjum), by = .(wolfID)]
+                 ,Social(case_, log_sl, ToD_start, wet_end_adj, log(1+ttd1), log(1+distance2), log(1+packDistadj_end), stepjum), by = .(wolfID)]
 
 
 
@@ -435,7 +436,7 @@ soc1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='
                 & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16'& wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
                 & wolfID!='GHA26_W23' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W38' & wolfID!='GHA26_W39'
                 & wolfID!='GHA26_W14' & wolfID!='RMNP_W14' & wolfID!='GHA26_W31'
-                ,Social(case_, log_sl, ToD_start, wet_end_adj, log(1+ttd1), log(1+distance1), log(1+packDistadj_end), stepjum), by = .(wolfID)]
+                ,Social(case_, log_sl, ToD_start, wet_end_adj, log(1+ttd1), log(1+distance2), log(1+packDistadj_end), stepjum), by = .(wolfID)]
 
 
 
@@ -453,7 +454,7 @@ socpropland2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wo
                  & wolfID!='GHA26_W35' & wolfID!='GHA26_W01' & wolfID!='GHA26_W03' & wolfID!='GHA26_W05' & wolfID!='RMNP_W05' & wolfID!='GHA26_W06'
                  & wolfID!='GHA26_W15' & wolfID!='RMNP_W15' & wolfID!='GHA26_W16' & wolfID!='RMNP_W16' & wolfID!='RMNP_W19'
                  & wolfID!='GHA26_W23' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' & wolfID!='GHA26_W36' & wolfID!='GHA26_W38' & wolfID!='GHA26_W39'
-                 ,Social.land(case_, log_sl, ToD_start, propforest_end, propopen_end, propwet_end, log(1+ttd1), log(1+distance1), log(1+packDistadj_end), stepjum), by = .(wolfID)]
+                 ,Social.land(case_, log_sl, ToD_start, propforest_end, propopen_end, propwet_end, log(1+ttd1), log(1+distance2), log(1+packDistadj_end), stepjum), by = .(wolfID)]
 
 socpropland1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
                         & wolfID!='GHA26_W35'  & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
@@ -462,7 +463,7 @@ socpropland1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & w
                         & wolfID!='GHA26_W23' & wolfID!='GHA26_W36' & wolfID!='GHA26_W38' & wolfID!='GHA26_W39'
                         & wolfID!='GHA26_W14' & wolfID!='RMNP_W14' & wolfID!='GHA26_W31'
                         & wolfID!='RMNP_W10'
-                        ,Social.land(case_, log_sl, ToD_start, propforest_end, propopen_end, propwet_end, log(1+ttd1), log(1+distance1), log(1+packDistadj_end), stepjum), by = .(wolfID)]
+                        ,Social.land(case_, log_sl, ToD_start, propforest_end, propopen_end, propwet_end, log(1+ttd1), log(1+distance2), log(1+packDistadj_end), stepjum), by = .(wolfID)]
 
 
 
@@ -666,7 +667,7 @@ ggplot(m.movepropland.coef.human, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Movement') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) + ylim(-.5,.5)
+  scale_color_manual(values = color) + ylim(-.3,.3)
 
 
 
@@ -867,33 +868,32 @@ ggplot(m.habpropland.coef.cdv, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) + ylim(-8,4)
+  scale_color_manual(values = color) + ylim(-5,4)
+
+ggplot(m.habpropland.coef.cdv[variable=='roads'], aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color)# + ylim(-5,4)
 
 
-# ggplot(m.habpropland.coef.rd, aes(variable, value, fill = test)) +
-#   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
-#                outlier.color = NA, lwd = 0.6,
-#                alpha = 0.25) +
-#   geom_jitter(aes(color = test),
-#               position = position_jitterdodge(.35),
-#               size = 2, alpha = 0.4) +
-#   #ggtitle('Interaction with community identity') +
-#   geom_hline(aes(yintercept = 0), lty = 2) +
-#   theme(#legend.position = 'none',
-#     axis.title = element_text(size = 16, color = 'black'),
-#     axis.text = element_text(size = 14, color = 'black'),
-#     plot.title=element_text(size = 16, hjust=0),
-#     axis.line = element_line(colour = "black"),
-#     panel.grid.minor = element_blank(),
-#     panel.background = element_blank(),
-#     strip.background = element_rect(colour="black", size = 1, fill = "white"),
-#     strip.text = element_text(size = 14)) +
-#   xlab('') +
-#   ylab('Selection') +
-#   scale_fill_manual(values = color) +
-#   scale_color_manual(values = color) +
-#   ylim(-.1,.15)
-# 
 
 ggplot(m.habpropland.coef.human, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
@@ -916,8 +916,31 @@ ggplot(m.habpropland.coef.human, aes(variable, value, fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) + ylim(-5,5)
+  scale_color_manual(values = color) + ylim(-3,5)
 
+
+ggplot(m.habpropland.coef.human[variable=='roads'], aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color)# + ylim(-3,5)
 
 ggplot(m.habpropland.coef.none, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
@@ -941,6 +964,30 @@ ggplot(m.habpropland.coef.none, aes(variable, value, fill = test)) +
   ylab('Selection') +
   scale_fill_manual(values = color) +
   scale_color_manual(values = color) + ylim(-5,5)
+
+
+ggplot(m.habpropland.coef.none[variable=='roads'], aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color)# + ylim(-5,5)
 ### MAKE PARK GRAPHS
 
 
@@ -996,7 +1043,7 @@ ggplot(m.soc.coef.cdv, aes(variable, value, fill = test)) +
   scale_color_manual(values = color)# + ylim(-.25,.05)
 
 
-ggplot(m.soc.coef.human[variable=='packDistXttd'], aes(variable, value, fill = test)) +
+ggplot(m.soc.coef.human, aes(variable, value, fill = test)) +
   geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -1070,31 +1117,132 @@ ggplot(m.soc.coef.none[variable=='nnXttd'], aes(variable, value, fill = test)) +
   ylim(-.1,.1)
 
 
-ggplot(m.soc.coef) + aes(variable, value, fill=ttd) +
-  geom_boxplot() +
-  geom_jitter(aes(color=COD)) + ylim(-.5,.5)
 
 
-m.soc.coef.cdv <- m.soc.coef[COD=='cdv']
 
-ggplot(m.soc.coef.cdv) + aes(variable, value, fill=ttd) +
-  geom_boxplot() +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= ttd, color = ttd)) + ylim(-.4,.75)
+m.socpropland2mo.coef <- socpropland2moOUT[term=='coef',-'AIC']
+m.socpropland2mo.coef <- m.socpropland2mo.coef[, .( wolfID , nnXttd = `ttd:nndist`, packDistXttd = `ttd:packdist`)]
+m.socpropland2mo.coef<- merge(m.socpropland2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.socpropland2mo.coef <- melt(m.socpropland2mo.coef)
+m.socpropland2mo.coef[,'ttd'] <- '2mo'
+
+m.socpropland1mo.coef <- socpropland1moOUT[term=='coef',-'AIC']
+m.socpropland1mo.coef <- m.socpropland1mo.coef[, .(wolfID , nnXttd = `ttd:nndist`, packDistXttd = `ttd:packdist`)]
+m.socpropland1mo.coef<- merge(m.socpropland1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+m.socpropland1mo.coef<- melt(m.socpropland1mo.coef)
+m.socpropland1mo.coef[,'ttd'] <- '1mo'
+
+m.socpropland.coef <- rbind(m.socpropland1mo.coef, m.socpropland2mo.coef)
+m.socpropland.coef[,'test'] <- ifelse(m.socpropland.coef$ttd =='1mo', 'case', 'control')
+m.socpropland.coef$test <- factor(m.socpropland.coef$test, levels = c('control','case'))
+
+m.socpropland.coef.cdv <- m.socpropland.coef[COD == 'cdv']
+m.socpropland.coef.human <- m.socpropland.coef[COD == 'human']
+m.socpropland.coef.none <- m.socpropland.coef[COD == 'none']
+
+m.socpropland.coef.nn <- m.socpropland.coef[variable =='nnXttd' & COD == 'cdv']
+m.socpropland.coef.pack <- m.socpropland.coef[variable =='packDistXttd' & COD == 'cdv']
 
 
-m.soc1mo.coef.g <- m.soc1mo.coef[COD!='wolf']
-ggplot(m.soc1mo.coef.g, aes(variable, value)) +
-  geom_boxplot(aes( fill=COD)) +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= COD, color = COD)) +
-  ylim(-.3,.75)
+#color = c("#0072B2", "#D55E00", "#009E73")
 
-ggplot(m.soc2mo.coef, aes(variable, value)) +
-  geom_boxplot(aes( fill=COD)) +
-  geom_dotplot(binaxis = 'y', stackdir='center',
-               position=position_dodge(1) , aes( fill= COD, color = COD))+
-  ylim(-.3,.2)
+ggplot(m.socpropland.coef.cdv, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color)# + ylim(-.25,.05)
+
+
+ggplot(m.socpropland.coef.human, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color)# + ylim(-.25,.05)
+
+
+
+ggplot(m.socpropland.coef.none, aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color)# + ylim(-.25,.05)
+
+
+ggplot(m.socpropland.coef.none[variable=='nnXttd'], aes(variable, value, fill = test)) +
+  geom_boxplot(aes(fill = test), #notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = test),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('Selection') +
+  scale_fill_manual(values = color) +
+  scale_color_manual(values = color) +
+  ylim(-.1,.1)
+
 
 
 
