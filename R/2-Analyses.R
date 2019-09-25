@@ -606,24 +606,46 @@ unique(dat.hum[wolfID!='RMNP_W03' & wolfID!='GHA26_W11' & wolfID!='RMNP_W16'
                ,.(wolfID)])
 
 #### AICs ####
-m.movewet2mo.aic <- unique(movewet2moOUT[,.(AIC_move2mo =AIC), by=.(wolfID)])
-m.movewet1mo.aic <- unique(movewet1moOUT[,.(AIC_move1mo =AIC), by=.(wolfID)])
-move.aic <- merge(m.movewet2mo.aic, m.movewet1mo.aic, all = T)
+m.movepropland2mo.aic <- unique(movepropland2moOUT[,.(AIC_move2mo =AIC), by=.(wolfID)])
+m.movepropland1mo.aic <- unique(movepropland1moOUT[,.(AIC_move1mo =AIC), by=.(wolfID)])
+move.aic <- merge(m.movepropland2mo.aic, m.movepropland1mo.aic, all = T)
 move.aic <- merge(move.aic, dat.meta[,.(COD), by = .(wolfpop)], by.x = 'wolfID', by.y = 'wolfpop')
 
-m.habwet2mo.aic <- unique(habwet2moOUT[,.(AIC_hab2mo =AIC), by=.(wolfID)])
-m.habwet1mo.aic <- unique(habwet1moOUT[,.(AIC_hab1mo =AIC), by=.(wolfID)])
-hab.aic <- merge(m.habwet2mo.aic, m.habwet1mo.aic, all = T)
+m.habpropland2mo.aic <- unique(habpropland2moOUT[,.(AIC_hab2mo =AIC), by=.(wolfID)])
+m.habpropland1mo.aic <- unique(habpropland1moOUT[,.(AIC_hab1mo =AIC), by=.(wolfID)])
+hab.aic <- merge(m.habpropland2mo.aic, m.habpropland1mo.aic, all = T)
 hab.aic <- merge(hab.aic, dat.meta[,.(COD), by = .(wolfpop)], by.x = 'wolfID', by.y = 'wolfpop')
 
-m.socwet2mo.aic <- unique(socwet2moOUT[,.(AIC_soc2mo =AIC), by=.(wolfID)])
-m.socwet1mo.aic <- unique(socwet1moOUT[,.(AIC_soc1mo =AIC), by=.(wolfID)])
-soc.aic <- merge(m.socwet2mo.aic, m.socwet1mo.aic, all = T)
+m.socpropland2mo.aic <- unique(socpropland2moOUT[,.(AIC_soc2mo =AIC), by=.(wolfID)])
+m.socpropland1mo.aic <- unique(socpropland1moOUT[,.(AIC_soc1mo =AIC), by=.(wolfID)])
+soc.aic <- merge(m.socpropland2mo.aic, m.socpropland1mo.aic, all = T)
 soc.aic <- merge(soc.aic, dat.meta[,.(COD), by = .(wolfpop)], by.x = 'wolfID', by.y = 'wolfpop')
 
 m.all.aic <- merge(move.aic, hab.aic, by=c('wolfID', 'COD'), all = T)
 m.all.aic <- merge(m.all.aic, soc.aic, by=c('wolfID', 'COD'), all = T)
 
+#### evidence ratios ####
+
+m.all.aic.2mo<-melt(m.all.aic[,.(wolfID, COD ,move=AIC_move2mo, habitat = AIC_hab2mo, social = AIC_soc2mo)])
+
+m.aic.wts <- m.all.aic.2mo[!is.na(value),.(COD, model=variable, AIC=value, weight=MuMIn::Weights(value)), by=.(wolfID)]
+
+m.aic.wts[, model_rank := frank(AIC, ties.method = 'dense', na.last = 'keep'), by = wolfID]
+
+
+
+m.aic.wts.t<-dcast(m.aic.wts,wolfID+COD +model~ model_rank, value.var = c( 'weight'))
+m.aic.t<-dcast(m.aic.wts,wolfID+COD +model~ model_rank, value.var = c( 'AIC'))
+#m.aic.wts.t[,.(er=)]
+m.er <- merge(m.aic.wts[model_rank==1, .(wolfID,COD,model.1=model, AIC.1=AIC)], m.aic.wts[model_rank==2, .(wolfID,COD,model.2=model, AIC.2=AIC)], all =T)
+m.er <- merge(m.er, m.aic.wts[model_rank==3, .(wolfID,COD,model.3=model, AIC.3=AIC)], all =T)
+m.er[,'er1.2']<- exp((m.er$AIC.2-m.er$AIC.1)/2)
+m.er[,'er1.3']<- ifelse(!is.na(m.er$AIC.3),exp((m.er$AIC.3-m.er$AIC.1)/2),NA)
+m.er$er1.2<-ifelse(is.infinite(m.er$er1.2), 10^300, m.er$er1.2)
+
+er.mean <-m.er[COD=='cdv'|COD=='human'|COD=='none',.(best=uniqueN(wolfID),mean=mean(er1.2, na.rm=T)), by=.(COD,model.1)]
+
+m.er.cdv <- m.er[COD=='cdv']
 
 #### ICC ####
 require(ICC)
@@ -732,12 +754,12 @@ dbetas.t <- melt(dbetas)
 dbetas.t[,'model'] <- ifelse(dbetas.t$variable == 'd_lnSL'|dbetas.t$variable == 'd_cosTA','move',
                              ifelse(dbetas.t$variable == 'd_nn'|dbetas.t$variable == 'd_pack', 'social', 'habitat'))
 
-dbetas.cdv <- dbetas.t[COD=='cdv']
-dbetas.human <- dbetas.t[COD=='human']
-dbetas.none <- dbetas.t[COD=='none']
+# dbetas.cdv <- dbetas.t[COD=='cdv']
+# dbetas.human <- dbetas.t[COD=='human']
+# dbetas.none <- dbetas.t[COD=='none']
 
 dbetas.t <- dbetas.t[COD=='cdv'|COD=='human'|COD=='none'] 
-dbetas.t$COD <- factor(dbetas.t$COD, levels = c('none','cdv','human'), labels = c('control','CDV','human'))
+dbetas.t$COD <- factor(dbetas.t$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
 
 
 cbPalette = c("#A95AA1", "#85C0F9", "#0F2080")
@@ -836,6 +858,52 @@ ggplot(dbetas.t[model=='social'], aes(variable, (-1*value), fill = COD)) +
   scale_fill_manual(values = cbPalette) +
   scale_color_manual(values = cbPalette) + ylim(-.8,.8)
 
+
+
+
+#### % in/out park ####
+pack2mo <-dat[ttd1>31 & ua=='used' & pop=='RMNP', .(COD, tot= uniqueN(t2_)), by=.(wolfID, packYN_end)]
+pack2mo.t<- dcast(pack2mo, wolfID+COD~packYN_end)
+pack2mo.t$`out-pack`<- ifelse(is.na(pack2mo.t$`out-pack`), 0, pack2mo.t$`out-pack`)
+pack2mo.t[,'total_steps'] <- pack2mo.t$`out-pack`+pack2mo.t$pack
+pack2mo.t[,'propout'] <- pack2mo.t$`out-pack`/pack2mo.t$total_steps
+
+
+pack1mo <-dat[ttd1<=31 & ua=='used' & pop=='RMNP', .(COD, tot= uniqueN(t2_)), by=.(wolfID, packYN_end)]
+pack1mo.t<- dcast(pack1mo, wolfID+COD~packYN_end)
+pack1mo.t$`out-pack`<- ifelse(is.na(pack1mo.t$`out-pack`), 0, pack1mo.t$`out-pack`)
+pack1mo.t[,'total_steps'] <- pack1mo.t$`out-pack`+pack1mo.t$pack
+pack1mo.t[,'propout'] <- pack1mo.t$`out-pack`/pack1mo.t$total_steps
+
+pack.propout <- merge(pack2mo.t[,.(wolfID, COD, propout2mo = propout)], pack1mo.t[,.(wolfID, COD, propout1mo = propout)])
+pack.propout <- melt(pack.propout)
+pack.propout <- pack.propout[COD=='cdv'|COD=='human'|COD=='none']
+
+pack.propmean <- pack.propout[,mean(value), .(COD, variable)]
+
+
+ggplot(pack.propout, aes(variable, (value), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('delta selection') +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) + ylim(0,.25)
 
 #### GRAPHS ####
 #### movement graphs ####
