@@ -417,6 +417,24 @@ habpropland1moOUT <- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & 
                          ,Habitat.land(case_, log_sl, ToD_start, scale(propforest_end_adj), scale(propopen_end_adj), scale(propwet_end), log(1+ttd1), scale(roadDist_end), stepjum), by = .(wolfID)]
 
 
+habpropland2moOUT2 <- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W05'# & wolfID!='GHA26_W35'
+                         ,Habitat.land(case_, log_sl, ToD_start, scale(propforest_end_adj), scale(propopen_end_adj), scale(propwet_end), log(1+ttd1), scale(log(1+roadDist_end)), stepjum), by = .(wolfID)]
+
+
+unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
+           #& wolfID!='GHA26_W35' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25'
+           ,.(wolfID)])
+
+habpropland1moOUT2 <- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+                         # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+                         ,Habitat.land(case_, log_sl, ToD_start, scale(propforest_end_adj), scale(propopen_end_adj), scale(propwet_end), log(1+ttd1), scale(log(1+roadDist_end)), stepjum), by = .(wolfID)]
+
+
+hist(dat$propforest_end_adj)
+hist(log(1+dat$propopen_end_adj))
+hist(log(1+dat$propwet_end))
+hist(scale(log(1+dat$roadDist_end)))
+hist(log(1+dat$ttd1))
 
 #### shorter human mods ####
 
@@ -701,6 +719,31 @@ m.habpropland.icc <- merge(m.habpropland2mo.icc[,.(wolfID, COD, forest.control, 
                             by = c('wolfID','COD'), all = T)
 
 
+
+
+
+m.habpropland2mo2.icc <- habpropland2moOUT2[term=='coef',-'AIC']
+m.habpropland2mo2.icc <- m.habpropland2mo2.icc[, .( wolfID , forest.control = `closed:ttd`,open.control = `open:ttd`, wet.control = `wet:ttd`, road.control = `ttd:rddist`)]
+
+m.habpropland2mo2.icc<- merge(m.habpropland2mo2.icc, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+
+m.habpropland1mo2.icc <- habpropland1moOUT2[term=='coef',-'AIC']
+m.habpropland1mo2.icc <- m.habpropland1mo2.icc[, .( wolfID , forest.case = `closed:ttd`,open.case = `open:ttd`, wet.case = `wet:ttd`, road.case = `ttd:rddist`)]
+
+m.habpropland1mo2.icc<- merge(m.habpropland1mo2.icc, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+m.habpropland2.icc <- merge(m.habpropland2mo2.icc[,.(wolfID, COD, forest.control, open.control, wet.control, road.control)], 
+                           m.habpropland1mo2.icc[,.(wolfID, COD, forest.case, open.case, wet.case, road.case)], 
+                           by = c('wolfID','COD'), all = T)
+
+
+
+
+
+
 m.socpropland2mo.icc <- socpropland2moOUT[term=='coef',-'AIC']
 m.socpropland2mo.icc <- m.socpropland2mo.icc[, .( wolfID , nnXttd.control = `ttd:nndist`, packDistXttd.control = `ttd:packdist`)]
 
@@ -739,6 +782,17 @@ m.habpropland.icc[,'d_road']<- ifelse(!is.na(m.habpropland.icc$road.control)&!is
 m.habpropland.icc[,'model'] <- 'habitat'
 
 
+m.habpropland2.icc[,'d_forest2']<- ifelse(!is.na(m.habpropland2.icc$forest.control)&!is.na(m.habpropland2.icc$forest.case),
+                                        m.habpropland2.icc$forest.control -m.habpropland2.icc$forest.case, NA)
+m.habpropland2.icc[,'d_open2']<-ifelse(!is.na(m.habpropland2.icc$open.control)&!is.na(m.habpropland2.icc$open.case),
+                                     m.habpropland2.icc$open.control -m.habpropland2.icc$open.case, NA)
+m.habpropland2.icc[,'d_wet2']<- ifelse(!is.na(m.habpropland2.icc$wet.control)&!is.na(m.habpropland2.icc$wet.case),
+                                     m.habpropland2.icc$wet.control -m.habpropland2.icc$wet.case, NA)
+m.habpropland2.icc[,'d_road2']<- ifelse(!is.na(m.habpropland2.icc$road.control)&!is.na(m.habpropland2.icc$road.case),
+                                      m.habpropland2.icc$road.control -m.habpropland2.icc$road.case, NA)
+m.habpropland2.icc[,'model'] <- 'habitat2'
+
+
 m.socpropland.icc[,'d_nn'] <- ifelse(!is.na(m.socpropland.icc$nnXttd.control)&!is.na(m.socpropland.icc$nnXttd.case),
                                      m.socpropland.icc$nnXttd.control -  m.socpropland.icc$nnXttd.case, NA)
 m.socpropland.icc[,'d_pack'] <-ifelse(!is.na(m.socpropland.icc$packDistXttd.control)&!is.na(m.socpropland.icc$packDistXttd.case),
@@ -748,11 +802,14 @@ m.socpropland.icc[,'model'] <- 'social'
 
 dbetas <- merge(m.movepropland.icc[,.(wolfID,COD, d_lnSL, d_cosTA)], 
                 m.habpropland.icc[,.(wolfID,COD, d_forest,d_open,d_wet,d_road)], by=c('wolfID','COD'), all=T)
+dbetas <- merge(dbetas, m.habpropland2.icc[,.(wolfID,COD, d_forest2,d_open2,d_wet2,d_road2)], by=c('wolfID','COD'), all=T)
 
 dbetas <- merge(dbetas, m.socpropland.icc[,.(wolfID,COD, d_nn, d_pack)], by=c('wolfID','COD'), all=T)
 dbetas.t <- melt(dbetas)
 dbetas.t[,'model'] <- ifelse(dbetas.t$variable == 'd_lnSL'|dbetas.t$variable == 'd_cosTA','move',
-                             ifelse(dbetas.t$variable == 'd_nn'|dbetas.t$variable == 'd_pack', 'social', 'habitat'))
+                             ifelse(dbetas.t$variable == 'd_nn'|dbetas.t$variable == 'd_pack', 'social',
+                                    ifelse(dbetas.t$variable == 'd_forest'| dbetas.t$variable == 'd_open'| 
+                                           dbetas.t$variable == 'd_wet'| dbetas.t$variable == 'd_road','habitat', 'habitat2')))
 
 # dbetas.cdv <- dbetas.t[COD=='cdv']
 # dbetas.human <- dbetas.t[COD=='human']
@@ -833,6 +890,30 @@ ggplot(dbetas.t[model=='habitat'& variable=='d_road'], aes(variable, (-1*value),
   ylab('delta selection') +
   scale_fill_manual(values = cbPalette) +
   scale_color_manual(values = cbPalette)# + ylim(-5,5)
+
+
+ggplot(dbetas.t[model=='habitat2'], aes(variable, (-1*value), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('delta selection') +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) + ylim(-5,5)
 
 
 ggplot(dbetas.t[model=='social'], aes(variable, (-1*value), fill = COD)) +
@@ -1324,13 +1405,13 @@ ggplot(m.hab.coef.none, aes(variable, (-1*value), fill = test)) +
 
 #### habitat propland graphs ####
 
-m.habpropland2mo.coef <- habpropland2moOUT[term=='coef',-'AIC']
+m.habpropland2mo.coef <- habpropland2moOUT2[term=='coef',-'AIC']
 m.habpropland2mo.coef <- m.habpropland2mo.coef[, .( wolfID, forest = `closed:ttd`, open = `open:ttd`, wet=`wet:ttd`, roads = `ttd:rddist`)]
 m.habpropland2mo.coef<- merge(m.habpropland2mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.habpropland2mo.coef <- melt(m.habpropland2mo.coef)
 m.habpropland2mo.coef[,'ttd'] <- '2mo'
 
-m.habpropland1mo.coef <- habpropland1moOUT[term=='coef',-'AIC']
+m.habpropland1mo.coef <- habpropland1moOUT2[term=='coef',-'AIC']
 m.habpropland1mo.coef <- m.habpropland1mo.coef[, .(  wolfID, forest = `closed:ttd`, open = `open:ttd`, wet=`wet:ttd`, roads = `ttd:rddist`)]
 m.habpropland1mo.coef<- merge(m.habpropland1mo.coef, dat.meta, by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 m.habpropland1mo.coef<- melt(m.habpropland1mo.coef)
@@ -1347,7 +1428,7 @@ m.habpropland.coef.none <- m.habpropland.coef[COD == 'none']
 #m.habpropland.coef.rd <- m.habpropland.coef[variable=='roads' & COD == 'cdv']
 
 
-#color = c("#0072B2", "#D55E00", "#009E73")
+color = c("#0072B2", "#D55E00", "#009E73")
 
 ggplot(m.habpropland.coef.cdv, aes(variable, (-1*value), fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
@@ -1370,7 +1451,7 @@ ggplot(m.habpropland.coef.cdv, aes(variable, (-1*value), fill = test)) +
   xlab('') +
   ylab('Selection') +
   scale_fill_manual(values = color) +
-  scale_color_manual(values = color) + ylim(-50,50)
+  scale_color_manual(values = color) + ylim(-5,5)
 
 ggplot(m.habpropland.coef.cdv[variable=='roads'], aes(variable, (-1*value), fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
