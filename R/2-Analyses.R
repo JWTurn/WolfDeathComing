@@ -52,6 +52,10 @@ dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 #dat[,'ttd1_adj'] <- ifelse(dat$COD =='none', dat$ttd1*730, dat$ttd1)
 
 dat.meta[,uniqueN(wolfpop), by= .(pop, COD)]
+mean.nndist <- dat[ua=='used',mean(distance2, na.rm = T), by=.(wolfID)]
+median.nndist <- dat[ua=='used',median(distance2, na.rm = T), by=.(wolfID)]
+mean(mean.nndist$V1, na.rm = T)
+mean(median.nndist$V1, na.rm = T)
 
 # dat[,'wet'] <- ifelse(dat$land_end == 'wet', 'wet', 'not')
 # dat.wet<-dat[land_end=='wet', .(id, ttd1, ua, propwet_end)]
@@ -146,7 +150,7 @@ dat[,mean(propopen_end), by=.(wolfID,ua)]
 unique(dat$land_end)
 
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
-                               ifelse(dat$land_end == 'coniferous'|dat$land_end == 'mixed'|dat$land_end == 'deciduous', 'forest','open'))
+                               ifelse(dat$land_end == 'coniferous', 'coniferous', ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous', 'mixed','open')))
 dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end 
 dat[,'propopen_end_adj'] <- dat$propopen_end #+dat$propshrub_end
 
@@ -324,7 +328,7 @@ Habitat.park <- function(y, sl, ToD, land, ttd, parkdist, rddist, strata1) {
 
 Habitat<- function(y, sl, ToD, land, ttd, rddist, strata1) {
   # Make the model
-  model <- clogit(y ~ sl:ToD + land +
+  model <- clogit(y ~ sl:ToD + #land +
                     sl:land +
                     ttd:land + ttd:rddist+ + strata(strata1))
   sum.model <- summary(model)$coefficients
@@ -376,7 +380,7 @@ Habitat.land<- function(y, sl, ToD, closed, open, wet, ttd, rddist, strata1) {
 
 
 hab2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
-                 ,Habitat(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
+                 ,Habitat(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), scale(log(1+roadDist_end)), stepjum), by = .(wolfID)]
 
 
 unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11',.(wolfID)])
@@ -385,6 +389,15 @@ hab1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!=
                  ,Habitat(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
 
 
+
+habland2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
+                ,Habitat.land(case_, log_sl, ToD_start, forest_end_adj, open_end_adj, wet_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
+
+
+#unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11',.(wolfID)])
+
+habland1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!='RMNP_W11' & wolfID!='GHA26_W24'
+                ,Habitat.land(case_, log_sl, ToD_start, forest_end_adj, open_end_adj, wet_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
 
 
 
@@ -486,7 +499,7 @@ Social.land <- function(y, sl, ToD, closed, open, wet, ttd, nndist, packdist, st
   # Make the model
   model <- clogit(y ~ sl:ToD + closed + open + wet + 
                     sl:closed + sl:open + sl:wet +
-                    ttd:nndist + ttd:packdist + strata(strata1))
+                    nndist + packdist + ttd:nndist + ttd:packdist + strata(strata1))
   sum.model <- summary(model)$coefficients
   # Transpose the coef of the model and cast as data.table
   term <- c('coef','hr','se','z','p')
@@ -1428,7 +1441,7 @@ m.habpropland.coef.none <- m.habpropland.coef[COD == 'none']
 #m.habpropland.coef.rd <- m.habpropland.coef[variable=='roads' & COD == 'cdv']
 
 
-color = c("#0072B2", "#D55E00", "#009E73")
+#color = c("#0072B2", "#D55E00", "#009E73")
 
 ggplot(m.habpropland.coef.cdv, aes(variable, (-1*value), fill = test)) +
   geom_boxplot(aes(fill = test),# notch = TRUE, notchwidth = 0.7,
