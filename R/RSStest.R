@@ -28,14 +28,16 @@ derived <- 'data/derived-data/'
 # saveRDS(nndist.w, 'data/derived-data/socprop1moCoef.Rds')
 nndist.w <- readRDS('data/derived-data/socprop1moCoef.Rds')
 
+W02 <- nndist.w[wolfID=='RMNP_W02',.(betann_coef, betann_lwr, betann_upr, betaintx_coef, betaintx_lwr, betaintx_upr)]
+
 W06 <- nndist.w[wolfID=='RMNP_W06',.(betann_coef, betann_lwr, betann_upr, betaintx_coef, betaintx_lwr, betaintx_upr)]
 # Population RSS at three levels of road availability
 # delta hi should be based off avg/median nndist
 # hi <- 101:1000
 # delta.hi <- 100
 
-hi <- 100:14999
-delta.hi <- 100
+hi <- 1001:20000
+delta.hi <- 1000
 
 # ttd 1mo, 2 weeks, 1 day
 # 1day
@@ -46,9 +48,9 @@ hj.2 <- log(1 + 14)
 hj.3 <- log(1 + 30)
 
 
-rss.nn.1 <- (log(hi/(hi-delta.hi)))^(W06$betann_coef + (W06$betaintx_coef*hj.1))
-rss.nn.2 <- (log(hi/(hi-delta.hi)))^(W06$betann_coef + (W06$betaintx_coef*hj.2))
-rss.nn.3 <- (log(hi/(hi-delta.hi)))^(W06$betann_coef + (W06$betaintx_coef*hj.3))
+rss.nn.1 <- (log(hi/(hi-delta.hi)))^(W02$betann_coef + (W02$betaintx_coef*hj.1))
+rss.nn.2 <- (log(hi/(hi-delta.hi)))^(W02$betann_coef + (W02$betaintx_coef*hj.2))
+rss.nn.3 <- (log(hi/(hi-delta.hi)))^(W02$betann_coef + (W02$betaintx_coef*hj.3))
 
 r =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
 r = r + geom_line(aes(x=(hi-100),y=(rss.nn.1), colour = "1 day"), size = 1) 
@@ -70,7 +72,7 @@ r = r + theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = elemen
 r = r + theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
               axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) 
 r = r + ylab("RSS") + xlab("Distance to NN (m)")
-r = r + ylim(-0.01,1)
+r = r + ylim(-0.01,10)
 r = r +scale_colour_manual("", 
                            values = c("gray", "black", "gray33"))  
 r = r +  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
