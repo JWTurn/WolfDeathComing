@@ -106,7 +106,7 @@ mean(median.nndist$V1, na.rm = T)
 ### dummy vars didn't, Can run prop with this same one
 Core.land <- function(y, sl, ToD, closed, open, wet, strata1) {
   # Make the model
-  model <- clogit(y ~ sl:ToD + closed + open + wet +
+  model <- clogit(y ~ sl:ToD + #closed + open + wet +
                     sl:closed + sl:open + sl:wet +
                     strata(strata1))
   sum.model <- summary(model)$coefficients
@@ -120,29 +120,29 @@ Core.land <- function(y, sl, ToD, closed, open, wet, strata1) {
   return(data.table(term, coefOut, AIC=AIC(model)))
 }
 
-Core <- function(y, sl, ToD, land, strata1) {
-  # Make the model
-  model <- clogit(y ~ sl:ToD + land +
-                    sl:land +
-                    strata(strata1))
-  sum.model <- summary(model)$coefficients
-  # Transpose the coef of the model and cast as data.table
-  term <- c('coef','hr','se','z','p')
-  coefOut <- data.table(t(sum.model))
-  
-  # Return combined columns
-  # print(summary(model))
-  print(AIC(model))
-  return(data.table(term, coefOut, AIC=AIC(model)))
-}
+# Core <- function(y, sl, ToD, land, strata1) {
+#   # Make the model
+#   model <- clogit(y ~ sl:ToD + land +
+#                     sl:land +
+#                     strata(strata1))
+#   sum.model <- summary(model)$coefficients
+#   # Transpose the coef of the model and cast as data.table
+#   term <- c('coef','hr','se','z','p')
+#   coefOut <- data.table(t(sum.model))
+#   
+#   # Return combined columns
+#   # print(summary(model))
+#   print(AIC(model))
+#   return(data.table(term, coefOut, AIC=AIC(model)))
+# }
 
 
 
 
-dat[,mean(propwet_end), by=.(wolfID,ua)]
-dat[,mean(propconif_end), by=.(wolfID,ua)]
-dat[,mean(propmixed_end), by=.(wolfID,ua)]
-dat[,mean(propopen_end), by=.(wolfID,ua)]
+
+# dat[,mean(propconif_end), by=.(wolfID,ua)]
+# dat[,mean(propmixed_end), by=.(wolfID,ua)]
+
     
 #run iSSA model by ID
 # Core Model
@@ -155,8 +155,15 @@ dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet',
                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous', 'forest','open'))
 
 dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end 
-dat[,'propopen_end_adj'] <- dat$propopen_end #+dat$propshrub_end
+dat[,'propopen_end_adj'] <- dat$propopen_end +dat$propshrub_end + dat$propurban_end
 
+
+dat[,mean(propwet_end), by=.(wolfID,ua,COD)]
+dat[,mean(propforest_end_adj), by=.(wolfID,ua, COD)]
+dat[ttd1<=31,mean(propopen_end_adj), by=.(wolfID,ua,COD)]
+
+View(dat[,mean(propopen_end_adj), by=.(wolfID,ua)])
+View(dat[,mean(propurban_end), by=.(wolfID,ua)])
 # dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
 #                                ifelse(dat$land_end == 'coniferous', 'coniferous',
 #                                       ifelse(dat$land_end == 'deciduous'| dat$land_end == 'mixed'|dat$land_end == 'shrub', 'mixed','open')))
@@ -166,6 +173,7 @@ dat[,'forest_end_adj'] <- ifelse(dat$land_end_adj == 'forest', 1, 0)
 dat[,'open_end_adj'] <- ifelse(dat$land_end_adj == 'open', 1, 0)
 dat[,'wet_end_adj'] <- ifelse(dat$land_end_adj == 'wet', 1, 0)
 
+
 unique(dat[,.(wolfID)])
 #id!='W13', id!='W03' & id!='W14' & id!='W25' 
 #wolfID!='GHA26_W03' & wolfID!='RMNP_W03' & wolfID!='GHA26_W09' & wolfID!='RMNP_W12'
@@ -173,17 +181,19 @@ unique(dat[,.(wolfID)])
 # Maybe add RMNPW11 back in? (wet doesn't work right)
 #
 
-core2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' # & wolfID!='GHA26_W24', 
-                ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
+# core2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' # & wolfID!='GHA26_W24', 
+#                 ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
+# 
+# 
+# core1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' # & wolfID!='GHA26_W24' 
+#                  ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
 
 
-core1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' # & wolfID!='GHA26_W24' 
-                 ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
+unique(dat[wolfID!='RMNP_W11' & wolfID!='RMNP_W22',.(wolfID)])
 
-
-
-corepropland2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11' 
-                    # & wolfID!='GHA26_W35', 
+corepropland2moOUT<- dat[ttd1>31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
+                         #& wolfID!='RMNP_W02' & wolfID!='RMNP_W03' & wolfID!='RMNP_W09'
+                        # & wolfID!='GHA26_W26'
                  ,Core.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, stepjum), by = .(wolfID)]
 
 
@@ -196,25 +206,25 @@ unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32',.(wolfID)])
 
 #### shorter human mods ####
 
-dat.hum <- dat[COD =='human'|COD=='none']
-
-unique(dat.hum[wolfID!='GHA26_W16' & wolfID!='GHA26_W23' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
-               & wolfID!='GHA26_W34'
-               ,.(wolfID)])
-
-corehum2moOUT<- dat.hum[ttd1>31 & ttd1<=38 & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' 
-                        & wolfID!='GHA26_W29' 
-                        ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
-
-corehum2wkOUT<- dat.hum[ttd1>7 & ttd1<=14 & wolfID!='GHA26_W16' & wolfID!='GHA26_W23' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
-                         & wolfID!='GHA26_W34' & wolfID!='GHA26_W39'
-                        ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
-
-corehum1wkOUT<- dat.hum[ttd1<=7 & wolfID!='RMNP_W03' & wolfID!='GHA26_W11' & wolfID!='RMNP_W16'
-                         & wolfID!='GHA26_W32' & wolfID!='GHA26_W34'
-                        ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
-
-unique(dat.hum[wolfID!='RMNP_W03' & wolfID!='GHA26_W11' & wolfID!='RMNP_W16',.(wolfID)])
+# dat.hum <- dat[COD =='human'|COD=='none']
+# 
+# unique(dat.hum[wolfID!='GHA26_W16' & wolfID!='GHA26_W23' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+#                & wolfID!='GHA26_W34'
+#                ,.(wolfID)])
+# 
+# corehum2moOUT<- dat.hum[ttd1>31 & ttd1<=38 & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' 
+#                         & wolfID!='GHA26_W29' 
+#                         ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
+# 
+# corehum2wkOUT<- dat.hum[ttd1>7 & ttd1<=14 & wolfID!='GHA26_W16' & wolfID!='GHA26_W23' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+#                          & wolfID!='GHA26_W34' & wolfID!='GHA26_W39'
+#                         ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
+# 
+# corehum1wkOUT<- dat.hum[ttd1<=7 & wolfID!='RMNP_W03' & wolfID!='GHA26_W11' & wolfID!='RMNP_W16'
+#                          & wolfID!='GHA26_W32' & wolfID!='GHA26_W34'
+#                         ,Core(case_, log_sl, ToD_start, land_end_adj, stepjum), by = .(wolfID)]
+# 
+# unique(dat.hum[wolfID!='RMNP_W03' & wolfID!='GHA26_W11' & wolfID!='RMNP_W16',.(wolfID)])
 
 #### MOVEMENT ####
 
@@ -233,7 +243,7 @@ Move <- function(y, sl, ToD, land, ttd, ta, strata1) {
   # Make the model
   model <- clogit(y ~ sl:ToD + land +
                     sl:land +
-                   # log(ttd+1):sl + log(ttd+1):ta + strata(strata1))
+                    #log(ttd+1):sl + log(ttd+1):ta + strata(strata1))
                    ttd:sl + ta + ttd:ta + strata(strata1))
   sum.model <- summary(model)$coefficients
   # Transpose the coef of the model and cast as data.table
@@ -265,75 +275,59 @@ Move.land <- function(y, sl, ToD, closed, open, wet, ttd, ta, strata1) {
 }
 
 
-
-move2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
+#& wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
+move2moOUT<- dat[ttd1>31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
                     ,Move(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
-move1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!='RMNP_W11'
+move1moOUT<- dat[ttd1<=31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
                    ,Move(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
 
 
-movepropland2moOUT <- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11' & wolfID!='GHA26_W35'
+movepropland2moOUT <- dat[ttd1>31 &  wolfID!='RMNP_W11' & wolfID!='RMNP_W22'#wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11' & wolfID!='GHA26_W35'
                          ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
 unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
            & wolfID!='GHA26_W35' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25',.(wolfID)])
 
-movepropland1moOUT <- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+movepropland1moOUT <- dat[ttd1<=31 &  wolfID!='RMNP_W11' & wolfID!='RMNP_W22'&wolfID!='GHA26_W27'# & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
                         # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
                          ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
 
-#### shorter human mods ####
-
-
-unique(dat.hum[wolfID!='GHA26_W16' & wolfID!='GHA26_W23' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
-               & wolfID!='GHA26_W34'
-               ,.(wolfID)])
-
-movehum2moOUT<- dat.hum[ttd1>31 & ttd1<=38 & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26' 
-                        & wolfID!='GHA26_W29' 
-                        ,Move(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
-
-movehum2wkOUT<- dat.hum[ttd1>7 & ttd1<=14 & wolfID!='GHA26_W16' & wolfID!='GHA26_W23' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
-                        & wolfID!='GHA26_W34' & wolfID!='GHA26_W39'
-                        ,Move(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
-
-movehum1wkOUT<- dat.hum[ttd1<=7 & wolfID!='RMNP_W03' & wolfID!='GHA26_W11' & wolfID!='RMNP_W16'
-                        & wolfID!='GHA26_W32' & wolfID!='GHA26_W34'
-                        ,Move(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
-
 
 
 
 #### HABITAT ####
-Habitat.park <- function(y, sl, ToD, land, ttd, parkdist, rddist, strata1) {
-  # Make the model
-  model <- clogit(y ~ sl:ToD + land +
-                    sl:land +
-                    ttd:land + ttd:parkdist + ttd:rddist + strata(strata1))
-                    #log(ttd+1):land + log(ttd+1):parkdist:parkYN + strata(strata1))
-  sum.model <- summary(model)$coefficients
-  # Transpose the coef of the model and cast as data.table
-  term <- c('coef','hr','se','z','p')
-  coefOut <- data.table(t(sum.model))
-  
-  # Return combined columns
-  # print(summary(model))
-  print(AIC(model))
-  return(data.table(term, coefOut, AIC=AIC(model)))
-}
+# Habitat.park <- function(y, sl, ToD, land, ttd, parkdist, rddist, strata1) {
+#   # Make the model
+#   model <- clogit(y ~ sl:ToD + land +
+#                     sl:land +
+#                     ttd:land + ttd:parkdist + ttd:rddist + strata(strata1))
+#                     #log(ttd+1):land + log(ttd+1):parkdist:parkYN + strata(strata1))
+#   sum.model <- summary(model)$coefficients
+#   # Transpose the coef of the model and cast as data.table
+#   term <- c('coef','hr','se','z','p')
+#   coefOut <- data.table(t(sum.model))
+#   
+#   # Return combined columns
+#   # print(summary(model))
+#   print(AIC(model))
+#   return(data.table(term, coefOut, AIC=AIC(model)))
+# }
 
 Habitat<- function(y, sl, ToD, land, ttd, rddist, strata1) {
   # Make the model
-  model <- clogit(y ~ sl:ToD + land +
+  model <- clogit(y ~ #sl:ToD + 
+                    land +
                     sl:land +
-                    ttd:land + rddist + ttd:rddist+ + strata(strata1))
+                    ttd:land + 
+                    #rddist + ttd:rddist+ 
+                    strata(strata1))
   sum.model <- summary(model)$coefficients
   # Transpose the coef of the model and cast as data.table
   term <- c('coef','hr','se','z','p')
@@ -346,26 +340,27 @@ Habitat<- function(y, sl, ToD, land, ttd, rddist, strata1) {
 }
 
 
-Habitat.park.land <- function(y, sl, ToD, closed, open, wet, ttd, parkdist, rddist, strata1) {
-  # Make the model
-  model <- clogit(y ~ sl:ToD + closed + open + wet +
-                    sl:closed + sl:open + sl:wet +
-                    ttd:closed + ttd:open + ttd:wet + ttd:log(parkdist+1) + ttd:log(rddist+1) + strata(strata1))
-  #log(ttd+1):land + log(ttd+1):parkdist:parkYN + strata(strata1))
-  sum.model <- summary(model)$coefficients
-  # Transpose the coef of the model and cast as data.table
-  term <- c('coef','hr','se','z','p')
-  coefOut <- data.table(t(sum.model))
-  
-  # Return combined columns
-  # print(summary(model))
-  print(AIC(model))
-  return(data.table(term, coefOut, AIC=AIC(model)))
-}
+# Habitat.park.land <- function(y, sl, ToD, closed, open, wet, ttd, parkdist, rddist, strata1) {
+#   # Make the model
+#   model <- clogit(y ~ sl:ToD + closed + open + wet +
+#                     sl:closed + sl:open + sl:wet +
+#                     ttd:closed + ttd:open + ttd:wet + ttd:log(parkdist+1) + ttd:log(rddist+1) + strata(strata1))
+#   #log(ttd+1):land + log(ttd+1):parkdist:parkYN + strata(strata1))
+#   sum.model <- summary(model)$coefficients
+#   # Transpose the coef of the model and cast as data.table
+#   term <- c('coef','hr','se','z','p')
+#   coefOut <- data.table(t(sum.model))
+#   
+#   # Return combined columns
+#   # print(summary(model))
+#   print(AIC(model))
+#   return(data.table(term, coefOut, AIC=AIC(model)))
+# }
 
 Habitat.land<- function(y, sl, ToD, closed, open, wet, ttd, rddist, strata1) {
   # Make the model
-  model <- clogit(y ~ sl:ToD + closed + open + wet +
+  model <- clogit(y ~ #sl:ToD + 
+                    closed + open + wet +
                     sl:closed + sl:open + sl:wet +
                     ttd:closed + ttd:open + ttd:wet + rddist + ttd:rddist + strata(strata1))
   sum.model <- summary(model)$coefficients
@@ -382,8 +377,8 @@ Habitat.land<- function(y, sl, ToD, closed, open, wet, ttd, rddist, strata1) {
 
 
 
-hab2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
-                 ,Habitat(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), (log(1+roadDist_end)), stepjum), by = .(wolfID)]
+hab2moOUT<- dat[ttd1>31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
+                 ,Habitat(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), (log(1+roadDist_end)), step_id_), by = .(wolfID)]
 
 
 unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11',.(wolfID)])
@@ -392,43 +387,44 @@ hab1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!=
                  ,Habitat(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
 
 
-
-habland2moOUT<- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
-                ,Habitat.land(case_, log_sl, ToD_start, forest_end_adj, open_end_adj, wet_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
-
-
-#unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11',.(wolfID)])
-
-habland1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!='RMNP_W11' & wolfID!='GHA26_W24'
-                ,Habitat.land(case_, log_sl, ToD_start, forest_end_adj, open_end_adj, wet_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
-
-
-
-
-
-unique(dat[ pop != 'GHA26' & wolfID!='RMNP_W09',.(wolfID)])
-
-habpark2moOUT<- dat[ttd1>31 & pop != 'GHA26' & wolfID!='RMNP_W11', 
-                Habitat.park(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), log(1+parkDistadj_end), log(1+roadDist_end), stepjum), by = .(wolfID)]
-
-# wolfID!='RMNP_W09' &
-
-habpark1moOUT<- dat[ttd1<=31 & pop != 'GHA26' & wolfID!='RMNP_W11' , 
-                Habitat.park(case_, log_sl, ToD_start, land_end_adj,log(1+ttd1), log(1+parkDistadj_end), log(1+roadDist_end), stepjum), by = .(wolfID)]
+# 
+# habland2moOUT<- dat[ttd1>31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
+#                 ,Habitat.land(case_, log_sl, ToD_start, forest_end_adj, open_end_adj, wet_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
+# 
+# 
+# #unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11',.(wolfID)])
+# 
+# habland1moOUT<- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!='RMNP_W11' & wolfID!='GHA26_W24'
+#                 ,Habitat.land(case_, log_sl, ToD_start, forest_end_adj, open_end_adj, wet_end_adj, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
+# 
+# 
 
 
-unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!='RMNP_W11' & wolfID!='GHA26_W35'
-           ,.(wolfID)])
+# 
+# unique(dat[ pop != 'GHA26' & wolfID!='RMNP_W09',.(wolfID)])
+# 
+# habpark2moOUT<- dat[ttd1>31 & pop != 'GHA26' & wolfID!='RMNP_W11', 
+#                 Habitat.park(case_, log_sl, ToD_start, land_end_adj, log(1+ttd1), log(1+parkDistadj_end), log(1+roadDist_end), stepjum), by = .(wolfID)]
+# 
+# # wolfID!='RMNP_W09' &
+# 
+# habpark1moOUT<- dat[ttd1<=31 & pop != 'GHA26' & wolfID!='RMNP_W11' , 
+#                 Habitat.park(case_, log_sl, ToD_start, land_end_adj,log(1+ttd1), log(1+parkDistadj_end), log(1+roadDist_end), stepjum), by = .(wolfID)]
+# 
+# 
+# unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32'# & wolfID!='RMNP_W11' & wolfID!='GHA26_W35'
+#            ,.(wolfID)])
 
-habpropland2moOUT <- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W05'# & wolfID!='GHA26_W35'
-                         ,Habitat.land(case_, log_sl, ToD_start, (propforest_end_adj), (propopen_end_adj), (propwet_end), log(1+ttd1), (roadDist_end), stepjum), by = .(wolfID)]
+habpropland2moOUT <- dat[ttd1>31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
+                         ,Habitat.land(case_, log_sl, ToD_start, scale(propforest_end_adj), scale(propopen_end_adj), scale(propwet_end), log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
 
 
 unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
            #& wolfID!='GHA26_W35' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25'
            ,.(wolfID)])
 
-habpropland1moOUT <- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+# & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+habpropland1moOUT <- dat[ttd1<=31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
                         # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
                          ,Habitat.land(case_, log_sl, ToD_start, (propforest_end_adj), (propopen_end_adj), (propwet_end), log(1+ttd1), (roadDist_end), stepjum), by = .(wolfID)]
 
