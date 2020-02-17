@@ -1551,11 +1551,11 @@ full.indiv$term <- factor(full.indiv$term, levels = full.terms, labels = c("log_
                                                                            "nnDist", "boundaryDist"))
 
 
-saveRDS(full.indiv, 'data/derived-data/full_cc_betas.Rds')
+#saveRDS(full.indiv, 'data/derived-data/full_cc_betas.Rds')
 
 cbPalette = c("#A95AA1", "#85C0F9", "#0F2080")
 
-ggplot(full.indiv, aes(term, (delta), fill = COD)) +
+p.delta <- ggplot(full.indiv, aes(term, (delta), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -1580,7 +1580,7 @@ ggplot(full.indiv, aes(term, (delta), fill = COD)) +
   scale_color_manual(values = cbPalette)# + ylim(-2,2)
 
 
-ggplot(full.indiv, aes(term, (control), fill = COD)) +
+p.control <- ggplot(full.indiv, aes(term, (control), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -1606,7 +1606,7 @@ ggplot(full.indiv, aes(term, (control), fill = COD)) +
 
 
 
-ggplot(full.indiv, aes(term, (case), fill = COD)) +
+p.case <- ggplot(full.indiv, aes(term, (case), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -1630,7 +1630,8 @@ ggplot(full.indiv, aes(term, (case), fill = COD)) +
   scale_fill_manual(values = cbPalette) +
   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
-
+require(patchwork)
+p.control/p.case/p.delta
 
 
 #### full all ####
