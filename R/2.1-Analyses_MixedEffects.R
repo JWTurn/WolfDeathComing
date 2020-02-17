@@ -1388,6 +1388,128 @@ ggplot(social.indiv[term=="log(ttd1 + 1):log(1 + distance2)"|term=="log(ttd1 + 1
 
 
 #### full ####
+#### intx COD ####
+
+full.indiv.COD <- merge(setDT(full.indiv.2mo.COD)[term != '(Intercept)',.(wolfID, term, control = estimate)],
+                          setDT(full.indiv.1mo.COD)[term != '(Intercept)',.(wolfID, term, case = estimate)], by= c('wolfID', 'term'))
+
+full.COD <- merge(full.indiv.COD[case!=0|control!=0], dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+full.COD$COD <- factor(full.COD$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+full.COD[,'delta_abs'] <- abs(full.COD$control) - full.COD$case
+full.COD[,'delta'] <- full.COD$control - full.COD$case
+
+# full.COD <- full.COD[term=='cos_ta'|term=='land_end_adjforest'|term=='land_end_adjopen'|term=='land_end_adjwet'|
+#                            term=='log(1 + distance2)'|term=='log(1 + packDistadj_end)'|
+#                            term=='log(1 + roadDist_end)'|term=='log_sl']
+full.terms <- (unique(full.COD$term))
+full.terms <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+                "log(1 + distance2)", "log(1 + packDistadj_end)")
+full.COD$term <- factor(full.COD$term, levels = full.terms, labels = c("log_sl", "cos_ta", "forest", "open", "wet", "roadDist",
+                                                                           "nnDist", "boundaryDist"))
+minmax <- setDT(full.COD)[,.(min= min(case), max=max(case)), by = .(term, COD)]
+full.COD.betas <- minmax[min!= max]
+full.COD.betas.names <- unique(full.COD.betas$term)
+
+
+full.COD.betas <- full.COD[term %like% "COD", ]
+
+ggplot(full.COD.betas, aes(term, (control), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  ggtitle("a) control") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette)# + ylim(-2,2)
+
+ggplot(full.COD.betas, aes(term, (case), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  ggtitle("b) case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette)# + ylim(-2,2)
+
+
+ggplot(full.COD.betas, aes(term, (delta), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('delta beta') +
+  ggtitle("c) change between control and case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette)# + ylim(-2,2)
+
+
+full.COD.betas.names <- c("cos_ta:CODnone", "cos_ta", 
+                          "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+                          "log(1 + distance2)", "log(1 + packDistadj_end)",
+                          "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
+                          "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
+                          "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
+
+#[term %chin% full.all.betas.names]
+
+# full.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+#                 "log(1 + distance2)", "log(1 + packDistadj_end)")
+
+full.all.indiv.betas$term <- factor(full.all.indiv.betas$term, levels = full.all.betas.names, labels = c("log_sl", "cos_ta", "open", "wet", "roadDist",
+                                                                                                         "nnDist", "boundaryDist",
+                                                                                                         "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
+                                                                                                         "nnDist-ttd", "boundaryDist-ttd"))
+
+
+
+
+#### COD separate ####
 confint(full.2mo.human$fit)
 full.indiv.human <- merge(setDT(full.indiv.2mo.human)[term != '(Intercept)',.(wolfID, term, control = estimate)],
                         setDT(full.indiv.1mo.human)[term != '(Intercept)',.(wolfID, term, case = estimate)], by= c('wolfID', 'term'))
@@ -1416,6 +1538,7 @@ full.terms <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "l
                 "log(1 + distance2)", "log(1 + packDistadj_end)")
 full.indiv$term <- factor(full.indiv$term, levels = full.terms, labels = c("log_sl", "cos_ta", "forest", "open", "wet", "roadDist",
                                                                            "nnDist", "boundaryDist"))
+
 
 
 cbPalette = c("#A95AA1", "#85C0F9", "#0F2080")
