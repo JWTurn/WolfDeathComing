@@ -151,7 +151,7 @@ full.cdv$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.cdv <- glmmTMB:::fitTMB(full.cdv)
 summary(full.cdv)
 
-summary(full.cdv)$coef$cond[-1, "Estimate"]
+popcdv <- summary(full.cdv)$coef$cond[-1, "Estimate"]
 summary(full.cdv)$varcor
 
 
@@ -1663,7 +1663,7 @@ full.all.indiv.betas$term <- factor(full.all.indiv.betas$term, levels = full.all
                                                                            "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                            "nnDist-ttd", "boundaryDist-ttd"))
 
-saveRDS(full.all.indiv.betas, 'data/derived-data/full_betas.Rds')
+#saveRDS(full.all.indiv.betas, 'data/derived-data/full_betas.Rds')
 full.ttd <- full.all.indiv.betas[term %like% "ttd", ]
 
 
@@ -1720,7 +1720,7 @@ full.lastmo.indiv.betas$term <- factor(full.lastmo.indiv.betas$term, levels = fu
                                                                                                          "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                          "nnDist-ttd", "boundaryDist-ttd"))
 
-saveRDS(full.lastmo.indiv.betas, 'data/derived-data/full_lastmo_betas.Rds')
+#saveRDS(full.lastmo.indiv.betas, 'data/derived-data/full_lastmo_betas.Rds')
 
 full.lastmo.ttd <- full.lastmo.indiv.betas[term %like% "ttd", ]
 
