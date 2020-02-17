@@ -67,6 +67,17 @@ dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet',
 dat[,'wolf_step_id'] <- paste(dat$wolfID, dat$step_id_, sep = '_')
 
 
+#### behav predict COD ####
+
+total <- mlogit::mlogit(COD ~ log_sl:ToD_start +
+                  log_sl:land_end_adj +
+                  log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
+                  land_end_adj + log(1+roadDist_end) +
+                  log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
+                  log(1+distance2) + log(1+packDistadj_end) +
+                  log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
+                  strata(wolf_step_id), dat )
+
 
 #### full model #### 
 #### all time ####
@@ -1540,6 +1551,7 @@ full.indiv$term <- factor(full.indiv$term, levels = full.terms, labels = c("log_
                                                                            "nnDist", "boundaryDist"))
 
 
+saveRDS(full.indiv, 'data/derived-data/full_cc_betas.Rds')
 
 cbPalette = c("#A95AA1", "#85C0F9", "#0F2080")
 
@@ -1649,6 +1661,8 @@ full.all.indiv.betas$term <- factor(full.all.indiv.betas$term, levels = full.all
                                                                            "nnDist", "boundaryDist",
                                                                            "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                            "nnDist-ttd", "boundaryDist-ttd"))
+
+saveRDS(full.all.indiv.betas, 'data/derived-data/full_betas.Rds')
 full.ttd <- full.all.indiv.betas[term %like% "ttd", ]
 
 
@@ -1704,6 +1718,9 @@ full.lastmo.indiv.betas$term <- factor(full.lastmo.indiv.betas$term, levels = fu
                                                                                                          "nnDist", "boundaryDist",
                                                                                                          "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                          "nnDist-ttd", "boundaryDist-ttd"))
+
+saveRDS(full.lastmo.indiv.betas, 'data/derived-data/full_lastmo_betas.Rds')
+
 full.lastmo.ttd <- full.lastmo.indiv.betas[term %like% "ttd", ]
 
 
