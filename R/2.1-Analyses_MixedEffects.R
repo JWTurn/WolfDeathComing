@@ -307,6 +307,80 @@ full.lastmo.all.indiv.none <- coef(full.lastmo.none)$cond$wolfID %>% rownames_to
 
 
 #### Time split ####
+#### intx COD ####
+
+full.2mo.COD <- glmmTMB(case_ ~ log_sl:ToD_start +
+                            log_sl:land_end_adj +
+                            cos_ta + 
+                            (1|wolf_step_id) + 
+                            (0 + log_sl|wolfID) + (0 + (log_sl:COD)|wolfID) +
+                            (0 + cos_ta|wolfID) + (0 + (cos_ta:COD)|wolfID) +
+                            land_end_adj + log(1+roadDist_end) +
+                            
+                            
+                            (0 + land_end_adj|wolfID) + (0 + (land_end_adj:COD)|wolfID) + 
+                            (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(1+roadDist_end):COD)|wolfID) +
+                            
+                            log(1+distance2) + log(1+packDistadj_end) +
+                            (0 + (log(1+distance2))|wolfID) + (0 + (log(1+distance2):COD)|wolfID) + 
+                            (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(1+packDistadj_end):COD)|wolfID)
+                          , family=poisson(), 
+                          data = dat[ttd1>31], doFit=FALSE)
+
+
+
+full.2mo.COD$parameters$theta[1] <- log(1e3)
+nvar_parm <- length(full.2mo.COD$parameters$theta)
+full.2mo.COD$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
+full.2mo.COD <- glmmTMB:::fitTMB(full.2mo.COD)
+summary(full.2mo.COD)
+
+summary(full.2mo.COD)$coef$cond[-1, "Estimate"]
+summary(full.2mo.COD)$varcor
+
+
+full.indiv.2mo.COD <- coef(full.2mo.COD)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
+  pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
+  mutate(method = "ME")
+
+
+
+full.1mo.COD <- glmmTMB(case_ ~ log_sl:ToD_start +
+                          log_sl:land_end_adj +
+                          cos_ta + 
+                          (1|wolf_step_id) + 
+                          (0 + log_sl|wolfID) + (0 + (log_sl:COD)|wolfID) +
+                          (0 + cos_ta|wolfID) + (0 + (cos_ta:COD)|wolfID) +
+                          land_end_adj + log(1+roadDist_end) +
+                          
+                          
+                          (0 + land_end_adj|wolfID) + (0 + (land_end_adj:COD)|wolfID) + 
+                          (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(1+roadDist_end):COD)|wolfID) +
+                          
+                          log(1+distance2) + log(1+packDistadj_end) +
+                          (0 + (log(1+distance2))|wolfID) + (0 + (log(1+distance2):COD)|wolfID) + 
+                          (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(1+packDistadj_end):COD)|wolfID)
+                        , family=poisson(), 
+                        data = dat[ttd1<=31], doFit=FALSE)
+
+
+
+full.1mo.COD$parameters$theta[1] <- log(1e3)
+nvar_parm <- length(full.1mo.COD$parameters$theta)
+full.1mo.COD$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
+full.1mo.COD <- glmmTMB:::fitTMB(full.1mo.COD)
+summary(full.1mo.COD)
+
+summary(full.1mo.COD)$coef$cond[-1, "Estimate"]
+summary(full.1mo.COD)$varcor
+
+
+full.indiv.1mo.COD <- coef(full.1mo.COD)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
+  pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
+  mutate(method = "ME")
+
+
+
 #### human ####
 full.2mo.human <- glmmTMB(case_ ~ log_sl:ToD_start +
                           log_sl:land_end_adj +
@@ -1507,10 +1581,10 @@ full.lastmo.indiv.betas$term <- factor(full.lastmo.indiv.betas$term, levels = fu
                                                                                                          "nnDist", "boundaryDist",
                                                                                                          "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                          "nnDist-ttd", "boundaryDist-ttd"))
-full.ttd <- full.lastmo.indiv.betas[term %like% "ttd", ]
+full.lastmo.ttd <- full.lastmo.indiv.betas[term %like% "ttd", ]
 
 
-ggplot(full.ttd, aes(term, (estimate), fill = COD)) +
+ggplot(full.lastmo.ttd, aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -1532,7 +1606,7 @@ ggplot(full.ttd, aes(term, (estimate), fill = COD)) +
   ylab('beta') +
   # ggtitle("b) case") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) + ylim(-.2,.2)
+  scale_color_manual(values = cbPalette) + ylim(-.15,.15)
 
 
 

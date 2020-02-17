@@ -37,7 +37,7 @@ enn <- edge_nn(
   id = 'WolfID',
   coords = c('X', 'Y'),
   timegroup = 'timegroup',
-  # returnDist = TRUE, #(not yet available)
+  returnDist = TRUE, #(not yet available)
   splitBy = 'PackID'
 )
 
