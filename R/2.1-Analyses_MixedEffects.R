@@ -269,7 +269,7 @@ full.lastmo.cdv$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.lastmo.cdv <- glmmTMB:::fitTMB(full.lastmo.cdv)
 summary(full.lastmo.cdv)
 
-summary(full.lastmo.cdv)$coef$cond[-1, "Estimate"]
+popcdv.lastmo <- summary(full.lastmo.cdv)$coef$cond[-1, "Estimate"]
 summary(full.lastmo.cdv)$varcor
 
 
