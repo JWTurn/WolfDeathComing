@@ -55,6 +55,7 @@ dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous', 'forest','open'))
 
+dat[,'forest']
 # dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end 
 # dat[,'propopen_end_adj'] <- dat$propopen_end +dat$propshrub_end + dat$propurban_end
 # 
@@ -69,7 +70,7 @@ dat[,'wolf_step_id'] <- paste(dat$wolfID, dat$step_id_, sep = '_')
 
 #### behav predict COD ####
 
-total <- mlogit::mlogit(COD ~ log_sl:ToD_start +
+total <- mclogit::mclogit(COD ~ log_sl:ToD_start +
                   log_sl:land_end_adj +
                   log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
                   land_end_adj + log(1+roadDist_end) +
@@ -110,13 +111,49 @@ full.human$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(full.human$parameters$theta)
 full.human$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.human <- glmmTMB:::fitTMB(full.human)
-summary(full.human)
+pophuman <- summary(full.human)
 
 summary(full.human)$coef$cond[-1, "Estimate"]
+saveRDS(pophuman, 'data/derived-data/pophuman.Rds')
 summary(full.human)$varcor
 
 
 full.all.indiv.human <- coef(full.human)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
+  pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
+  mutate(method = "ME")
+
+full.human.both <- glmmTMB(case_ ~ log_sl:ToD_start +
+                        log_sl:land_end_adj +
+                        log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
+                        (1|wolf_step_id) +
+                        (0 + (log_sl)|wolfID) +
+                        (0 + (cos_ta)|wolfID) +
+                        (0 + (log(ttd1+1):log_sl)|wolfID) +
+                        (0 + (log(ttd1+1):cos_ta)|wolfID) +
+                        land_end_adj + log(1+roadDist_end) +
+                        log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
+                        
+                        (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
+                        (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
+                        
+                        log(1+packDistadj_end) +
+                        log(ttd1+1):log(1+packDistadj_end) +
+                        (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
+                      , family=poisson(),
+                      data = dat[COD == 'human'], doFit=FALSE)
+
+full.human.both$parameters$theta[1] <- log(1e3)
+nvar_parm <- length(full.human.both$parameters$theta)
+full.human.both$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
+full.human.both <- glmmTMB:::fitTMB(full.human.both)
+pophuman.both <- summary(full.human.both)
+
+summary(full.human.both)$coef$cond[-1, "Estimate"]
+saveRDS(pophuman.both, 'data/derived-data/pophumanboth.Rds')
+summary(full.human.both)$varcor
+
+
+full.all.indiv.human.both <- coef(full.human.both)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
   pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
   mutate(method = "ME")
 
@@ -149,9 +186,10 @@ full.cdv$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(full.cdv$parameters$theta)
 full.cdv$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.cdv <- glmmTMB:::fitTMB(full.cdv)
-summary(full.cdv)
+popcdv <- summary(full.cdv)
+saveRDS(popcdv, 'data/derived-data/popcdv.Rds')
 
-popcdv <- summary(full.cdv)$coef$cond[-1, "Estimate"]
+summary(full.cdv)$coef$cond[-1, "Estimate"]
 summary(full.cdv)$varcor
 
 
@@ -470,26 +508,6 @@ full.indiv.1mo.human <- coef(full.1mo.human)$cond$wolfID %>% rownames_to_column(
 
 #### cdv ####
 
-# full.2mo.cdv <- glmmTMB(case_ ~ log_sl:ToD_start +
-#                           log_sl:land_end_adj +
-#                           log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
-#                           (1|wolf_step_id) + 
-#                           (0 + (log(ttd1+1):log_sl)|wolfID) + 
-#                           (0 + (log(ttd1+1):cos_ta)|wolfID) +
-#                           land_end_adj + log(1+roadDist_end) +
-#                           log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
-#                           
-#                           (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) + 
-#                           (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
-#                         
-#                           log(1+distance2) + log(1+packDistadj_end) +
-#                           log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
-#                          
-#                           (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) + 
-#                           (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
-#                           , family=poisson(), 
-#                     data = dat[ttd1>31 & COD == 'cdv'], doFit=FALSE)
-
 full.2mo.cdv <- glmmTMB(case_ ~ log_sl:ToD_start +
                           log_sl:land_end_adj +
                           cos_ta + 
@@ -587,7 +605,7 @@ full.indiv.1mo.cdv <- coef(full.1mo.cdv)$cond$wolfID %>% rownames_to_column("wol
 
 
 
-#### none ###
+#### none ####
 full.2mo.none <- glmmTMB(case_ ~ log_sl:ToD_start +
                             log_sl:land_end_adj +
                             cos_ta + 
