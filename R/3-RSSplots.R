@@ -194,3 +194,46 @@ r = r +  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)
 print(r)
 
 
+
+## pop cdv last mo
+popcdv.lastmo.nn <- data.frame(term=names(popcdv.lastmo), beta=popcdv.lastmo, row.names=NULL)
+popcdv.lastmo.nn[,'var'] <- ifelse(popcdv.lastmo.nn$term%like% 'ttd', 'intx','var')
+popcdv.lastmo.nn <-setDT(popcdv.lastmo.nn)[term %like% 'distance2']
+popcdv.lastmo.nn[,'sel'] <- 'nnDist'
+
+popcdv.lastmo.wide <- dcast(popcdv.lastmo.nn, sel ~ var, value.var = c('beta'))
+popcdv.lastmo.wide <- popcdv.lastmo.wide[,.(sel, beta= var, betaintx=intx)]
+
+rss.nn.1 <- delta.hi*(popcdv.lastmo.wide$beta + (popcdv.lastmo.wide$betaintx*hj.1))
+rss.nn.2 <- delta.hi*(popcdv.lastmo.wide$beta + (popcdv.lastmo.wide$betaintx*hj.2))
+rss.nn.3 <- delta.hi*(popcdv.lastmo.wide$beta + (popcdv.lastmo.wide$betaintx*hj.3))
+
+
+r =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.1), colour = "1 day"), size = 1) 
+#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_lo), colour = "Day"), size = 1, lty = 3) 
+#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_hi), colour = "Day"), size = 1, lty = 3) 
+r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.2), colour = "14 days"), size = 1) 
+# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_lo), colour = "Twilight"), size = 1, lty = 3) 
+# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_hi), colour = "Twilight"), size = 1, lty = 3) 
+r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.3), colour = "30 days"),size = 1) 
+# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_lo), colour = "Night"),size = 1, lty = 3) 
+# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_hi), colour = "Night"),size = 1, lty = 3) 
+r = r + theme_bw()  + theme(
+  #panel.background =element_rect(colour = "black", fill=NA, size=1),
+  panel.border = element_blank(), 
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.line = element_line(colour = "black", size = .7))
+r = r + theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20))
+r = r + theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+              axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) 
+r = r + ylab("RSS") + xlab("log Distance to NN (m)")
+#r = r + ylim(-0.01,3)
+r = r +scale_colour_manual("", 
+                           values = c("gray", "black", "gray33"))  
+r = r +  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+
+print(r)
+
+
