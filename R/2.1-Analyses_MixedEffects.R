@@ -168,11 +168,11 @@ full.cdv <- glmmTMB(case_ ~ log_sl:ToD_start +
                       (0 + (cos_ta)|wolfID) +
                       (0 + (log(ttd1+1):log_sl)|wolfID) +
                       (0 + (log(ttd1+1):cos_ta)|wolfID) +
-                      land_end_adj  +# log(1+roadDist_end) +
-                      log(ttd1+1):land_end_adj + #log(ttd1+1):log(1+roadDist_end) +
+                      land_end_adj  + log(1+roadDist_end) +
+                      log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
                       
                       (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
-                      #(0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
+                      (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
                       
                       log(1+distance2) + log(1+packDistadj_end) +
                       log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
@@ -187,9 +187,10 @@ nvar_parm <- length(full.cdv$parameters$theta)
 full.cdv$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.cdv <- glmmTMB:::fitTMB(full.cdv)
 summary(full.cdv)
+popcdv<- summary(full.cdv)$coef$cond[-1, 1:2]
 saveRDS(popcdv, 'data/derived-data/popcdv.Rds')
 
-popcdv <- summary(full.cdv)$coef$cond[-1, "Estimate"]
+summary(full.cdv)$coef$cond[-1, "Estimate"]
 summary(full.cdv)$varcor
 
 
@@ -307,7 +308,9 @@ full.lastmo.cdv$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.lastmo.cdv <- glmmTMB:::fitTMB(full.lastmo.cdv)
 summary(full.lastmo.cdv)
 
-popcdv.lastmo <- summary(full.lastmo.cdv)$coef$cond[-1, "Estimate"]
+popcdv.lastmo <- summary(full.lastmo.cdv)$coef$cond[-1, 1:2]
+saveRDS(popcdv.lastmo, 'data/derived-data/popcdv_lastmo.Rds')
+summary(full.lastmo.cdv)$coef$cond[-1, "Estimate"]
 summary(full.lastmo.cdv)$varcor
 
 
