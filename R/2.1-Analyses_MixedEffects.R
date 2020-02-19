@@ -93,11 +93,11 @@ full.human <- glmmTMB(case_ ~ log_sl:ToD_start +
                       (0 + (cos_ta)|wolfID) +
                       (0 + (log(ttd1+1):log_sl)|wolfID) +
                       (0 + (log(ttd1+1):cos_ta)|wolfID) +
-                      land_end_adj + log(1+roadDist_end) +
-                      log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
+                      land_end_adj + #log(1+roadDist_end) +
+                      log(ttd1+1):land_end_adj + # log(ttd1+1):log(1+roadDist_end) +
                       
                       (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
-                      (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
+                      #(0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
                       
                       log(1+distance2) + log(1+packDistadj_end) +
                       log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
@@ -114,7 +114,7 @@ full.human <- glmmTMB:::fitTMB(full.human)
 pophuman <- summary(full.human)
 
 summary(full.human)$coef$cond[-1, "Estimate"]
-saveRDS(pophuman, 'data/derived-data/pophuman.Rds')
+saveRDS(pophuman, 'data/derived-data/pophuman_noroad.Rds')
 summary(full.human)$varcor
 
 
@@ -168,11 +168,11 @@ full.cdv <- glmmTMB(case_ ~ log_sl:ToD_start +
                       (0 + (cos_ta)|wolfID) +
                       (0 + (log(ttd1+1):log_sl)|wolfID) +
                       (0 + (log(ttd1+1):cos_ta)|wolfID) +
-                      land_end_adj + log(1+roadDist_end) +
-                      log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
+                      land_end_adj  +# log(1+roadDist_end) +
+                      log(ttd1+1):land_end_adj + #log(ttd1+1):log(1+roadDist_end) +
                       
                       (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
-                      (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
+                      #(0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
                       
                       log(1+distance2) + log(1+packDistadj_end) +
                       log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
@@ -186,10 +186,10 @@ full.cdv$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(full.cdv$parameters$theta)
 full.cdv$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
 full.cdv <- glmmTMB:::fitTMB(full.cdv)
-popcdv <- summary(full.cdv)
+summary(full.cdv)
 saveRDS(popcdv, 'data/derived-data/popcdv.Rds')
 
-summary(full.cdv)$coef$cond[-1, "Estimate"]
+popcdv <- summary(full.cdv)$coef$cond[-1, "Estimate"]
 summary(full.cdv)$varcor
 
 
