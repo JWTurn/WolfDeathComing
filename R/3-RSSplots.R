@@ -153,8 +153,8 @@ print(r)
 
 #### pop RSS ----
 popcdv <- readRDS('data/derived-data/popcdv.Rds')
-
-popcdv.nn <- data.frame(term=names(popcdv), beta=popcdv, row.names=NULL)
+pop.cdv <- as.data.frame(popcdv)
+popcdv.nn <- data.frame(term=rownames(pop.cdv), beta=pop.cdv[,1], se=pop.cdv[,2], row.names=NULL)
 popcdv.nn[,'var'] <- ifelse(popcdv.nn$term%like% 'ttd', 'intx','var')
 popcdv.nn <-setDT(popcdv.nn)[term %like% 'distance2']
 popcdv.nn[,'sel'] <- 'nnDist'
@@ -167,40 +167,33 @@ rss.nn.2 <- delta.hi*(popcdv.wide$beta + (popcdv.wide$betaintx*hj.2))
 rss.nn.3 <- delta.hi*(popcdv.wide$beta + (popcdv.wide$betaintx*hj.3))
 rss.nn.4 <- delta.hi*(popcdv.wide$beta + (popcdv.wide$betaintx*hj.4))
 
-r =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.1), colour = "1 day"), size = 1) 
-#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_lo), colour = "Day"), size = 1, lty = 3) 
-#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_hi), colour = "Day"), size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.2), colour = "14 days"), size = 1) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_lo), colour = "Twilight"), size = 1, lty = 3) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_hi), colour = "Twilight"), size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.3), colour = "30 days"),size = 1) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_lo), colour = "Night"),size = 1, lty = 3) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_hi), colour = "Night"),size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.4), colour = "60 days"),size = 1) 
-r = r + theme_bw()  + theme(
-  #panel.background =element_rect(colour = "black", fill=NA, size=1),
-  panel.border = element_blank(), 
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  axis.line = element_line(colour = "black", size = .7))
-r = r + theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20))
-r = r + theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
-              axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) 
-r = r + ylab("RSS") + xlab("log Distance to NN (m)")
-#r = r + ylim(-0.01,3)
-r = r +scale_colour_manual("", 
-                           values = c("gray", "black", "gray33", 'purple'))  
-r = r +  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+rss.nn =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi),y=(-rss.nn.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi),y=(-rss.nn.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi),y=(-rss.nn.3), colour = "30 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("log Distance to NN (m)") +
+  #r = r + ylim(-0.01,3)
+  scale_colour_manual("", values = c("gray", "black", "gray33"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
-print(r)
+rss.nn
 
 
 
 ## pop cdv last mo
-popcdv.lastmo.nn <- data.frame(term=names(popcdv.lastmo), beta=popcdv.lastmo, row.names=NULL)
-popcdv.lastmo.nn[,'var'] <- ifelse(popcdv.lastmo.nn$term%like% 'ttd', 'intx','var')
-popcdv.lastmo.nn <-setDT(popcdv.lastmo.nn)[term %like% 'distance2']
+pop.cdv.lastmo <- as.data.frame(popcdv.lastmo)
+pop.cdv.lastmo <- data.frame(term=rownames(pop.cdv.lastmo), beta=pop.cdv.lastmo[,1], se=pop.cdv.lastmo[,2], row.names=NULL)
+pop.cdv.lastmo[,'var'] <- ifelse(pop.cdv.lastmo$term%like% 'ttd', 'intx','var')
+popcdv.lastmo.nn <-setDT(popcdv.lastmo)[term %like% 'distance2']
 popcdv.lastmo.nn[,'sel'] <- 'nnDist'
 
 popcdv.lastmo.wide <- dcast(popcdv.lastmo.nn, sel ~ var, value.var = c('beta'))
@@ -231,6 +224,40 @@ rss.nn.lastmo =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, 
 
 rss.nn.lastmo
 
+
+
+
+
+popcdv.lastmo.pack <-setDT(pop.cdv.lastmo)[term %like% 'pack']
+popcdv.lastmo.pack[,'sel'] <- 'packDist'
+
+popcdv.lastmo.pack.wide <- dcast(popcdv.lastmo.pack, sel ~ var, value.var = c('beta'))
+popcdv.lastmo.pack.wide <- popcdv.lastmo.pack.wide[,.(sel, beta= var, betaintx=intx)]
+
+rss.pack.1 <- delta.hi*(popcdv.lastmo.pack.wide$beta + (popcdv.lastmo.pack.wide$betaintx*hj.1))
+rss.pack.2 <- delta.hi*(popcdv.lastmo.pack.wide$beta + (popcdv.lastmo.pack.wide$betaintx*hj.2))
+rss.pack.3 <- delta.hi*(popcdv.lastmo.pack.wide$beta + (popcdv.lastmo.pack.wide$betaintx*hj.3))
+
+
+rss.pack.lastmo =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi),y=(rss.pack.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi),y=(rss.pack.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi),y=(rss.pack.3), colour = "30 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("log Distance to pack boundary (m)") +
+  #r = r + ylim(-0.01,3)
+  scale_colour_manual("", values = c("gray", "black", "gray33"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+
+rss.pack.lastmo
 
 ### RSS for two log-transformed interaction betas
 
