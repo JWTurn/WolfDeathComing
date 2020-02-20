@@ -156,7 +156,7 @@ summary(everyone.noroad)
 
 summary(everyone.noroad)$coef$cond[-1, "Estimate"]
 popeveryone.noroad<- summary(everyone.noroad)$coef$cond[-1, 1:2]
-saveRDS(popeveryone.noroad, 'data/derived-data/popeveryone.noroad.Rds')
+saveRDS(popeveryone.noroad, 'data/derived-data/popeveryone_noroad.Rds')
 summary(everyone.noroad)$varcor
 
 
@@ -1748,7 +1748,7 @@ everyone.all.betas <- minmax[min!= max]
 everyone.all.betas.names <- unique(everyone.all.betas$term)
 
 everyone.all.betas.names <- c("log_sl", "cos_ta", 
-                              "land_end_adjopen", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+                              "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
                           "log(1 + distance2)", "log(1 + packDistadj_end)",
                           "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
                           "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
@@ -1764,6 +1764,33 @@ everyone.all.indiv.betas$term <- factor(everyone.all.indiv.betas$term, levels = 
                                                                                                          "nnDist-ttd", "boundaryDist-ttd"))
 
 #saveRDS(everyone.all.indiv.betas, 'data/derived-data/everyone_betas.Rds')
+
+
+
+everyone.noroad.all.indiv<- merge(everyone.noroad.all.indiv, dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
+everyone.noroad.all.indiv$COD <- factor(everyone.noroad.all.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+
+minmax <- setDT(everyone.noroad.all.indiv)[,.(min= min(estimate), max=max(estimate)), by = .(term, COD)]
+everyone.noroad.all.betas <- minmax[min!= max]
+everyone.noroad.all.betas.names <- unique(everyone.noroad.all.betas$term)
+
+everyone.noroad.all.betas.names <- c("log_sl", "cos_ta", 
+                              "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", 
+                              "log(1 + distance2)", "log(1 + packDistadj_end)",
+                              "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
+                              "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", 
+                              "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
+
+everyone.noroad.all.indiv.betas <- everyone.noroad.all.indiv[term %chin% everyone.noroad.all.betas.names]
+# everyone.noroad.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+#                 "log(1 + distance2)", "log(1 + packDistadj_end)")
+
+everyone.noroad.all.indiv.betas$term <- factor(everyone.noroad.all.indiv.betas$term, levels = everyone.noroad.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", 
+                                                                                                                     "nnDist", "boundaryDist",
+                                                                                                                     "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", 
+                                                                                                                     "nnDist-ttd", "boundaryDist-ttd"))
+
+#saveRDS(everyone.noroad.all.indiv.betas, 'data/derived-data/everyone_noroad_betas.Rds')
 
 #### separate ####
 
