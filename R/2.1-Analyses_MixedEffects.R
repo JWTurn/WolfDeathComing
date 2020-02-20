@@ -51,6 +51,7 @@ dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
 
 dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 
+summary(dat$land_end)
 
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous', 'forest','open'))
@@ -120,6 +121,46 @@ summary(everyone)$varcor
 
 
 everyone.all.indiv <- coef(everyone)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
+  pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
+  mutate(method = "ME")
+
+
+
+everyone.noroad <- glmmTMB(case_ ~ log_sl:ToD_start +
+                      log_sl:land_end_adj +
+                      log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
+                      (1|wolf_step_id) +
+                      (0 + (log_sl)|wolfID) +
+                      (0 + (cos_ta)|wolfID) +
+                      (0 + (log(ttd1+1):log_sl)|wolfID) +
+                      (0 + (log(ttd1+1):cos_ta)|wolfID) +
+                      land_end_adj +# log(1+roadDist_end) +
+                      log(ttd1+1):land_end_adj +  #log(ttd1+1):log(1+roadDist_end) +
+                      
+                      (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
+                      #(0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
+                      
+                      log(1+distance2) + log(1+packDistadj_end) +
+                      log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
+                      
+                      (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
+                      (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
+                    , family=poisson(),
+                    data = dat[wolfID %chin% dat.wnn$wolfID], doFit=FALSE)
+
+everyone.noroad$parameters$theta[1] <- log(1e3)
+nvar_parm <- length(everyone.noroad$parameters$theta)
+everyone.noroad$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
+everyone.noroad <- glmmTMB:::fitTMB(everyone.noroad)
+summary(everyone.noroad)
+
+summary(everyone.noroad)$coef$cond[-1, "Estimate"]
+popeveryone.noroad<- summary(everyone.noroad)$coef$cond[-1, 1:2]
+saveRDS(popeveryone.noroad, 'data/derived-data/popeveryone.noroad.Rds')
+summary(everyone.noroad)$varcor
+
+
+everyone.noroad.all.indiv <- coef(everyone.noroad)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
   pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
   mutate(method = "ME")
 
