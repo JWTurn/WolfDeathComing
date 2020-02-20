@@ -84,6 +84,7 @@ total <- mclogit::mclogit(COD ~ log_sl:ToD_start +
 #### full model #### 
 #### all time ####
 dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
+dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~ log_sl:ToD_start +
@@ -106,7 +107,7 @@ everyone <- glmmTMB(case_ ~ log_sl:ToD_start +
                         (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
                         (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
                       , family=poisson(),
-                      data = dat[wolfID %chin% dat.wnn$wolfID], doFit=FALSE)
+                      data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], doFit=FALSE)
 
 everyone$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(everyone$parameters$theta)
@@ -116,7 +117,7 @@ summary(everyone)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
-saveRDS(popeveryone, 'data/derived-data/popeveryone.Rds')
+saveRDS(popeveryone, 'data/derived-data/popeveryone_lastmoNN.Rds')
 summary(everyone)$varcor
 
 
@@ -146,7 +147,7 @@ everyone.noroad <- glmmTMB(case_ ~ log_sl:ToD_start +
                       (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
                       (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
                     , family=poisson(),
-                    data = dat[wolfID %chin% dat.wnn$wolfID], doFit=FALSE)
+                    data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], doFit=FALSE)
 
 everyone.noroad$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(everyone.noroad$parameters$theta)
@@ -156,7 +157,7 @@ summary(everyone.noroad)
 
 summary(everyone.noroad)$coef$cond[-1, "Estimate"]
 popeveryone.noroad<- summary(everyone.noroad)$coef$cond[-1, 1:2]
-saveRDS(popeveryone.noroad, 'data/derived-data/popeveryone_noroad.Rds')
+saveRDS(popeveryone.noroad, 'data/derived-data/popeveryone_noroad_lastmoNN.Rds')
 summary(everyone.noroad)$varcor
 
 
@@ -1763,7 +1764,93 @@ everyone.all.indiv.betas$term <- factor(everyone.all.indiv.betas$term, levels = 
                                                                                                          "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                          "nnDist-ttd", "boundaryDist-ttd"))
 
-#saveRDS(everyone.all.indiv.betas, 'data/derived-data/everyone_betas.Rds')
+everyone.all.indiv.betas$COD[is.na(everyone.all.indiv.betas$COD)] <- "control"
+
+#saveRDS(everyone.all.indiv.betas, 'data/derived-data/everyone_betas_lastmoNN.Rds')
+
+
+
+everyone.ttd <- everyone.all.indiv.betas[term %like% "ttd", ]
+
+ttd.vars <- ggplot(everyone.ttd, aes(term, (estimate), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  # ggtitle("b) case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+
+
+ggplot(everyone.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  # ggtitle("b) case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+
+
+everyone.main <- everyone.all.indiv.betas[!(term %like% "ttd"), ]
+
+main.vars <- ggplot(everyone.main, aes(term, (estimate), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  # ggtitle("b) case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+
+ttd.vars
+main.vars
+
 
 
 
@@ -1790,7 +1877,61 @@ everyone.noroad.all.indiv.betas$term <- factor(everyone.noroad.all.indiv.betas$t
                                                                                                                      "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", 
                                                                                                                      "nnDist-ttd", "boundaryDist-ttd"))
 
+everyone.noroad.all.indiv.betas$COD[is.na(everyone.noroad.all.indiv.betas$COD)] <- "control"
+
 #saveRDS(everyone.noroad.all.indiv.betas, 'data/derived-data/everyone_noroad_betas.Rds')
+
+everyone.noroad.ttd <- everyone.noroad.all.indiv.betas[term %like% "ttd", ]
+
+ggplot(everyone.noroad.ttd, aes(term, (estimate), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  # ggtitle("b) case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+
+
+ggplot(everyone.noroad.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
+  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+               outlier.color = NA, lwd = 0.6,
+               alpha = 0.25) +
+  geom_jitter(aes(color = COD),
+              position = position_jitterdodge(.35),
+              size = 2, alpha = 0.4) +
+  #ggtitle('Interaction with community identity') +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  theme(#legend.position = 'none',
+    axis.title = element_text(size = 16, color = 'black'),
+    axis.text = element_text(size = 14, color = 'black'),
+    plot.title=element_text(size = 16, hjust=0),
+    axis.line = element_line(colour = "black"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    strip.background = element_rect(colour="black", size = 1, fill = "white"),
+    strip.text = element_text(size = 14)) +
+  xlab('') +
+  ylab('beta') +
+  # ggtitle("b) case") +
+  scale_fill_manual(values = cbPalette) +
+  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+
 
 #### separate ####
 
