@@ -1698,6 +1698,34 @@ p.control/p.case/p.delta
 
 
 #### full all ####
+#### everyone ####
+everyone.all.indiv<- merge(everyone.all.indiv, dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
+everyone.all.indiv$COD <- factor(everyone.all.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+
+minmax <- setDT(everyone.all.indiv)[,.(min= min(estimate), max=max(estimate)), by = .(term, COD)]
+everyone.all.betas <- minmax[min!= max]
+everyone.all.betas.names <- unique(everyone.all.betas$term)
+
+everyone.all.betas.names <- c("log_sl", "cos_ta", 
+                              "land_end_adjopen", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+                          "log(1 + distance2)", "log(1 + packDistadj_end)",
+                          "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
+                          "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
+                          "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
+
+everyone.all.indiv.betas <- everyone.all.indiv[term %chin% everyone.all.betas.names]
+# everyone.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+#                 "log(1 + distance2)", "log(1 + packDistadj_end)")
+
+everyone.all.indiv.betas$term <- factor(everyone.all.indiv.betas$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
+                                                                                                         "nnDist", "boundaryDist",
+                                                                                                         "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
+                                                                                                         "nnDist-ttd", "boundaryDist-ttd"))
+
+#saveRDS(everyone.all.indiv.betas, 'data/derived-data/everyone_betas.Rds')
+
+#### separate ####
+
 summary(full.cdv)
 full.all.indiv.none[,'COD'] <- 'none'
 full.all.indiv.human[,'COD'] <- 'human'
