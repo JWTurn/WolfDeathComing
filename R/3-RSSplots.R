@@ -193,7 +193,7 @@ rss.nn
 pop.cdv.lastmo <- as.data.frame(popcdv.lastmo)
 pop.cdv.lastmo <- data.frame(term=rownames(pop.cdv.lastmo), beta=pop.cdv.lastmo[,1], se=pop.cdv.lastmo[,2], row.names=NULL)
 pop.cdv.lastmo[,'var'] <- ifelse(pop.cdv.lastmo$term%like% 'ttd', 'intx','var')
-popcdv.lastmo.nn <-setDT(popcdv.lastmo)[term %like% 'distance2']
+popcdv.lastmo.nn <-setDT(pop.cdv.lastmo)[term %like% 'distance2']
 popcdv.lastmo.nn[,'sel'] <- 'nnDist'
 
 popcdv.lastmo.wide <- dcast(popcdv.lastmo.nn, sel ~ var, value.var = c('beta'))
