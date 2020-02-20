@@ -240,6 +240,7 @@ full.all.indiv.none <- coef(full.none)$cond$wolfID %>% rownames_to_column("wolfI
 
 
 #### Last month ####
+dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
 ### human ####
 full.lastmo.human <- glmmTMB(case_ ~ log_sl:ToD_start +
                              #log_sl:land_end_adj +
@@ -261,7 +262,7 @@ full.lastmo.human <- glmmTMB(case_ ~ log_sl:ToD_start +
                              (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
                              (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
                            , family=poisson(),
-                           data = dat[ttd1<=31 &wolfID %chin% dat.wnn$wolfID & COD == 'human'], doFit=FALSE)
+                           data = dat[ttd1<=31 &wolfID %chin% dat.wnn.lastmo$wolfID & COD == 'human'], doFit=FALSE)
 
 full.lastmo.human$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(full.lastmo.human$parameters$theta)
@@ -300,7 +301,7 @@ full.lastmo.cdv <- glmmTMB(case_ ~ log_sl:ToD_start +
                              (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
                              (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
                            , family=poisson(),
-                           data = dat[ttd1<=31 &wolfID %chin% dat.wnn$wolfID & COD == 'cdv'], doFit=FALSE)
+                           data = dat[ttd1<=31 &wolfID %chin% dat.wnn.lastmo$wolfID & COD == 'cdv'], doFit=FALSE)
 
 full.lastmo.cdv$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(full.lastmo.cdv$parameters$theta)
@@ -340,7 +341,7 @@ full.lastmo.none <- glmmTMB(case_ ~ log_sl:ToD_start +
                              (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
                              (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
                            , family=poisson(),
-                           data = dat[ttd1<=31 &wolfID %chin% dat.wnn$wolfID & COD == 'none'], doFit=FALSE)
+                           data = dat[ttd1<=31 &wolfID %chin% dat.wnn.lastmo$wolfID & COD == 'none'], doFit=FALSE)
 
 full.lastmo.none$parameters$theta[1] <- log(1e3)
 nvar_parm <- length(full.lastmo.none$parameters$theta)
