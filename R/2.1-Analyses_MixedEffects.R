@@ -85,6 +85,11 @@ total <- mclogit::mclogit(COD ~ log_sl:ToD_start +
 #### all time ####
 dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
 dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
+dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+dat.wnn.lastmo.cod[,uniqueN(wolfID), by=.(pop, COD)]
+dat.meta[,uniqueN(wolfpop), by=.(pop, COD)]
+
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~ log_sl:ToD_start +
