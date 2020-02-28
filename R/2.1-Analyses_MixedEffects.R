@@ -56,7 +56,7 @@ summary(dat$land_end)
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous', 'forest','open'))
 
-dat[,'forest']
+#dat[,'forest']
 # dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end 
 # dat[,'propopen_end_adj'] <- dat$propopen_end +dat$propshrub_end + dat$propurban_end
 # 
@@ -68,6 +68,7 @@ dat[,'forest']
 
 dat[,'wolf_step_id'] <- paste(dat$wolfID, dat$step_id_, sep = '_')
 
+dat[ua=='used',.(road=mean(roadDist_end, na.rm = T), nn= mean(distance2, na.rm = T), pack= mean(packDistadj_end, na.rm = T)), by= COD]
 
 #### behav predict COD ####
 
