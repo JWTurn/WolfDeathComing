@@ -128,52 +128,89 @@ RMNPW26.nn =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, siz
 RMNPW26.nn
 
 
-#### NOT WORKING ####
+
 ### RSS for two log-transformed interaction betas
 
-# delta hi should be based off avg/median nndist
-hi <- 101:1000
-delta.hi <- 100
 
 hj.1 <- 1
 # 2wks
 hj.2 <- 14
 # 1mo
 hj.3 <- 30
+# 2mo
+hj.4 <- 60
 
-rss.nn.1 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.1))
-rss.nn.2 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.2))
-rss.nn.3 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.3))
+# delta hi should be based off avg/median nndist
+# hi <- 101:1000
+# delta.hi <- 100
+hi <- 7501
+delta.hi <- 1:7500
 
-r =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.1), colour = "1 day"), size = 1) 
-#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_lo), colour = "Day"), size = 1, lty = 3) 
-#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_hi), colour = "Day"), size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.2), colour = "14 days"), size = 1) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_lo), colour = "Twilight"), size = 1, lty = 3) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_hi), colour = "Twilight"), size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.3), colour = "30 days"),size = 1) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_lo), colour = "Night"),size = 1, lty = 3) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_hi), colour = "Night"),size = 1, lty = 3) 
-r = r + theme_bw()  + theme(
-  #panel.background =element_rect(colour = "black", fill=NA, size=1),
-  panel.border = element_blank(), 
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  axis.line = element_line(colour = "black", size = .7))
-r = r + theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20))
-r = r + theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
-              axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) 
-r = r + ylab("RSS") + xlab("log Distance to NN (m)")
-#r = r + ylim(-0.01,3)
-r = r +scale_colour_manual("", 
-                           values = c("gray", "black", "gray33"))  
-r = r +  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
-print(r)
+lnrss.nn.1 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.1))
+lnrss.nn.2 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.2))
+lnrss.nn.3 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.3))
+lnrss.nn.4 <- (log(hi/(hi-delta.hi)))^(W02$beta + (W02$betaintx*hj.4))
+
+lnrss.nn.W02 =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi),y=(lnrss.nn.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi),y=(lnrss.nn.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi),y=(lnrss.nn.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi),y=(lnrss.nn.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to NN (m)") +
+  ylim(-0.01,10) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+
+lnrss.nn.W02
 
 
 #### pop RSS ----
+beta.se[,'term2'] <- gsub("-ttd", "", beta.se$term)
+
+beta.se.wide <- dcast(beta.se, COD + term2 ~ var, value.var = c('mean'))
+beta.se.wide <- plyr::rename(beta.se.wide, c('var'='beta', 'intx'='betaintx'))
+
+beta.se.cdv <- beta.se.wide[COD=='CDV']
+poprss.nn <- beta.se.cdv[term2=='nnDist']
+
+pop.lnrss.nn.1 <- (log(hi/(hi-delta.hi)))^(poprss.nn$beta + (poprss.nn$betaintx*hj.1))
+pop.lnrss.nn.2 <- (log(hi/(hi-delta.hi)))^(poprss.nn$beta + (poprss.nn$betaintx*hj.2))
+pop.lnrss.nn.3 <- (log(hi/(hi-delta.hi)))^(poprss.nn$beta + (poprss.nn$betaintx*hj.3))
+pop.lnrss.nn.4 <- (log(hi/(hi-delta.hi)))^(poprss.nn$beta + (poprss.nn$betaintx*hj.4))
+
+lnrss.nn.pop =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi),y=(pop.lnrss.nn.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi),y=(pop.lnrss.nn.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi),y=(pop.lnrss.nn.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi),y=(pop.lnrss.nn.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to NN (m)") +
+  ylim(-0.01,20) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+
+lnrss.nn.pop
+
+######
+
 popcdv <- readRDS('data/derived-data/popcdv.Rds')
 pop.cdv <- as.data.frame(popcdv)
 popcdv.nn <- data.frame(term=rownames(pop.cdv), beta=pop.cdv[,1], se=pop.cdv[,2], row.names=NULL)
