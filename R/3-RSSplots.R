@@ -15,13 +15,15 @@ lapply(libs, require, character.only = TRUE)
 raw <- 'data/raw-data/'
 derived <- 'data/derived-data/'
 
-fullOUT <- readRDS('data/derived-data/full_betas.Rds')
+#indivOUT <- readRDS('data/derived-data/full_betas.Rds')
+fullOUT <- readRDS('data/derived-data/everyone_betas_lastmoNN.Rds')
 
 
 ### Function ----
 se <- function(x){
   sd(x, na.rm = T)/ sqrt(length(na.omit(x)))
 }
+
 
 ### simpler RSS for intx terms -- not log-transformed betas Δhi ⋅(βi + βij ⋅hj (x1 )] 
 rss.intx <- function(x, xintx, delta, h){
@@ -32,9 +34,35 @@ rss.intx <- function(x, xintx, delta, h){
 
 ### create CIs ----
 
-beta.se <- fullOUT[,.(se= se(estimate)),.(term)]
+beta.se <- fullOUT[,.(mean = mean(estimate), se= se(estimate)),.(term, COD)]
+beta.se[,'lwr'] <- beta.se$mean - (beta.se$se*1.96)
+beta.se[,'upr'] <- beta.se$mean + (beta.se$se*1.96)
+beta.se[,'var'] <- ifelse(beta.se$term %like% 'ttd', 'intx','var')
 
-beta <- merge(fullOUT, beta.se, by = 'term')
+pd <- position_dodge(0.5) # move them .05 to the left and right
+ggplot(beta.se[var=='var'], aes(x=term, y=mean, colour=COD)) + 
+  geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
+  geom_point(position=pd) +
+  theme_bw()  + 
+  theme(
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+    geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+
+ggplot(beta.se[var=='intx'], aes(x=term, y=mean, colour=COD)) + 
+  geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
+  geom_point(position=pd) +
+  theme_bw()  + 
+  theme(
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+
+beta <- merge(fullOUT, beta.se[,.(term, COD, se)], by = c('term', 'COD'))
 beta[,'lwr'] <- beta$estimate - (beta$se*1.96)
 beta[,'upr'] <- beta$estimate + (beta$se*1.96)
 beta[,'var'] <- ifelse(beta$term %like% 'ttd', 'intx','var')
@@ -77,33 +105,27 @@ rss.nn.2 <- delta.hi*(W26$beta + (W26$betaintx*hj.2))
 rss.nn.3 <- delta.hi*(W26$beta + (W26$betaintx*hj.3))
 rss.nn.4 <- delta.hi*(W26$beta + (W26$betaintx*hj.4))
 
-r =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.1), colour = "1 day"), size = 1) 
-#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_lo), colour = "Day"), size = 1, lty = 3) 
-#r = r + geom_line(aes(x=(hj-250),y=log(rssroadd_hi), colour = "Day"), size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.2), colour = "14 days"), size = 1) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_lo), colour = "Twilight"), size = 1, lty = 3) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadt_hi), colour = "Twilight"), size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.3), colour = "30 days"),size = 1) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_lo), colour = "Night"),size = 1, lty = 3) 
-# r = r + geom_line(aes(x=(hj-250),y=log(rssroadn_hi), colour = "Night"),size = 1, lty = 3) 
-r = r + geom_line(aes(x=(delta.hi),y=(rss.nn.4), colour = "60 days"),size = 1) 
-r = r + theme_bw()  + theme(
-  #panel.background =element_rect(colour = "black", fill=NA, size=1),
-  panel.border = element_blank(), 
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  axis.line = element_line(colour = "black", size = .7))
-r = r + theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20))
-r = r + theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
-              axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) 
-r = r + ylab("RSS") + xlab("log Distance to NN (m)")
-#r = r + ylim(-0.01,3)
-r = r +scale_colour_manual("", 
-                           values = c("gray", "black", "gray33", 'purple'))  
-r = r +  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+# I've negated RSS value here so it's more intuitive to understand distance to selecting to be farther
+RMNPW26.nn =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi),y=(rss.nn.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi),y=(rss.nn.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi),y=(rss.nn.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi),y=(rss.nn.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("log Distance to NN (m)") +
+  #r = r + ylim(-0.01,3)
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
-print(r)
+RMNPW26.nn
 
 
 #### NOT WORKING ####
