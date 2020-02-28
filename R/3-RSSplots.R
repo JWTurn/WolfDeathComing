@@ -288,7 +288,7 @@ humanrss.pack <- beta.se.wide[COD=='human' & term2=='boundaryDist']
 # hi <- 101:1000
 # delta.hi <- 100
 hi.pack <- 5001
-delta.hi.pack <- -5000:5000
+delta.hi.pack <- 0:5000
 
 humanrss.pack.1 <- (log(hi/(hi.pack-delta.hi.pack)))^(humanrss.pack$beta + (humanrss.pack$betaintx*hj.1))
 humanrss.pack.2 <- (log(hi/(hi.pack-delta.hi.pack)))^(humanrss.pack$beta + (humanrss.pack$betaintx*hj.2))
