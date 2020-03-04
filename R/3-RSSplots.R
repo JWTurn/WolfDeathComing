@@ -113,6 +113,7 @@ lnrss.nn.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
+  ggtitle("b) human") +
   ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
@@ -143,6 +144,7 @@ lnrss.nn.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
+  ggtitle("c) CDV") +
   ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
@@ -173,6 +175,7 @@ lnrss.nn.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty =
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
+  ggtitle("a) control") +
   ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
@@ -211,7 +214,8 @@ lnrss.road.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lt
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to road (m)") +
-  #ylim(-0.01,3) +
+  ggtitle("b) human") +
+  ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -241,7 +245,8 @@ lnrss.road.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to road (m)") +
-  #ylim(-0.01,20) +
+  ggtitle("c) CDV") +
+  ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -271,7 +276,8 @@ lnrss.road.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to road (m)") +
-  #ylim(-0.01,20) +
+  ggtitle("a) control") +
+  ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -285,10 +291,10 @@ lnrss.road.pop.none
 humanrss.pack <- beta.se.wide[COD=='human' & term2=='boundaryDist']
 
 # delta hi should be based off avg/median nndist
-# hi <- 101:1000
-# delta.hi <- 100
-hi.pack <- 5001
-delta.hi.pack <- 0:5000
+# hi.pack <- 2:5000
+# delta.hi.pack <- 1
+hi.pack <- 2501
+delta.hi.pack <- -2500:2500
 
 humanrss.pack.1 <- (log(hi/(hi.pack-delta.hi.pack)))^(humanrss.pack$beta + (humanrss.pack$betaintx*hj.1))
 humanrss.pack.2 <- (log(hi/(hi.pack-delta.hi.pack)))^(humanrss.pack$beta + (humanrss.pack$betaintx*hj.2))
@@ -310,7 +316,8 @@ lnrss.pack.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lt
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to pack (m)") +
-  #ylim(-0.01,3) +
+  ggtitle("b) human") +
+  ylim(-0.01,3) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -340,7 +347,8 @@ lnrss.pack.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to pack (m)") +
-  #ylim(-0.01,20) +
+  ggtitle("c) CDV") +
+  ylim(-0.01,3) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -370,12 +378,14 @@ lnrss.pack.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to pack (m)") +
-  #ylim(-0.01,20) +
+  ggtitle("a) control") +
+  ylim(-0.01,3) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
 lnrss.pack.pop.none
 
+(lnrss.road.pop.none|lnrss.road.pop.human|lnrss.road.pop.CDV)/(lnrss.nn.pop.none|lnrss.nn.pop.human|lnrss.nn.pop.CDV)/(lnrss.pack.pop.none|lnrss.pack.pop.human|lnrss.pack.pop.CDV)
 
 #########
 beta <- merge(fullOUT, beta.se[,.(term, COD, se)], by = c('term', 'COD'))
