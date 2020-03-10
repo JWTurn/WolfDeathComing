@@ -88,6 +88,29 @@ ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(ttd1, (distance2), color = 
 ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(ttd1, (roadDist_end), color = wolfID)) +
   geom_point() + geom_smooth(method = lm, se=F)
 
+rd.u<-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(roadDist_end)) +
+  geom_histogram() + ggtitle("used - CDV") 
+rd.a<-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(roadDist_end)) +
+  geom_histogram()  + ggtitle("avaliable - CDV") 
+rd.u/rd.a
+
+nn.u<-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(distance2)) +
+  geom_histogram() + ggtitle("used - CDV") + xlab('Dist NN')
+nn.a<-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(distance2)) +
+  geom_histogram()  + ggtitle("avaliable - CDV") + xlab('Dist NN')
+nn.u/nn.a
+
+ggplot(dat[ttd1<=31 & ua =='used' & COD=='human'], aes(roadDist_end)) +
+  geom_histogram() 
+ggplot(dat[ttd1<=31 & ua =='avail' & COD=='human'], aes(roadDist_end)) +
+  geom_histogram() 
+
+ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(land_end_adj)) +
+  geom_histogram(stat = 'count') 
+ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(land_end_adj)) +
+  geom_histogram(stat = 'count') 
+
+
 dat[COD=='cdv',.(last(packDistadj_end), min(packDistadj_end), max(packDistadj_end)), by=.(wolfID)]
 
 
