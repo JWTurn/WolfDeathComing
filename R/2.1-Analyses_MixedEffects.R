@@ -88,17 +88,39 @@ ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(ttd1, (distance2), color = 
 ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(ttd1, (roadDist_end), color = wolfID)) +
   geom_point() + geom_smooth(method = lm, se=F)
 
-rd.u<-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(roadDist_end)) +
-  geom_histogram() + ggtitle("used - CDV") 
+rd.u <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(roadDist_end)) +
+  geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() +
+  ggtitle("used - CDV") 
 rd.a<-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(roadDist_end)) +
-  geom_histogram()  + ggtitle("avaliable - CDV") 
-rd.u/rd.a
+  geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() + 
+  ggtitle("avaliable - CDV") 
 
-nn.u<-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(distance2)) +
-  geom_histogram() + ggtitle("used - CDV") + xlab('Dist NN')
+rd.u.c <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='none'], aes(roadDist_end)) +
+  geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() +
+  ggtitle("used - none") 
+rd.a.c <-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='none'], aes(roadDist_end)) +
+  geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() + 
+  ggtitle("avaliable - none") 
+(rd.u.c|rd.u)/(rd.a.c|rd.a)
+
+
+nn.u <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(distance2)) +
+  geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() +
+  ggtitle("used - CDV") + xlab('Dist to NN')
 nn.a<-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(distance2)) +
-  geom_histogram()  + ggtitle("avaliable - CDV") + xlab('Dist NN')
-nn.u/nn.a
+  geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() + 
+  ggtitle("avaliable - CDV") + xlab('Dist to NN')
+
+nn.u.c <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='none'], aes(distance2)) +
+  geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() +
+  ggtitle("used - none") + xlab('Dist to NN')
+nn.a.c <-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='none'], aes(distance2)) +
+  geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() + 
+  ggtitle("avaliable - none") + xlab('Dist to NN')
+(nn.u.c|nn.u)/(nn.a.c|nn.a)
+
+
+
 
 ggplot(dat[ttd1<=31 & ua =='used' & COD=='human'], aes(roadDist_end)) +
   geom_histogram() 
@@ -157,9 +179,13 @@ summary(everyone)
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
 saveRDS(popeveryone, 'data/derived-data/popeveryone_lastmoNN.Rds')
-summary(everyone)$varcor
+attr(summary(everyone)$varcor$cond, 'stddev')
 
-
+ranef(everyone, condVar = T)$cond$wolfID
+as.data.frame(ranef(everyone, condVar = T))$condsd$wolfID
+coef(everyone)$cond$wolfID[ , -1]
+everyone.ran_vals <-broom.mixed::tidy(everyone, effect= 'ran_vals')
+everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 everyone.all.indiv <- coef(everyone)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
   pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
   mutate(method = "ME")
@@ -1829,23 +1855,50 @@ everyone.all.betas.names <- unique(everyone.all.betas$term)
 
 everyone.all.betas.names <- c("log_sl", "cos_ta", 
                               "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
-                          "log(1 + distance2)", "log(1 + packDistadj_end)",
-                          "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
-                          "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
-                          "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
+                              "log(1 + distance2)", "log(1 + packDistadj_end)",
+                              "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
+                              "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
+                              "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
 
 everyone.all.indiv.betas <- everyone.all.indiv[term %chin% everyone.all.betas.names]
 # everyone.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
 #                 "log(1 + distance2)", "log(1 + packDistadj_end)")
 
 everyone.all.indiv.betas$term <- factor(everyone.all.indiv.betas$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
-                                                                                                         "nnDist", "boundaryDist",
-                                                                                                         "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
-                                                                                                         "nnDist-ttd", "boundaryDist-ttd"))
+                                                                                                                     "nnDist", "boundaryDist",
+                                                                                                                     "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
+                                                                                                                     "nnDist-ttd", "boundaryDist-ttd"))
 
 everyone.all.indiv.betas$COD[is.na(everyone.all.indiv.betas$COD)] <- "control"
 
 #saveRDS(everyone.all.indiv.betas, 'data/derived-data/everyone_betas_lastmoNN.Rds')
+
+# everyone.all.indiv<- merge(everyone.all.indiv, dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
+# everyone.all.indiv$COD <- factor(everyone.all.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+# 
+# minmax <- setDT(everyone.all.indiv)[,.(min= min(estimate), max=max(estimate)), by = .(term, COD)]
+# everyone.all.betas <- minmax[min!= max]
+# everyone.all.betas.names <- unique(everyone.all.betas$term)
+# 
+# everyone.all.betas.names <- c("log_sl", "cos_ta", 
+#                               "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+#                           "log(1 + distance2)", "log(1 + packDistadj_end)",
+#                           "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
+#                           "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
+#                           "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
+# 
+# everyone.all.indiv.betas <- everyone.all.indiv[term %chin% everyone.all.betas.names]
+# # everyone.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+# #                 "log(1 + distance2)", "log(1 + packDistadj_end)")
+# 
+# everyone.all.indiv.betas$term <- factor(everyone.all.indiv.betas$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
+#                                                                                                          "nnDist", "boundaryDist",
+#                                                                                                          "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
+#                                                                                                          "nnDist-ttd", "boundaryDist-ttd"))
+# 
+# everyone.all.indiv.betas$COD[is.na(everyone.all.indiv.betas$COD)] <- "control"
+
+
 
 
 
