@@ -233,6 +233,13 @@ everyone.indiv<- merge(everyone.se[,.(wolfID= level, term, estimate, se=std.erro
 everyone.indiv$COD <- factor(everyone.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
 everyone.indiv$COD[is.na(everyone.indiv$COD)] <- "control"
 
+unique(everyone.indiv$term)
+everyone.all.betas.names <- c("log_sl", "cos_ta", 
+                             "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+                             "log(1 + distance2)", "log(1 + packDistadj_end)",
+                             "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
+                             "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)",
+                             "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
 everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
                                                                                                                      "nnDist", "boundaryDist",
                                                                                                                      "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
@@ -320,8 +327,8 @@ main.vars <- ggplot(everyone.main, aes(term, (estimate), fill = COD)) +
   scale_fill_manual(values = cbPalette) +
   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
-ttd.vars
-main.vars
+main.vars/ttd.vars
+
 
 
 
