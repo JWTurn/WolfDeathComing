@@ -33,6 +33,9 @@ rss.intx <- function(x, xintx, delta, h){
 
 
 ### create CIs ----
+fullOUT[,'var'] <- ifelse(fullOUT$term %like% 'ttd', 'intx','var')
+fullOUT[,'lwr'] <- fullOUT$estimate - (fullOUT$se*1.96)
+fullOUT[,'upr'] <- fullOUT$estimate + (fullOUT$se*1.96)
 
 beta.se <- fullOUT[,.(mean = mean(estimate), se= se(estimate)),.(term, COD)]
 beta.se[,'lwr'] <- beta.se$mean - (beta.se$se*1.96)
@@ -147,7 +150,7 @@ lnrss.nn.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
   ggtitle("b) human") +
- # ylim(-0.01,20) +
+  ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -178,7 +181,7 @@ lnrss.nn.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
   ggtitle("c) CDV") +
-  #ylim(-0.01,20) +
+  ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -209,7 +212,7 @@ lnrss.nn.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty =
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
   ggtitle("a) control") +
-  #ylim(-0.01,20) +
+  ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
 
@@ -224,8 +227,8 @@ humanrss.road <- beta.se.wide[COD=='human' & term2=='roadDist']
 # delta hi should be based off avg/median nndist
 # hi <- 101:1000
 # delta.hi <- 100
-hi.road <- 1501
-delta.hi.road <- 1:1500
+hi.road <- 3001
+delta.hi.road <- 1:3000
 
 humanrss.road.1 <- (log(hi.road/(hi.road-delta.hi.road)))^(humanrss.road$beta + (humanrss.road$betaintx*hj.1))
 humanrss.road.2 <- (log(hi.road/(hi.road-delta.hi.road)))^(humanrss.road$beta + (humanrss.road$betaintx*hj.2))
@@ -316,7 +319,7 @@ lnrss.road.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
 
 lnrss.road.pop.none
 
-
+lnrss.road.pop.none/lnrss.road.pop.human/lnrss.road.pop.CDV
 
 
 #### pop RSS pack dist ----
@@ -326,8 +329,8 @@ humanrss.pack <- beta.se.wide[COD=='human' & term2=='boundaryDist']
 # delta hi should be based off avg/median nndist
 # hi.pack <- 2:5000
 # delta.hi.pack <- 1
-hi.pack <- 2501
-delta.hi.pack <- -2500:2500
+hi.pack <- 3001
+delta.hi.pack <- 0:3000
 
 humanrss.pack.1 <- (log(hi.pack/(hi.pack-delta.hi.pack)))^(humanrss.pack$beta + (humanrss.pack$betaintx*hj.1))
 humanrss.pack.2 <- (log(hi.pack/(hi.pack-delta.hi.pack)))^(humanrss.pack$beta + (humanrss.pack$betaintx*hj.2))
