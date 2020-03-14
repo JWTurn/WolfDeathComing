@@ -65,7 +65,31 @@ ttd<-ggplot(beta.se[var=='intx'], aes(x=term, y=mean, colour=COD)) +
 
 main/ttd
 
+fullOUT$wolfID<-as.factor(fullOUT$wolfID)
+fullOUT$var<-as.factor(fullOUT$var)
 
+cdv.nn.main <- ggplot(fullOUT[var=='var'& COD == 'CDV'], aes(x=term, y=estimate, colour=wolfID)) + 
+  geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
+  geom_point(position=pd) +
+  theme_bw()  + 
+  theme(
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+
+cdv.nn.ttd <- ggplot(fullOUT[var=='intx'& COD == 'CDV'], aes(x=term, y=estimate, colour=wolfID)) + 
+  geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
+  geom_point(position=pd) +
+  theme_bw()  + 
+  theme(
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+cdv.nn.main/cdv.nn.ttd
 ######
 ### RSS for two log-transformed interaction betas
 # transform data
