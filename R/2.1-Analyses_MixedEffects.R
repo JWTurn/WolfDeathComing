@@ -181,6 +181,7 @@ popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
 saveRDS(popeveryone, 'data/derived-data/popeveryone_lastmoNN.Rds')
 
 everyone.ran_vals <-broom.mixed::tidy(everyone, effect= 'ran_vals')
+everyone.ran_pars <-broom.mixed::tidy(everyone, effect= 'ran_pars')
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
