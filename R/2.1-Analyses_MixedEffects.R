@@ -82,7 +82,7 @@ total <- mclogit::mclogit(COD ~ log_sl:ToD_start +
                   strata(wolf_step_id), dat )
 
 ######
-ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(ttd1, (distance2), color = wolfID)) +
+ggplot(dat[ ua =='used' & COD=='cdv'], aes(ttd1, (distance2), color = wolfID)) +
   geom_point() + geom_smooth(method = lm, se=F)
  
 ggplot(dat[ttd1<=31 & ua =='used' & COD=='cdv'], aes(ttd1, (roadDist_end), color = wolfID)) +
@@ -181,9 +181,13 @@ popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
 saveRDS(popeveryone, 'data/derived-data/popeveryone_lastmoNN.Rds')
 
 everyone.ran_vals <-broom.mixed::tidy(everyone, effect= 'ran_vals')
-everyone.ran_pars <-broom.mixed::tidy(everyone, effect= 'ran_pars')
+# everyone.ran_pars <-broom.mixed::tidy(everyone, effect= 'ran_pars')
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
+
+everyone.all.indiv <- coef(everyone)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
+  pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
+  mutate(method = "ME")
 
 
 everyone.lastmo <- glmmTMB(case_ ~ log_sl:ToD_start +
