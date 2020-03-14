@@ -71,6 +71,30 @@ main/ttd
 fullOUT$wolfID<-as.factor(fullOUT$wolfID)
 fullOUT$var<-as.factor(fullOUT$var)
 
+
+none.nn.main <- ggplot(fullOUT[var=='var'& COD == 'control'], aes(x=term, y=estimate, colour=wolfID)) + 
+  geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
+  geom_point(position=pd) +
+  theme_bw()  + 
+  theme(
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+
+none.nn.ttd <- ggplot(fullOUT[var=='intx'& COD == 'control'], aes(x=term, y=estimate, colour=wolfID)) + 
+  geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
+  geom_point(position=pd) +
+  theme_bw()  + 
+  theme(
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)
+none.nn.main/none.nn.ttd
+
 cdv.nn.main <- ggplot(fullOUT[var=='var'& COD == 'CDV'], aes(x=term, y=estimate, colour=wolfID)) + 
   geom_errorbar(aes(ymin=lwr, ymax=upr), width=.1, position=pd) +
   geom_point(position=pd) +
@@ -466,7 +490,7 @@ rss.forest.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lt
   ggtitle("b) human") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
 
 rss.forest.pop.human
 
@@ -499,12 +523,12 @@ rss.forest.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
   theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylab("RSS") + xlab("Distance to forest (m)") +
+  ylab("RSS") + xlab("Forest") +
   ggtitle("c) CDV") +
   
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = "right") + theme(legend.text = element_text(size = 20))
 
 rss.forest.pop.CDV
 
@@ -536,15 +560,254 @@ rss.forest.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
   theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylab("RSS") + xlab("Distance to forest (m)") +
+  ylab("RSS") + xlab("Forest") +
   ggtitle("a) control") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
 
 rss.forest.pop.none
 
 
+
+
+
+humanrss.wet <- beta.se.wide[COD=='human' & term2=='wet']
+
+# delta hi should be based off avg/median nndist
+# hi <- 101:1000
+# delta.hi <- 100
+hi.wet <- 1
+delta.hi.wet <- seq(0, 1, .0001)
+
+humanrss.wet.1 <- delta.hi.wet*(humanrss.wet$beta + (humanrss.wet$betaintx*log.hj.1))
+humanrss.wet.2 <- delta.hi.wet*(humanrss.wet$beta + (humanrss.wet$betaintx*log.hj.2))
+humanrss.wet.3 <- delta.hi.wet*(humanrss.wet$beta + (humanrss.wet$betaintx*log.hj.3))
+humanrss.wet.4 <- delta.hi.wet*(humanrss.wet$beta + (humanrss.wet$betaintx*log.hj.4))
+
+
+# humanrss.wet.1 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(humanrss.wet$beta + (humanrss.wet$betaintx*hj.1))
+# humanrss.wet.2 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(humanrss.wet$beta + (humanrss.wet$betaintx*hj.2))
+# humanrss.wet.3 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(humanrss.wet$beta + (humanrss.wet$betaintx*hj.3))
+# humanrss.wet.4 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(humanrss.wet$beta + (humanrss.wet$betaintx*hj.4))
+
+rss.wet.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi.wet),y=(humanrss.wet.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi.wet),y=(humanrss.wet.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi.wet),y=(humanrss.wet.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi.wet),y=(humanrss.wet.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Wet") +
+  ggtitle("b) human") +
+  #ylim(-0.01,2.5) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+
+rss.wet.pop.human
+
+
+
+CDVrss.wet <- beta.se.wide[COD=='CDV' & term2=='wet']
+
+CDVrss.wet.1 <- delta.hi.wet*(CDVrss.wet$beta + (CDVrss.wet$betaintx*log.hj.1))
+CDVrss.wet.2 <- delta.hi.wet*(CDVrss.wet$beta + (CDVrss.wet$betaintx*log.hj.2))
+CDVrss.wet.3 <- delta.hi.wet*(CDVrss.wet$beta + (CDVrss.wet$betaintx*log.hj.3))
+CDVrss.wet.4 <- delta.hi.wet*(CDVrss.wet$beta + (CDVrss.wet$betaintx*log.hj.4))
+
+# 
+# CDVrss.wet.1 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(CDVrss.wet$beta + (CDVrss.wet$betaintx*hj.1))
+# CDVrss.wet.2 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(CDVrss.wet$beta + (CDVrss.wet$betaintx*hj.2))
+# CDVrss.wet.3 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(CDVrss.wet$beta + (CDVrss.wet$betaintx*hj.3))
+# CDVrss.wet.4 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(CDVrss.wet$beta + (CDVrss.wet$betaintx*hj.4))
+
+rss.wet.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi.wet),y=(CDVrss.wet.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi.wet),y=(CDVrss.wet.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi.wet),y=(CDVrss.wet.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi.wet),y=(CDVrss.wet.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Wet") +
+  ggtitle("c) CDV") +
+  
+  #ylim(-0.01,2.5) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 20))
+
+rss.wet.pop.CDV
+
+
+
+nonerss.wet <- beta.se.wide[COD=='control' & term2=='wet']
+
+nonerss.wet.1 <- delta.hi.wet*(nonerss.wet$beta + (nonerss.wet$betaintx*log.hj.1))
+nonerss.wet.2 <- delta.hi.wet*(nonerss.wet$beta + (nonerss.wet$betaintx*log.hj.2))
+nonerss.wet.3 <- delta.hi.wet*(nonerss.wet$beta + (nonerss.wet$betaintx*log.hj.3))
+nonerss.wet.4 <- delta.hi.wet*(nonerss.wet$beta + (nonerss.wet$betaintx*log.hj.4))
+
+# nonerss.wet.1 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(nonerss.wet$beta + (nonerss.wet$betaintx*hj.1))
+# nonerss.wet.2 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(nonerss.wet$beta + (nonerss.wet$betaintx*hj.2))
+# nonerss.wet.3 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(nonerss.wet$beta + (nonerss.wet$betaintx*hj.3))
+# nonerss.wet.4 <- (log(hi.wet/(hi.wet-delta.hi.wet)))^(nonerss.wet$beta + (nonerss.wet$betaintx*hj.4))
+
+rss.wet.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi.wet),y=(nonerss.wet.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi.wet),y=(nonerss.wet.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi.wet),y=(nonerss.wet.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi.wet),y=(nonerss.wet.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Wet") +
+  ggtitle("a) control") +
+  #ylim(-0.01,2.5) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+
+rss.wet.pop.none
+
+
+
+
+
+humanrss.open <- beta.se.wide[COD=='human' & term2=='open']
+
+# delta hi should be based off avg/median nndist
+# hi <- 101:1000
+# delta.hi <- 100
+hi.open <- 1
+delta.hi.open <- seq(0, 1, .0001)
+
+humanrss.open.1 <- delta.hi.open*(humanrss.open$beta + (humanrss.open$betaintx*log.hj.1))
+humanrss.open.2 <- delta.hi.open*(humanrss.open$beta + (humanrss.open$betaintx*log.hj.2))
+humanrss.open.3 <- delta.hi.open*(humanrss.open$beta + (humanrss.open$betaintx*log.hj.3))
+humanrss.open.4 <- delta.hi.open*(humanrss.open$beta + (humanrss.open$betaintx*log.hj.4))
+
+
+# humanrss.open.1 <- (log(hi.open/(hi.open-delta.hi.open)))^(humanrss.open$beta + (humanrss.open$betaintx*hj.1))
+# humanrss.open.2 <- (log(hi.open/(hi.open-delta.hi.open)))^(humanrss.open$beta + (humanrss.open$betaintx*hj.2))
+# humanrss.open.3 <- (log(hi.open/(hi.open-delta.hi.open)))^(humanrss.open$beta + (humanrss.open$betaintx*hj.3))
+# humanrss.open.4 <- (log(hi.open/(hi.open-delta.hi.open)))^(humanrss.open$beta + (humanrss.open$betaintx*hj.4))
+
+rss.open.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi.open),y=(humanrss.open.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi.open),y=(humanrss.open.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi.open),y=(humanrss.open.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi.open),y=(humanrss.open.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Open") +
+  ggtitle("b) human") +
+  #ylim(-0.01,2.5) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+
+rss.open.pop.human
+
+
+
+CDVrss.open <- beta.se.wide[COD=='CDV' & term2=='open']
+
+CDVrss.open.1 <- delta.hi.open*(CDVrss.open$beta + (CDVrss.open$betaintx*log.hj.1))
+CDVrss.open.2 <- delta.hi.open*(CDVrss.open$beta + (CDVrss.open$betaintx*log.hj.2))
+CDVrss.open.3 <- delta.hi.open*(CDVrss.open$beta + (CDVrss.open$betaintx*log.hj.3))
+CDVrss.open.4 <- delta.hi.open*(CDVrss.open$beta + (CDVrss.open$betaintx*log.hj.4))
+
+# 
+# CDVrss.open.1 <- (log(hi.open/(hi.open-delta.hi.open)))^(CDVrss.open$beta + (CDVrss.open$betaintx*hj.1))
+# CDVrss.open.2 <- (log(hi.open/(hi.open-delta.hi.open)))^(CDVrss.open$beta + (CDVrss.open$betaintx*hj.2))
+# CDVrss.open.3 <- (log(hi.open/(hi.open-delta.hi.open)))^(CDVrss.open$beta + (CDVrss.open$betaintx*hj.3))
+# CDVrss.open.4 <- (log(hi.open/(hi.open-delta.hi.open)))^(CDVrss.open$beta + (CDVrss.open$betaintx*hj.4))
+
+rss.open.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi.open),y=(CDVrss.open.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi.open),y=(CDVrss.open.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi.open),y=(CDVrss.open.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi.open),y=(CDVrss.open.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Open") +
+  ggtitle("c) CDV") +
+  
+  #ylim(-0.01,2.5) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 20))
+
+rss.open.pop.CDV
+
+
+
+nonerss.open <- beta.se.wide[COD=='control' & term2=='open']
+
+nonerss.open.1 <- delta.hi.open*(nonerss.open$beta + (nonerss.open$betaintx*log.hj.1))
+nonerss.open.2 <- delta.hi.open*(nonerss.open$beta + (nonerss.open$betaintx*log.hj.2))
+nonerss.open.3 <- delta.hi.open*(nonerss.open$beta + (nonerss.open$betaintx*log.hj.3))
+nonerss.open.4 <- delta.hi.open*(nonerss.open$beta + (nonerss.open$betaintx*log.hj.4))
+
+# nonerss.open.1 <- (log(hi.open/(hi.open-delta.hi.open)))^(nonerss.open$beta + (nonerss.open$betaintx*hj.1))
+# nonerss.open.2 <- (log(hi.open/(hi.open-delta.hi.open)))^(nonerss.open$beta + (nonerss.open$betaintx*hj.2))
+# nonerss.open.3 <- (log(hi.open/(hi.open-delta.hi.open)))^(nonerss.open$beta + (nonerss.open$betaintx*hj.3))
+# nonerss.open.4 <- (log(hi.open/(hi.open-delta.hi.open)))^(nonerss.open$beta + (nonerss.open$betaintx*hj.4))
+
+rss.open.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  geom_line(aes(x=(delta.hi.open),y=(nonerss.open.1), colour = "1 day"), size = 1) + 
+  geom_line(aes(x=(delta.hi.open),y=(nonerss.open.2), colour = "14 days"), size = 1) +
+  geom_line(aes(x=(delta.hi.open),y=(nonerss.open.3), colour = "30 days"),size = 1) +
+  geom_line(aes(x=(delta.hi.open),y=(nonerss.open.4), colour = "60 days"),size = 1) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Open") +
+  ggtitle("a) control") +
+  #ylim(-0.01,2.5) +
+  scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+
+rss.open.pop.none
+
+
+(rss.forest.pop.none|rss.forest.pop.human|rss.forest.pop.CDV)/(rss.wet.pop.none|rss.wet.pop.human|rss.wet.pop.CDV)/(rss.open.pop.none|rss.open.pop.human|rss.open.pop.CDV)
 
 #########
 beta <- merge(fullOUT, beta.se[,.(term, COD, se)], by = c('term', 'COD'))
