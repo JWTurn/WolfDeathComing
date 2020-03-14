@@ -2024,36 +2024,36 @@ ggplot(everyone.noroad.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(te
 
 
 #####
-everyone.lastmo.all.indiv<- merge(everyone.lastmo.all.indiv, dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
-everyone.lastmo.all.indiv$COD <- factor(everyone.lastmo.all.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+everyone.all.indiv<- merge(everyone.all.indiv, dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
+everyone.all.indiv$COD <- factor(everyone.all.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
 
-minmax <- setDT(everyone.lastmo.all.indiv)[,.(min= min(estimate), max=max(estimate)), by = .(term, COD)]
-everyone.lastmo.all.betas <- minmax[min!= max]
-everyone.lastmo.all.betas.names <- unique(everyone.lastmo.all.betas$term)
+minmax <- setDT(everyone.all.indiv)[,.(min= min(estimate), max=max(estimate)), by = .(term, COD)]
+everyone.all.betas <- minmax[min!= max]
+everyone.all.betas.names <- unique(everyone.all.betas$term)
 
-everyone.lastmo.all.betas.names <- c("log_sl", "cos_ta", 
+everyone.all.betas.names <- c("log_sl", "cos_ta", 
                               "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
                               "log(1 + distance2)", "log(1 + packDistadj_end)",
                               "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
                               "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
                               "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
 
-everyone.lastmo.all.indiv.betas <- everyone.lastmo.all.indiv[term %chin% everyone.lastmo.all.betas.names]
-# everyone.lastmo.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
+everyone.all.indiv.betas <- everyone.all.indiv[term %chin% everyone.all.betas.names]
+# everyone.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
 #                 "log(1 + distance2)", "log(1 + packDistadj_end)")
 
-everyone.lastmo.all.indiv.betas$term <- factor(everyone.lastmo.all.indiv.betas$term, levels = everyone.lastmo.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
+everyone.all.indiv.betas$term <- factor(everyone.all.indiv.betas$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
                                                                                                                      "nnDist", "boundaryDist",
                                                                                                                      "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                                      "nnDist-ttd", "boundaryDist-ttd"))
 
-everyone.lastmo.all.indiv.betas$COD[is.na(everyone.lastmo.all.indiv.betas$COD)] <- "control"
+everyone.all.indiv.betas$COD[is.na(everyone.all.indiv.betas$COD)] <- "control"
 
 #saveRDS(everyone.lastmo.all.indiv.betas, 'data/derived-data/everyone_lastmo_betas.Rds')
 
-everyone.lastmo.ttd <- everyone.lastmo.all.indiv.betas[term %like% "ttd", ]
+everyone.ttd <- everyone.all.indiv.betas[term %like% "ttd", ]
 
-ttd.vars.lastmo <- ggplot(everyone.lastmo.ttd, aes(term, (estimate), fill = COD)) +
+ttd.vars <- ggplot(everyone.ttd, aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -2078,7 +2078,7 @@ ttd.vars.lastmo <- ggplot(everyone.lastmo.ttd, aes(term, (estimate), fill = COD)
   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
 
-ggplot(everyone.lastmo.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
+ggplot(everyone.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -2103,9 +2103,9 @@ ggplot(everyone.lastmo.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(te
   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
 
-everyone.lastmo.main <- everyone.lastmo.all.indiv.betas[!(term %like% "ttd"), ]
+everyone.main <- everyone.all.indiv.betas[!(term %like% "ttd"), ]
 
-main.vars.lastmo <- ggplot(everyone.lastmo.main, aes(term, (estimate), fill = COD)) +
+main.vars <- ggplot(everyone.main, aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
                outlier.color = NA, lwd = 0.6,
                alpha = 0.25) +
@@ -2129,8 +2129,8 @@ main.vars.lastmo <- ggplot(everyone.lastmo.main, aes(term, (estimate), fill = CO
   scale_fill_manual(values = cbPalette) +
   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
-ttd.vars.lastmo
-main.vars.lastmo
+main.vars/ttd.vars
+
 
 
 #### separate ####
