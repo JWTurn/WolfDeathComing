@@ -26,8 +26,12 @@ se <- function(x){
 
 
 ### simpler RSS for intx terms -- not log-transformed betas Δhi ⋅(βi + βij ⋅hj (x1 )] 
-rss.intx <- function(x, xintx, delta, h){
-  delta*(x + (xintx*h))
+rss.intx <- function(x, xintx, delta, hj){
+  delta*(x + (xintx*hj))
+}
+
+logrss.intx <- function(x, xintx, delta, hi, hj){
+  (log(hi/(hi-delta)))^(x + (xintx*hj))
 }
 
 
@@ -36,6 +40,8 @@ rss.intx <- function(x, xintx, delta, h){
 fullOUT[,'var'] <- ifelse(fullOUT$term %like% 'ttd', 'intx','var')
 fullOUT[,'lwr'] <- fullOUT$estimate - (fullOUT$se*1.96)
 fullOUT[,'upr'] <- fullOUT$estimate + (fullOUT$se*1.96)
+
+
 
 beta.se <- fullOUT[,.(mean = mean(estimate), se= se(estimate)),.(term, COD)]
 beta.se[,'lwr'] <- beta.se$mean - (beta.se$se*1.96)
@@ -451,7 +457,7 @@ lnrss.pack.pop.none
 
 #### habitat RSS ####
 
-#### pop RSS road dist ----
+#### pop RSS forest ----
 
 humanrss.forest <- beta.se.wide[COD=='human' & term2=='forest']
 
@@ -569,7 +575,7 @@ rss.forest.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
 rss.forest.pop.none
 
 
-
+#### pop RSS wet ----
 
 
 humanrss.wet <- beta.se.wide[COD=='human' & term2=='wet']
@@ -689,7 +695,7 @@ rss.wet.pop.none
 
 
 
-
+#### pop RSS open ----
 
 humanrss.open <- beta.se.wide[COD=='human' & term2=='open']
 
@@ -808,6 +814,328 @@ rss.open.pop.none
 
 
 (rss.forest.pop.none|rss.forest.pop.human|rss.forest.pop.CDV)/(rss.wet.pop.none|rss.wet.pop.human|rss.wet.pop.CDV)/(rss.open.pop.none|rss.open.pop.human|rss.open.pop.CDV)
+
+
+
+#### Indiv RSS ----
+indiv.beta <- fullOUT
+indiv.beta[,'term2'] <- gsub("-ttd", "", indiv.beta$term)
+indiv.beta.wide <- dcast(indiv.beta, wolfID + COD + term2 ~ var, value.var = c('estimate'))
+indiv.beta.wide <- plyr::rename(indiv.beta.wide, c('var'='beta', 'intx'='betaintx'))
+
+#### Indiv RSS nnDist ----
+
+hi.nn <- 5001
+delta.hi.nn <- 1:5000
+
+#### indiv RSS nn -- human ----
+indiv.humanrss.nn <- indiv.beta.wide[COD=='human' & term2=='nnDist']
+
+indiv.humanrss.nn.1 <- indiv.humanrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.1), delta=1:5000, hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.nn.2 <- indiv.humanrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.2), delta=1:5000, hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.nn.3 <- indiv.humanrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.3), delta=1:5000, hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.nn.4 <- indiv.humanrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.4), delta=1:5000, hj='60 days'), by=.(wolfID) ]
+
+indiv.humanrss.nn.hj <- rbind(indiv.humanrss.nn.1, indiv.humanrss.nn.2, indiv.humanrss.nn.3, indiv.humanrss.nn.4)
+
+lnrss.nn.indiv.human =  ggplot(indiv.humanrss.nn.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to NN (m)") +
+  ggtitle("b) human") +
+  ylim(-0.01,20) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.nn.indiv.human
+
+#### indiv RSS nn -- CDV ----
+indiv.CDVrss.nn <- indiv.beta.wide[COD=='CDV' & term2=='nnDist']
+
+indiv.CDVrss.nn.1 <- indiv.CDVrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.1), delta=1:5000, hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.nn.2 <- indiv.CDVrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.2), delta=1:5000, hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.nn.3 <- indiv.CDVrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.3), delta=1:5000, hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.nn.4 <- indiv.CDVrss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.4), delta=1:5000, hj='60 days'), by=.(wolfID) ]
+
+indiv.CDVrss.nn.hj <- rbind(indiv.CDVrss.nn.1, indiv.CDVrss.nn.2, indiv.CDVrss.nn.3, indiv.CDVrss.nn.4)
+
+lnrss.nn.indiv.CDV =  ggplot(indiv.CDVrss.nn.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to NN (m)") +
+  ggtitle("c) CDV") +
+  ylim(-0.01,20) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.nn.indiv.CDV
+
+
+
+
+#### indiv RSS nn -- none ----
+indiv.nonerss.nn <- indiv.beta.wide[COD=='control' & term2=='nnDist']
+
+indiv.nonerss.nn.1 <- indiv.nonerss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.1), delta=1:5000, hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.nn.2 <- indiv.nonerss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.2), delta=1:5000, hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.nn.3 <- indiv.nonerss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.3), delta=1:5000, hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.nn.4 <- indiv.nonerss.nn[,.(rss=logrss.intx(beta, betaintx, delta.hi.nn, hi.nn, hj.4), delta=1:5000, hj='60 days'), by=.(wolfID) ]
+
+indiv.nonerss.nn.hj <- rbind(indiv.nonerss.nn.1, indiv.nonerss.nn.2, indiv.nonerss.nn.3, indiv.nonerss.nn.4)
+
+lnrss.nn.indiv.none =  ggplot(indiv.nonerss.nn.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to NN (m)") +
+  ggtitle("c) none") +
+  ylim(-0.01,20) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.nn.indiv.none
+
+
+
+#### Indiv RSS roadDist ----
+
+hi.road <- 3001
+delta.hi.road <- 1:3000
+
+#### indiv RSS road -- human ----
+indiv.humanrss.road <- indiv.beta.wide[COD=='human' & term2=='roadDist']
+
+indiv.humanrss.road.1 <- indiv.humanrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.1), delta=1:3000, hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.road.2 <- indiv.humanrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.2), delta=1:3000, hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.road.3 <- indiv.humanrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.3), delta=1:3000, hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.road.4 <- indiv.humanrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.4), delta=1:3000, hj='60 days'), by=.(wolfID) ]
+
+indiv.humanrss.road.hj <- rbind(indiv.humanrss.road.1, indiv.humanrss.road.2, indiv.humanrss.road.3, indiv.humanrss.road.4)
+
+lnrss.road.indiv.human =  ggplot(indiv.humanrss.road.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to road (m)") +
+  ggtitle("b) human") +
+  ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.road.indiv.human
+
+#### indiv RSS road -- CDV ----
+indiv.CDVrss.road <- indiv.beta.wide[COD=='CDV' & term2=='roadDist']
+
+indiv.CDVrss.road.1 <- indiv.CDVrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.1), delta=1:3000, hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.road.2 <- indiv.CDVrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.2), delta=1:3000, hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.road.3 <- indiv.CDVrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.3), delta=1:3000, hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.road.4 <- indiv.CDVrss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.4), delta=1:3000, hj='60 days'), by=.(wolfID) ]
+
+indiv.CDVrss.road.hj <- rbind(indiv.CDVrss.road.1, indiv.CDVrss.road.2, indiv.CDVrss.road.3, indiv.CDVrss.road.4)
+
+lnrss.road.indiv.CDV =  ggplot(indiv.CDVrss.road.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to road (m)") +
+  ggtitle("c) CDV") +
+  ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.road.indiv.CDV
+
+
+
+
+#### indiv RSS road -- none ----
+indiv.nonerss.road <- indiv.beta.wide[COD=='control' & term2=='roadDist']
+
+indiv.nonerss.road.1 <- indiv.nonerss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.1), delta=1:3000, hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.road.2 <- indiv.nonerss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.2), delta=1:3000, hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.road.3 <- indiv.nonerss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.3), delta=1:3000, hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.road.4 <- indiv.nonerss.road[,.(rss=logrss.intx(beta, betaintx, delta.hi.road, hi.road, hj.4), delta=1:3000, hj='60 days'), by=.(wolfID) ]
+
+indiv.nonerss.road.hj <- rbind(indiv.nonerss.road.1, indiv.nonerss.road.2, indiv.nonerss.road.3, indiv.nonerss.road.4)
+
+lnrss.road.indiv.none =  ggplot(indiv.nonerss.road.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to road (m)") +
+  ggtitle("c) none") +
+  ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.road.indiv.none
+
+
+
+#### Indiv RSS packDist ----
+
+hi.pack <- 3001
+delta.hi.pack <- 1:3000
+
+#### indiv RSS pack -- human ----
+indiv.humanrss.pack <- indiv.beta.wide[COD=='human' & term2=='boundaryDist']
+
+indiv.humanrss.pack.1 <- indiv.humanrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.1), delta=1:3000, hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.pack.2 <- indiv.humanrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.2), delta=1:3000, hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.pack.3 <- indiv.humanrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.3), delta=1:3000, hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.pack.4 <- indiv.humanrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.4), delta=1:3000, hj='60 days'), by=.(wolfID) ]
+
+indiv.humanrss.pack.hj <- rbind(indiv.humanrss.pack.1, indiv.humanrss.pack.2, indiv.humanrss.pack.3, indiv.humanrss.pack.4)
+
+lnrss.pack.indiv.human =  ggplot(indiv.humanrss.pack.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to pack (m)") +
+  ggtitle("b) human") +
+  ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.pack.indiv.human
+
+#### indiv RSS pack -- CDV ----
+indiv.CDVrss.pack <- indiv.beta.wide[COD=='CDV' & term2=='boundaryDist']
+
+indiv.CDVrss.pack.1 <- indiv.CDVrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.1), delta=1:3000, hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.pack.2 <- indiv.CDVrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.2), delta=1:3000, hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.pack.3 <- indiv.CDVrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.3), delta=1:3000, hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.pack.4 <- indiv.CDVrss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.4), delta=1:3000, hj='60 days'), by=.(wolfID) ]
+
+indiv.CDVrss.pack.hj <- rbind(indiv.CDVrss.pack.1, indiv.CDVrss.pack.2, indiv.CDVrss.pack.3, indiv.CDVrss.pack.4)
+
+lnrss.pack.indiv.CDV =  ggplot(indiv.CDVrss.pack.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to pack (m)") +
+  ggtitle("c) CDV") +
+  ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.pack.indiv.CDV
+
+
+
+
+#### indiv RSS pack -- none ----
+indiv.nonerss.pack <- indiv.beta.wide[COD=='control' & term2=='boundaryDist']
+
+indiv.nonerss.pack.1 <- indiv.nonerss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.1), delta=1:3000, hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.pack.2 <- indiv.nonerss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.2), delta=1:3000, hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.pack.3 <- indiv.nonerss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.3), delta=1:3000, hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.pack.4 <- indiv.nonerss.pack[,.(rss=logrss.intx(beta, betaintx, delta.hi.pack, hi.pack, hj.4), delta=1:3000, hj='60 days'), by=.(wolfID) ]
+
+indiv.nonerss.pack.hj <- rbind(indiv.nonerss.pack.1, indiv.nonerss.pack.2, indiv.nonerss.pack.3, indiv.nonerss.pack.4)
+
+lnrss.pack.indiv.none =  ggplot(indiv.nonerss.pack.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Distance to pack (m)") +
+  ggtitle("c) none") +
+  ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+lnrss.pack.indiv.none
+
+
+(lnrss.road.indiv.none|lnrss.road.indiv.human|lnrss.road.indiv.CDV)/(lnrss.nn.indiv.none|lnrss.nn.indiv.human|lnrss.nn.indiv.CDV)/(lnrss.pack.indiv.none|lnrss.pack.indiv.human|lnrss.pack.indiv.CDV)
+
+#(rss.forest.indiv.none|rss.forest.indiv.human|rss.forest.indiv.CDV)/(rss.wet.indiv.none|rss.wet.indiv.human|rss.wet.indiv.CDV)/(rss.open.indiv.none|rss.open.indiv.human|rss.open.indiv.CDV)
+
+
 
 #########
 beta <- merge(fullOUT, beta.se[,.(term, COD, se)], by = c('term', 'COD'))
