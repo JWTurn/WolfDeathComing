@@ -1137,6 +1137,112 @@ lnrss.pack.indiv.none
 
 
 
+#### habitat RSS ####
+
+#### indiv RSS forest ----
+#### human ####
+
+delta.hi.forest <- seq(0, 1, .00001)
+
+
+indiv.humanrss.forest <- indiv.beta.wide[COD=='human' & term2=='forest']
+
+
+indiv.humanrss.forest.1 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.forest.2 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.forest.3 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.forest.4 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.humanrss.forest.hj <- rbind(indiv.humanrss.forest.1, indiv.humanrss.forest.2, indiv.humanrss.forest.3, indiv.humanrss.forest.4)
+
+rss.forest.indiv.human =  ggplot(indiv.humanrss.forest.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Forest") +
+  ggtitle("b) human") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.forest.indiv.human
+
+
+#### CDV ####
+indiv.CDVrss.forest <- indiv.beta.wide[COD=='CDV' & term2=='forest']
+
+
+indiv.CDVrss.forest.1 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.forest.2 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.3 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.4 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.CDVrss.forest.hj <- rbind(indiv.CDVrss.forest.1, indiv.CDVrss.forest.2, indiv.CDVrss.forest.3, indiv.CDVrss.forest.4)
+
+rss.forest.indiv.CDV =  ggplot(indiv.CDVrss.forest.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Forest") +
+  ggtitle("c) CDV") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  + 
+  scale_linetype_manual("", values = c('solid','twodash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.forest.indiv.CDV
+
+
+
+
+#### none ####
+indiv.nonerss.forest <- indiv.beta.wide[COD=='control' & term2=='forest']
+
+
+indiv.nonerss.forest.1 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.forest.2 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.forest.3 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.forest.4 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.nonerss.forest.hj <- rbind(indiv.nonerss.forest.1, indiv.nonerss.forest.2, indiv.nonerss.forest.3, indiv.nonerss.forest.4)
+
+rss.forest.indiv.none =  ggplot(indiv.nonerss.forest.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("Forest") +
+  ggtitle("a) control") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  scale_linetype_manual("", values = c('solid','twodash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.forest.indiv.none
+
 #########
 beta <- merge(fullOUT, beta.se[,.(term, COD, se)], by = c('term', 'COD'))
 beta[,'lwr'] <- beta$estimate - (beta$se*1.96)
