@@ -74,8 +74,8 @@ ttd<-ggplot(beta.se[var=='intx'], aes(x=term, y=mean, colour=COD)) +
 
 main/ttd
 
-fullOUT$wolfID<-as.factor(fullOUT$wolfID)
-fullOUT$var<-as.factor(fullOUT$var)
+# fullOUT$wolfID<-as.factor(fullOUT$wolfID)
+# fullOUT$var<-as.factor(fullOUT$var)
 
 
 none.nn.main <- ggplot(fullOUT[var=='var'& COD == 'control'], aes(x=term, y=estimate, colour=wolfID)) + 
@@ -1133,11 +1133,9 @@ lnrss.pack.indiv.none
 
 (lnrss.road.indiv.none|lnrss.road.indiv.human|lnrss.road.indiv.CDV)/(lnrss.nn.indiv.none|lnrss.nn.indiv.human|lnrss.nn.indiv.CDV)/(lnrss.pack.indiv.none|lnrss.pack.indiv.human|lnrss.pack.indiv.CDV)
 
-#(rss.forest.indiv.none|rss.forest.indiv.human|rss.forest.indiv.CDV)/(rss.wet.indiv.none|rss.wet.indiv.human|rss.wet.indiv.CDV)/(rss.open.indiv.none|rss.open.indiv.human|rss.open.indiv.CDV)
 
 
-
-#### habitat RSS ####
+#### indiv habitat RSS ####
 
 #### indiv RSS forest ----
 #### human ####
@@ -1203,7 +1201,7 @@ rss.forest.indiv.CDV =  ggplot(indiv.CDVrss.forest.hj[hj!='14 days' & hj!='30 da
   ggtitle("c) CDV") +
   # ylim(-0.01,5) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  + 
-  scale_linetype_manual("", values = c('solid','dotdash')) +
+  # scale_linetype_manual("", values = c('solid','dotdash')) +
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.forest.indiv.CDV
@@ -1238,7 +1236,7 @@ rss.forest.indiv.none =  ggplot(indiv.nonerss.forest.hj[hj!='14 days' & hj!='30 
   ggtitle("a) control") +
   # ylim(-0.01,5) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  scale_linetype_manual("", values = c('solid','twodash')) +
+  # scale_linetype_manual("", values = c('solid','twodash')) +
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.forest.indiv.none
@@ -1309,7 +1307,7 @@ rss.wet.indiv.CDV =  ggplot(indiv.CDVrss.wet.hj[hj!='14 days' & hj!='30 days'], 
   ggtitle("c) CDV") +
   # ylim(-0.01,5) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  + 
-  scale_linetype_manual("", values = c('solid','dotdash')) +
+  # scale_linetype_manual("", values = c('solid','dotdash')) +
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.wet.indiv.CDV
@@ -1344,13 +1342,122 @@ rss.wet.indiv.none =  ggplot(indiv.nonerss.wet.hj[hj!='14 days' & hj!='30 days']
   ggtitle("a) control") +
   # ylim(-0.01,5) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  scale_linetype_manual("", values = c('solid','twodash')) +
+  # scale_linetype_manual("", values = c('solid','twodash')) +
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.wet.indiv.none
 
 
 
+
+#### indiv RSS open ----
+#### human ####
+
+delta.hi.open <- seq(0, 1, .00001)
+
+
+indiv.humanrss.open <- indiv.beta.wide[COD=='human' & term2=='open']
+
+
+indiv.humanrss.open.1 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.open.2 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.open.3 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.open.4 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.humanrss.open.hj <- rbind(indiv.humanrss.open.1, indiv.humanrss.open.2, indiv.humanrss.open.3, indiv.humanrss.open.4)
+
+rss.open.indiv.human =  ggplot(indiv.humanrss.open.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("open") +
+  ggtitle("b) human") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  #scale_linetype_manual("", values = c('solid','twodash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.open.indiv.human
+
+
+#### CDV ####
+indiv.CDVrss.open <- indiv.beta.wide[COD=='CDV' & term2=='open']
+
+
+indiv.CDVrss.open.1 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.open.2 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.open.3 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.open.4 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.CDVrss.open.hj <- rbind(indiv.CDVrss.open.1, indiv.CDVrss.open.2, indiv.CDVrss.open.3, indiv.CDVrss.open.4)
+
+rss.open.indiv.CDV =  ggplot(indiv.CDVrss.open.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("open") +
+  ggtitle("c) CDV") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  + 
+  #scale_linetype_manual("", values = c('solid','twodash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.open.indiv.CDV
+
+
+
+
+#### none ####
+indiv.nonerss.open <- indiv.beta.wide[COD=='control' & term2=='open']
+
+
+indiv.nonerss.open.1 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.open.2 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.open.3 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.open.4 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.nonerss.open.hj <- rbind(indiv.nonerss.open.1, indiv.nonerss.open.2, indiv.nonerss.open.3, indiv.nonerss.open.4)
+
+rss.open.indiv.none =  ggplot(indiv.nonerss.open.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("open") +
+  ggtitle("a) control") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  # scale_linetype_manual("", values = c('solid','twodash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.open.indiv.none
+
+
+
+(rss.forest.indiv.none|rss.forest.indiv.human|rss.forest.indiv.CDV)/(rss.wet.indiv.none|rss.wet.indiv.human|rss.wet.indiv.CDV)/(rss.open.indiv.none|rss.open.indiv.human|rss.open.indiv.CDV)
 
 
 #########
