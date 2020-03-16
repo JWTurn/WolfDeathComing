@@ -1148,10 +1148,10 @@ delta.hi.forest <- seq(0, 1, .00001)
 indiv.humanrss.forest <- indiv.beta.wide[COD=='human' & term2=='forest']
 
 
-indiv.humanrss.forest.1 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.humanrss.forest.2 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.humanrss.forest.3 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.humanrss.forest.4 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.humanrss.forest.1 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.forest.2 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.forest.3 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.forest.4 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
 
 indiv.humanrss.forest.hj <- rbind(indiv.humanrss.forest.1, indiv.humanrss.forest.2, indiv.humanrss.forest.3, indiv.humanrss.forest.4)
 
@@ -1180,10 +1180,10 @@ rss.forest.indiv.human
 indiv.CDVrss.forest <- indiv.beta.wide[COD=='CDV' & term2=='forest']
 
 
-indiv.CDVrss.forest.1 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.CDVrss.forest.2 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.CDVrss.forest.3 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.CDVrss.forest.4 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.1 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.forest.2 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.3 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.4 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
 
 indiv.CDVrss.forest.hj <- rbind(indiv.CDVrss.forest.1, indiv.CDVrss.forest.2, indiv.CDVrss.forest.3, indiv.CDVrss.forest.4)
 
@@ -1203,7 +1203,7 @@ rss.forest.indiv.CDV =  ggplot(indiv.CDVrss.forest.hj[hj!='14 days' & hj!='30 da
   ggtitle("c) CDV") +
   # ylim(-0.01,5) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  + 
-  scale_linetype_manual("", values = c('solid','twodash')) +
+  scale_linetype_manual("", values = c('solid','dotdash')) +
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.forest.indiv.CDV
@@ -1242,6 +1242,116 @@ rss.forest.indiv.none =  ggplot(indiv.nonerss.forest.hj[hj!='14 days' & hj!='30 
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.forest.indiv.none
+
+
+
+#### indiv RSS wet ----
+#### human ####
+
+delta.hi.wet <- seq(0, 1, .00001)
+
+
+indiv.humanrss.wet <- indiv.beta.wide[COD=='human' & term2=='wet']
+
+
+indiv.humanrss.wet.1 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.wet.2 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.wet.3 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.wet.4 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.humanrss.wet.hj <- rbind(indiv.humanrss.wet.1, indiv.humanrss.wet.2, indiv.humanrss.wet.3, indiv.humanrss.wet.4)
+
+rss.wet.indiv.human =  ggplot(indiv.humanrss.wet.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("wet") +
+  ggtitle("b) human") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.wet.indiv.human
+
+
+#### CDV ####
+indiv.CDVrss.wet <- indiv.beta.wide[COD=='CDV' & term2=='wet']
+
+
+indiv.CDVrss.wet.1 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.wet.2 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.wet.3 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.wet.4 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.CDVrss.wet.hj <- rbind(indiv.CDVrss.wet.1, indiv.CDVrss.wet.2, indiv.CDVrss.wet.3, indiv.CDVrss.wet.4)
+
+rss.wet.indiv.CDV =  ggplot(indiv.CDVrss.wet.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("wet") +
+  ggtitle("c) CDV") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  + 
+  scale_linetype_manual("", values = c('solid','dotdash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.wet.indiv.CDV
+
+
+
+
+#### none ####
+indiv.nonerss.wet <- indiv.beta.wide[COD=='control' & term2=='wet']
+
+
+indiv.nonerss.wet.1 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.wet.2 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.wet.3 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.wet.4 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+
+indiv.nonerss.wet.hj <- rbind(indiv.nonerss.wet.1, indiv.nonerss.wet.2, indiv.nonerss.wet.3, indiv.nonerss.wet.4)
+
+rss.wet.indiv.none =  ggplot(indiv.nonerss.wet.hj[hj!='14 days' & hj!='30 days'], aes(x=(delta),y=(rss))) + 
+  geom_line(aes(linetype = hj, colour = wolfID), size = 1) + 
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) + 
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("RSS") + xlab("wet") +
+  ggtitle("a) control") +
+  # ylim(-0.01,5) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  scale_linetype_manual("", values = c('solid','twodash')) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+rss.wet.indiv.none
+
+
+
+
 
 #########
 beta <- merge(fullOUT, beta.se[,.(term, COD, se)], by = c('term', 'COD'))
