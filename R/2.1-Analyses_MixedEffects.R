@@ -143,8 +143,8 @@ dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
 dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
 dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 
-dat.wnn.lastmo.cod[,uniqueN(wolfID), by=.(pop, COD)]
-dat.meta[,uniqueN(wolfpop), by=.(pop, COD)]
+dat.wnn.lastmo.cod[,.(N=uniqueN(wolfID)), by=.(pop, COD)]
+dat.meta[,N=uniqueN(wolfpop), by=.(pop, COD)]
 
 #### everyone ####
 
