@@ -175,14 +175,14 @@ lnrss.nn.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
   ggtitle("b) human") +
   ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.nn.pop.human
 
@@ -206,14 +206,14 @@ lnrss.nn.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
   ggtitle("c) CDV") +
   ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.nn.pop.CDV
 
@@ -237,14 +237,14 @@ lnrss.nn.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty =
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to NN (m)") +
   ggtitle("a) control") +
   ylim(-0.01,20) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.nn.pop.none
 
@@ -276,14 +276,14 @@ lnrss.road.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lt
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to road (m)") +
   ggtitle("b) human") +
   ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.road.pop.human
 
@@ -307,14 +307,14 @@ lnrss.road.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to road (m)") +
   ggtitle("c) CDV") +
   ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.road.pop.CDV
 
@@ -338,14 +338,14 @@ lnrss.road.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to road (m)") +
   ggtitle("a) control") +
   ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.road.pop.none
 
@@ -378,14 +378,14 @@ lnrss.pack.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lt
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to pack (m)") +
   ggtitle("b) human") +
   ylim(-0.01,3) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.pack.pop.human
 
@@ -409,14 +409,14 @@ lnrss.pack.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to pack (m)") +
   ggtitle("c) CDV") +
   ylim(-0.01,3) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.pack.pop.CDV
 
@@ -440,14 +440,14 @@ lnrss.pack.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Distance to pack (m)") +
   ggtitle("a) control") +
   ylim(-0.01,3) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = c(.75,.9)) + theme(legend.text = element_text(size = 10))
 
 lnrss.pack.pop.none
 
@@ -489,14 +489,14 @@ rss.forest.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lt
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Forest") +
   ggtitle("b) human") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 10))
 
 rss.forest.pop.human
 
@@ -526,7 +526,7 @@ rss.forest.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Forest") +
@@ -534,7 +534,7 @@ rss.forest.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
   
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = "right") + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = "right") + theme(legend.text = element_text(size = 10))
 
 rss.forest.pop.CDV
 
@@ -563,14 +563,14 @@ rss.forest.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Forest") +
   ggtitle("a) control") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 10))
 
 rss.forest.pop.none
 
@@ -608,14 +608,14 @@ rss.wet.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty =
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Wet") +
   ggtitle("b) human") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 10))
 
 rss.wet.pop.human
 
@@ -645,7 +645,7 @@ rss.wet.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Wet") +
@@ -653,7 +653,7 @@ rss.wet.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 2
   
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.wet.pop.CDV
 
@@ -682,14 +682,14 @@ rss.wet.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Wet") +
   ggtitle("a) control") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 10))
 
 rss.wet.pop.none
 
@@ -727,14 +727,14 @@ rss.open.pop.human =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Open") +
   ggtitle("b) human") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 10))
 
 rss.open.pop.human
 
@@ -764,7 +764,7 @@ rss.open.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Open") +
@@ -772,7 +772,7 @@ rss.open.pop.CDV =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty = 
   
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 rss.open.pop.CDV
 
@@ -801,14 +801,14 @@ rss.open.pop.none =  ggplot() + geom_hline(yintercept = 0,colour = "black",lty =
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.line = element_line(colour = "black", size = .7)) +
-  theme(plot.title=element_text(size=20,hjust = 0.05),axis.text.x = element_text(size=20), axis.title = element_text(size=25),axis.text.y = element_text(size=20)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("RSS") + xlab("Open") +
   ggtitle("a) control") +
   #ylim(-0.01,2.5) +
   scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
-  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 20))
+  theme(legend.key = element_blank()) + theme(legend.position = 'none') + theme(legend.text = element_text(size = 10))
 
 rss.open.pop.none
 
@@ -1140,16 +1140,16 @@ lnrss.pack.indiv.none
 #### indiv RSS forest ----
 #### human ####
 
-delta.hi.forest <- seq(0, 1, .00001)
+delta.hi.forest <- seq(0, 1, .0001)
 
 
 indiv.humanrss.forest <- indiv.beta.wide[COD=='human' & term2=='forest']
 
 
-indiv.humanrss.forest.1 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.humanrss.forest.2 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.humanrss.forest.3 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.humanrss.forest.4 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.humanrss.forest.1 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.forest.2 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.forest.3 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.forest.4 <- indiv.humanrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.humanrss.forest.hj <- rbind(indiv.humanrss.forest.1, indiv.humanrss.forest.2, indiv.humanrss.forest.3, indiv.humanrss.forest.4)
 
@@ -1178,10 +1178,10 @@ rss.forest.indiv.human
 indiv.CDVrss.forest <- indiv.beta.wide[COD=='CDV' & term2=='forest']
 
 
-indiv.CDVrss.forest.1 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.CDVrss.forest.2 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.CDVrss.forest.3 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.CDVrss.forest.4 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.1 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.forest.2 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.3 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.forest.4 <- indiv.CDVrss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, log.hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.CDVrss.forest.hj <- rbind(indiv.CDVrss.forest.1, indiv.CDVrss.forest.2, indiv.CDVrss.forest.3, indiv.CDVrss.forest.4)
 
@@ -1213,10 +1213,10 @@ rss.forest.indiv.CDV
 indiv.nonerss.forest <- indiv.beta.wide[COD=='control' & term2=='forest']
 
 
-indiv.nonerss.forest.1 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.nonerss.forest.2 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.nonerss.forest.3 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.nonerss.forest.4 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.nonerss.forest.1 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.forest.2 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.forest.3 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.forest.4 <- indiv.nonerss.forest[,.(rss=rss.intx(beta, betaintx, delta.hi.forest, hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.nonerss.forest.hj <- rbind(indiv.nonerss.forest.1, indiv.nonerss.forest.2, indiv.nonerss.forest.3, indiv.nonerss.forest.4)
 
@@ -1246,16 +1246,16 @@ rss.forest.indiv.none
 #### indiv RSS wet ----
 #### human ####
 
-delta.hi.wet <- seq(0, 1, .00001)
+delta.hi.wet <- seq(0, 1, .0001)
 
 
 indiv.humanrss.wet <- indiv.beta.wide[COD=='human' & term2=='wet']
 
 
-indiv.humanrss.wet.1 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.humanrss.wet.2 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.humanrss.wet.3 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.humanrss.wet.4 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.humanrss.wet.1 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.wet.2 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.wet.3 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.wet.4 <- indiv.humanrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.humanrss.wet.hj <- rbind(indiv.humanrss.wet.1, indiv.humanrss.wet.2, indiv.humanrss.wet.3, indiv.humanrss.wet.4)
 
@@ -1284,10 +1284,10 @@ rss.wet.indiv.human
 indiv.CDVrss.wet <- indiv.beta.wide[COD=='CDV' & term2=='wet']
 
 
-indiv.CDVrss.wet.1 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.CDVrss.wet.2 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.CDVrss.wet.3 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.CDVrss.wet.4 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.CDVrss.wet.1 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.wet.2 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.wet.3 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.wet.4 <- indiv.CDVrss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, log.hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.CDVrss.wet.hj <- rbind(indiv.CDVrss.wet.1, indiv.CDVrss.wet.2, indiv.CDVrss.wet.3, indiv.CDVrss.wet.4)
 
@@ -1319,10 +1319,10 @@ rss.wet.indiv.CDV
 indiv.nonerss.wet <- indiv.beta.wide[COD=='control' & term2=='wet']
 
 
-indiv.nonerss.wet.1 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.nonerss.wet.2 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.nonerss.wet.3 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.nonerss.wet.4 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.nonerss.wet.1 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.wet.2 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.wet.3 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.wet.4 <- indiv.nonerss.wet[,.(rss=rss.intx(beta, betaintx, delta.hi.wet, hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.nonerss.wet.hj <- rbind(indiv.nonerss.wet.1, indiv.nonerss.wet.2, indiv.nonerss.wet.3, indiv.nonerss.wet.4)
 
@@ -1353,16 +1353,16 @@ rss.wet.indiv.none
 #### indiv RSS open ----
 #### human ####
 
-delta.hi.open <- seq(0, 1, .00001)
+delta.hi.open <- seq(0, 1, .0001)
 
 
 indiv.humanrss.open <- indiv.beta.wide[COD=='human' & term2=='open']
 
 
-indiv.humanrss.open.1 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.humanrss.open.2 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.humanrss.open.3 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.humanrss.open.4 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.humanrss.open.1 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.humanrss.open.2 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.humanrss.open.3 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.humanrss.open.4 <- indiv.humanrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.humanrss.open.hj <- rbind(indiv.humanrss.open.1, indiv.humanrss.open.2, indiv.humanrss.open.3, indiv.humanrss.open.4)
 
@@ -1392,10 +1392,10 @@ rss.open.indiv.human
 indiv.CDVrss.open <- indiv.beta.wide[COD=='CDV' & term2=='open']
 
 
-indiv.CDVrss.open.1 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.CDVrss.open.2 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.CDVrss.open.3 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.CDVrss.open.4 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.CDVrss.open.1 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.CDVrss.open.2 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.CDVrss.open.3 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.CDVrss.open.4 <- indiv.CDVrss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, log.hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.CDVrss.open.hj <- rbind(indiv.CDVrss.open.1, indiv.CDVrss.open.2, indiv.CDVrss.open.3, indiv.CDVrss.open.4)
 
@@ -1427,10 +1427,10 @@ rss.open.indiv.CDV
 indiv.nonerss.open <- indiv.beta.wide[COD=='control' & term2=='open']
 
 
-indiv.nonerss.open.1 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.1), delta=seq(0, 1, .00001), hj='1 day'), by=.(wolfID) ]
-indiv.nonerss.open.2 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.2), delta=seq(0, 1, .00001), hj='14 days'), by=.(wolfID) ]
-indiv.nonerss.open.3 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.3), delta=seq(0, 1, .00001), hj='30 days'), by=.(wolfID) ]
-indiv.nonerss.open.4 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.4), delta=seq(0, 1, .00001), hj='60 days'), by=.(wolfID) ]
+indiv.nonerss.open.1 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.1), delta=seq(0, 1, .0001), hj='1 day'), by=.(wolfID) ]
+indiv.nonerss.open.2 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.2), delta=seq(0, 1, .0001), hj='14 days'), by=.(wolfID) ]
+indiv.nonerss.open.3 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.3), delta=seq(0, 1, .0001), hj='30 days'), by=.(wolfID) ]
+indiv.nonerss.open.4 <- indiv.nonerss.open[,.(rss=rss.intx(beta, betaintx, delta.hi.open, hj.4), delta=seq(0, 1, .0001), hj='60 days'), by=.(wolfID) ]
 
 indiv.nonerss.open.hj <- rbind(indiv.nonerss.open.1, indiv.nonerss.open.2, indiv.nonerss.open.3, indiv.nonerss.open.4)
 
