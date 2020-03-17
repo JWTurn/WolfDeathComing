@@ -154,6 +154,9 @@ unique(dat$land_end)
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous', 'forest','open'))
 
+# dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end 
+# dat[,'propopen_end_adj'] <- dat$propopen_end +dat$propshrub_end #+ dat$propurban_end
+
 dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end 
 dat[,'propopen_end_adj'] <- dat$propopen_end +dat$propshrub_end + dat$propurban_end
 
@@ -285,18 +288,30 @@ move1moOUT<- dat[ttd1<=31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
 
 
 
+# 
+# movepropland2moOUT <- dat[ttd1>31  & wolfID!='GHA26_W27' & wolfID!='GHA26_W32'& wolfID!='GHA26_W24'& wolfID!='GHA26_W35' #& wolfID!='RMNP_W11' & wolfID!='RMNP_W22'&
+#                          ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
+# 
+# 
+# unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
+#            & wolfID!='GHA26_W35' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25',.(wolfID)])
+# 
+# movepropland1moOUT <- dat[ttd1<=31 &  wolfID!='RMNP_W11' & wolfID!='RMNP_W22'&wolfID!='GHA26_W27'# & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+#                         # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+#                          ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
+# 
+
 
 movepropland2moOUT <- dat[ttd1>31 &  wolfID!='RMNP_W11' & wolfID!='RMNP_W22'#wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11' & wolfID!='GHA26_W35'
-                         ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
+                          ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
 unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W11'
            & wolfID!='GHA26_W35' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25',.(wolfID)])
 
-movepropland1moOUT <- dat[ttd1<=31 &  wolfID!='RMNP_W11' & wolfID!='RMNP_W22'&wolfID!='GHA26_W27'# & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
-                        # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
-                         ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
-
+movepropland1moOUT <- dat[ttd1<=31 &  wolfID!='RMNP_W11' & wolfID!='RMNP_W22'&wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+                          # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+                          ,Move.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), cos_ta, stepjum), by = .(wolfID)]
 
 
 
@@ -422,11 +437,15 @@ habpropland2moOUT <- dat[ttd1>31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
 unique(dat[wolfID!='GHA26_W27' & wolfID!='GHA26_W32' #& wolfID!='RMNP_W11'
            #& wolfID!='GHA26_W35' & wolfID!='GHA26_W24' & wolfID!='GHA26_W25'
            ,.(wolfID)])
+habpropland1moOUT <- dat[ttd1<=31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
+                         # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+                         ,Habitat.land(case_, log_sl, ToD_start, propforest_end_adj, propopen_end_adj, propwet_end, log(1+ttd1), log(1+roadDist_end), stepjum), by = .(wolfID)]
+
 
 # & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='GHA26_W24'# & wolfID!='RMNP_W11' 
-habpropland1moOUT <- dat[ttd1<=31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
-                        # & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
-                         ,Habitat.land(case_, log_sl, ToD_start, (propforest_end_adj), (propopen_end_adj), (propwet_end), log(1+ttd1), (roadDist_end), stepjum), by = .(wolfID)]
+# habpropland1moOUT <- dat[ttd1<=31 & wolfID!='RMNP_W11' & wolfID!='RMNP_W22'
+#                         & wolfID!='GHA26_W35'  & wolfID!='GHA26_W25' & wolfID!='GHA26_W26'
+#                          ,Habitat.land(case_, log_sl, ToD_start, (propforest_end_adj), (propopen_end_adj), (propwet_end), log(1+ttd1), (roadDist_end), stepjum), by = .(wolfID)]
 
 
 # habpropland2moOUT2 <- dat[ttd1>31 & wolfID!='GHA26_W27' & wolfID!='GHA26_W32' & wolfID!='RMNP_W05'# & wolfID!='GHA26_W35'
@@ -2062,6 +2081,61 @@ ggplot(m.sochum.coef.none, aes(variable, (value), fill = ttd)) +
   ylab('selection') +
   scale_fill_manual(values = color) +
   scale_color_manual(values = color) + ylim(-1,1)
+
+
+
+
+#### gathering coef and SEs ####
+m.movepropland2mo.se <- movepropland2moOUT[term=='coef'|term=='se',-'AIC']
+m.movepropland2mo.se[,'test'] <- 'control'
+m.movepropland2mo.se<- merge(m.movepropland2mo.se, dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+
+m.movepropland1mo.se <- movepropland1moOUT[term=='coef'|term=='se',-'AIC']
+m.movepropland1mo.se[,'test'] <- 'case'
+
+m.movepropland1mo.se<- merge(m.movepropland1mo.se, dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+m.movepropland.se <- rbind(m.movepropland2mo.se, 
+                            m.movepropland1mo.se)
+
+
+
+m.habpropland2mo.se <- habpropland2moOUT[term=='coef'|term=='se',-'AIC']
+m.habpropland2mo.se[,'test'] <- 'control'
+m.habpropland2mo.se<- merge(m.habpropland2mo.se, dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+
+m.habpropland1mo.se <- habpropland1moOUT[term=='coef'|term=='se',-'AIC']
+m.habpropland1mo.se[,'test'] <- 'case'
+
+m.habpropland1mo.se<- merge(m.habpropland1mo.se, dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+m.habpropland.se <- rbind(m.habpropland2mo.se, 
+                           m.habpropland1mo.se)
+
+
+
+
+m.socpropland2mo.se <- socpropland2moOUT[term=='coef'|term=='se',-'AIC']
+m.socpropland2mo.se[,'test'] <- 'control'
+m.socpropland2mo.se<- merge(m.socpropland2mo.se, dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+
+m.socpropland1mo.se <- socpropland1moOUT[term=='coef'|term=='se',-'AIC']
+m.socpropland1mo.se[,'test'] <- 'case'
+
+m.socpropland1mo.se<- merge(m.socpropland1mo.se, dat.meta[,.(wolfpop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+
+m.socpropland.se <- rbind(m.socpropland2mo.se, 
+                           m.socpropland1mo.se)
+
 
 
 
