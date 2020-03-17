@@ -359,7 +359,7 @@ ttd.move <- ggplot(everyone.ttd[term=='log_sl-ttd'|term=='cos_ta-ttd'], aes(term
   ylab('beta') +
   ggtitle("Movement") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+  scale_color_manual(values = cbPalette) + ylim(-.35,.3)
 
 ttd.hab <- ggplot(everyone.ttd[term=='forest-ttd'|term=='open-ttd'|term=='wet-ttd'], aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
@@ -383,7 +383,7 @@ ttd.hab <- ggplot(everyone.ttd[term=='forest-ttd'|term=='open-ttd'|term=='wet-tt
   ylab('beta') +
   ggtitle("Habitat") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+  scale_color_manual(values = cbPalette) + ylim(-8,12)
 
 ttd.dist <- ggplot(everyone.ttd[term=='roadDist-ttd'|term=='nnDist-ttd'|term=='boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
@@ -407,7 +407,7 @@ ttd.dist <- ggplot(everyone.ttd[term=='roadDist-ttd'|term=='nnDist-ttd'|term=='b
   ylab('beta') +
   ggtitle("Distance to Rd and Social") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+  scale_color_manual(values = cbPalette) + ylim(-1,2.5)
 
 
 
@@ -434,7 +434,7 @@ main.move <- ggplot(everyone.main[term=='log_sl'|term=='cos_ta'], aes(term, (est
   ylab('beta') +
   ggtitle("Movement") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+  scale_color_manual(values = cbPalette) + ylim(-.35,.3)
 
 main.hab <- ggplot(everyone.main[term=='forest'|term=='open'|term=='wet'], aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
@@ -458,7 +458,7 @@ main.hab <- ggplot(everyone.main[term=='forest'|term=='open'|term=='wet'], aes(t
   ylab('beta') +
   ggtitle("Habitat") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+  scale_color_manual(values = cbPalette) + ylim(-8,12)
 
 main.dist <- ggplot(everyone.main[term=='roadDist'|term=='nnDist'|term=='boundaryDist'], aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
@@ -482,7 +482,7 @@ main.dist <- ggplot(everyone.main[term=='roadDist'|term=='nnDist'|term=='boundar
   ylab('beta') +
   ggtitle("Distance to Rd and Social") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+  scale_color_manual(values = cbPalette) + ylim(-1,2.5)
 
 
 main.move/ttd.move
