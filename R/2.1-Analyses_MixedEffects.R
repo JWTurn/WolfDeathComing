@@ -70,16 +70,10 @@ dat[,'wolf_step_id'] <- paste(dat$wolfID, dat$step_id_, sep = '_')
 
 dat[ua=='used',.(road=mean(roadDist_end, na.rm = T), nn= mean(distance2, na.rm = T), pack= mean(packDistadj_end, na.rm = T)), by= COD]
 
-#### behav predict COD ####
+dat$COD <- factor(dat$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+dat$COD[is.na(dat$COD)] <- "control"
 
-total <- mclogit::mclogit(COD ~ log_sl:ToD_start +
-                  log_sl:land_end_adj +
-                  log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
-                  land_end_adj + log(1+roadDist_end) +
-                  log(ttd1+1):land_end_adj + log(ttd1+1):log(1+roadDist_end) +
-                  log(1+distance2) + log(1+packDistadj_end) +
-                  log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
-                  strata(wolf_step_id), dat )
+
 
 ######
 ggplot(dat[ ua =='used' & COD=='cdv'], aes(ttd1, (distance2), color = wolfID)) +
@@ -95,10 +89,10 @@ rd.a<-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(roadDist_end)) +
   geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() + 
   ggtitle("avaliable - CDV") 
 
-rd.u.c <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='none'], aes(roadDist_end)) +
+rd.u.c <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='control'], aes(roadDist_end)) +
   geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() +
   ggtitle("used - none") 
-rd.a.c <-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='none'], aes(roadDist_end)) +
+rd.a.c <-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='control'], aes(roadDist_end)) +
   geom_histogram(aes(y=..density..), binwidth = 50) + geom_density() + 
   ggtitle("avaliable - none") 
 (rd.u.c|rd.u)/(rd.a.c|rd.a)
@@ -111,10 +105,10 @@ nn.a<-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(distance2)) +
   geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() + 
   ggtitle("avaliable - CDV") + xlab('Dist to NN')
 
-nn.u.c <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='none'], aes(distance2)) +
+nn.u.c <-ggplot(dat[ttd1<=31 & ua =='used' & COD=='control'], aes(distance2)) +
   geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() +
   ggtitle("used - none") + xlab('Dist to NN')
-nn.a.c <-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='none'], aes(distance2)) +
+nn.a.c <-ggplot(dat[ttd1<=31 & ua =='avail' & COD=='control'], aes(distance2)) +
   geom_histogram(aes(y=..density..), binwidth = 100) + geom_density() + 
   ggtitle("avaliable - none") + xlab('Dist to NN')
 (nn.u.c|nn.u)/(nn.a.c|nn.a)
@@ -144,29 +138,31 @@ dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfI
 dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
 
 dat.wnn.lastmo.cod[,.(N=uniqueN(wolfID)), by=.(pop, COD)]
-dat.meta[,N=uniqueN(wolfpop), by=.(pop, COD)]
+dat.meta[,.(N=uniqueN(wolfpop)), by=.(pop, COD)]
+
 
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~ log_sl:ToD_start +
-                        log_sl:land_end_adj +
-                        log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
+                       # log_sl:land_end_adj +
+                        log_sl:COD + cos_ta:COD + 
+                        I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                         (1|wolf_step_id) +
                         (0 + (log_sl)|wolfID) +
                         (0 + (cos_ta)|wolfID) +
-                        (0 + (log(ttd1+1):log_sl)|wolfID) +
-                        (0 + (log(ttd1+1):cos_ta)|wolfID) +
-                        land_end_adj + log(1+roadDist_end) +
-                        log(ttd1+1):land_end_adj +  log(ttd1+1):log(1+roadDist_end) +
+                        (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
+                        (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
+                        COD:land_end_adj + I(log(1+roadDist_end)):COD +
+                        COD:I(log(ttd1 + 1)):land_end_adj +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
                         
-                        (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
-                        (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
+                        (0 + land_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):land_end_adj)|wolfID) +
+                        (0 + I(log(1+roadDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+roadDist_end)))|wolfID) +
                         
-                        log(1+distance2) + log(1+packDistadj_end) +
-                        log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
+                        I(log(1+distance2)):COD + I(log(1+packDistadj_end)):COD +
+                        I(log(ttd1 + 1)):I(log(1+distance2)):COD + I(log(ttd1 + 1)):I(log(1+packDistadj_end)):COD +
                         
-                        (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
-                        (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
+                        (0 + I(log(1+distance2))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+distance2)))|wolfID) +
+                        (0 + I(log(1+packDistadj_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDistadj_end)))|wolfID)
                       , family=poisson(),
                       data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], doFit=FALSE)
 
@@ -178,7 +174,7 @@ summary(everyone)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
-saveRDS(popeveryone, 'data/derived-data/popeveryone_lastmoNN.Rds')
+saveRDS(popeveryone, 'data/derived-data/popeveryone_COD.Rds')
 
 everyone.ran_vals <-broom.mixed::tidy(everyone, effect= 'ran_vals')
 # everyone.ran_pars <-broom.mixed::tidy(everyone, effect= 'ran_pars')
@@ -251,8 +247,8 @@ everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.n
                                                                                                                      "nnDist-ttd", "boundaryDist-ttd"))
 
 
-#saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_lastmoNN.Rds')
-everyone.indiv<-readRDS('data/derived-data/everyone_betas_lastmoNN.Rds')
+#saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_COD.Rds')
+#everyone.indiv<-readRDS('data/derived-data/everyone_betas_lastmoNN.Rds')
 
 
 everyone.ttd <- everyone.indiv[term %like% "ttd", ]
@@ -282,29 +278,29 @@ ttd.vars <- ggplot(everyone.ttd, aes(term, (estimate), fill = COD)) +
   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
 
-ggplot(everyone.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
-  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
-               outlier.color = NA, lwd = 0.6,
-               alpha = 0.25) +
-  geom_jitter(aes(color = COD),
-              position = position_jitterdodge(.35),
-              size = 2, alpha = 0.4) +
-  #ggtitle('Interaction with community identity') +
-  geom_hline(aes(yintercept = 0), lty = 2) +
-  theme(#legend.position = 'none',
-    axis.title = element_text(size = 16, color = 'black'),
-    axis.text = element_text(size = 14, color = 'black'),
-    plot.title=element_text(size = 16, hjust=0),
-    axis.line = element_line(colour = "black"),
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    strip.background = element_rect(colour="black", size = 1, fill = "white"),
-    strip.text = element_text(size = 14)) +
-  xlab('') +
-  ylab('beta') +
-  # ggtitle("b) case") +
-  scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
+# ggplot(everyone.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
+#   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
+#                outlier.color = NA, lwd = 0.6,
+#                alpha = 0.25) +
+#   geom_jitter(aes(color = COD),
+#               position = position_jitterdodge(.35),
+#               size = 2, alpha = 0.4) +
+#   #ggtitle('Interaction with community identity') +
+#   geom_hline(aes(yintercept = 0), lty = 2) +
+#   theme(#legend.position = 'none',
+#     axis.title = element_text(size = 16, color = 'black'),
+#     axis.text = element_text(size = 14, color = 'black'),
+#     plot.title=element_text(size = 16, hjust=0),
+#     axis.line = element_line(colour = "black"),
+#     panel.grid.minor = element_blank(),
+#     panel.background = element_blank(),
+#     strip.background = element_rect(colour="black", size = 1, fill = "white"),
+#     strip.text = element_text(size = 14)) +
+#   xlab('') +
+#   ylab('beta') +
+#   # ggtitle("b) case") +
+#   scale_fill_manual(values = cbPalette) +
+#   scale_color_manual(values = cbPalette) #+ ylim(-2,2)
 
 
 everyone.main <- everyone.indiv[!(term %like% "ttd"), ]
