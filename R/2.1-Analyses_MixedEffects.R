@@ -681,7 +681,7 @@ road.CDV.1day.1.indiv[,'wolfID2'] <- road.CDV.1day.1.indiv$wolfID
 road.CDV.1day.1.indiv[,'wolfID'] <- NA
 
 p.road.CDV.1day.1.indiv <- road.CDV.1day.1.indiv[,.(h1 = predict(everyone,
-                              newdata = .SD[,.(ToD_start, log_sl, cos_ta, land_end_adj, roadDist_end, distance2, packDistadj_end, COD, ttd1, wolf_step_id, wolfID)], type = link),
+                              newdata = .SD[,.(ToD_start, log_sl, cos_ta, land_end_adj, roadDist_end, distance2, packDistadj_end, COD, ttd1, wolf_step_id, wolfID)], type = "link"),
                               x = seq(from = 0, to = 3000, length.out = 100)), 
                               by=.(wolfID2)]
 
@@ -868,6 +868,7 @@ p.road.human.1day.2.indiv<- p.road.human.1day.2.indiv[,.(wolfID = wolfID2, h2, t
 
 logRSS.road.human.indiv <- merge(p.road.human.1day.1.indiv, p.road.human.1day.2.indiv, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
 logRSS.road.human.indiv[,'rss'] <- logRSS.road.human.indiv$h1 - logRSS.road.human.indiv$h2
+
 
 
 road.human.60day.1.indiv <- dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD == 'human',.(ToD_start = factor('day', levels = levels(ToD_start)),
