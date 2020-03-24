@@ -704,11 +704,12 @@ road.CDV.1day.2.indiv[,'wolfID'] <- NA
 p.road.CDV.1day.2.indiv <- road.CDV.1day.2.indiv[,.(h2 = predict(everyone,
                                                           newdata = .SD[,.(ToD_start, log_sl, cos_ta, land_end_adj, roadDist_end, distance2, packDistadj_end, COD, ttd1, wolf_step_id, wolfID)], type = 'link')), 
                                                  by=.(wolfID2)]
+
 p.road.CDV.1day.1.indiv<- p.road.CDV.1day.1.indiv[,.(wolfID = wolfID2, h1, x, ttd = '1 day', COD = 'CDV', var = 'road')]
 p.road.CDV.1day.2.indiv<- p.road.CDV.1day.2.indiv[,.(wolfID = wolfID2, h2, ttd = '1 day', COD = 'CDV', var = 'road')]
 
-logRSS.road.CDV.indiv <- merge(p.road.CDV.1day.1.indiv, p.road.CDV.1day.2.indiv, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
-logRSS.road.CDV.indiv[,'rss'] <- logRSS.road.CDV.indiv$h1 - logRSS.road.CDV.indiv$h2
+logRSS.road.CDV.1day.indiv <- merge(p.road.CDV.1day.1.indiv, p.road.CDV.1day.2.indiv, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.road.CDV.1day.indiv[,'rss'] <- logRSS.road.CDV.indiv$h1 - logRSS.road.CDV.indiv$h2
 
 
 
@@ -866,8 +867,8 @@ p.road.human.1day.2.indiv <- road.human.1day.2.indiv[,.(h2 = predict(everyone,
 p.road.human.1day.1.indiv<- p.road.human.1day.1.indiv[,.(wolfID = wolfID2, h1, x, ttd = '1 day', COD = 'human', var = 'road')]
 p.road.human.1day.2.indiv<- p.road.human.1day.2.indiv[,.(wolfID = wolfID2, h2, ttd = '1 day', COD = 'human', var = 'road')]
 
-logRSS.road.human.indiv <- merge(p.road.human.1day.1.indiv, p.road.human.1day.2.indiv, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
-logRSS.road.human.indiv[,'rss'] <- logRSS.road.human.indiv$h1 - logRSS.road.human.indiv$h2
+logRSS.road.human.1day.indiv <- merge(p.road.human.1day.1.indiv, p.road.human.1day.2.indiv, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.road.human.1day.indiv[,'rss'] <- logRSS.road.human.indiv$h1 - logRSS.road.human.indiv$h2
 
 
 
@@ -1075,7 +1076,9 @@ logRSS.road.control.60day.indiv <- merge(p.road.control.60day.1.indiv, p.road.co
 logRSS.road.control.60day.indiv[,'rss'] <- logRSS.road.control.60day.indiv$h1 - logRSS.road.control.60day.indiv$h2
 
 
-
+logRSS.road.indiv <- rbind(logRSS.road.control.1day.indiv, logRSS.road.control.60day.indiv, 
+                           logRSS.road.human.1day.indiv, logRSS.road.human.60day.indiv, 
+                           logRSS.road.CDV.1day.indiv, logRSS.road.CDV.60day.indiv)
 
 
 
@@ -1084,11 +1087,27 @@ logRSS.road.control.60day.indiv[,'rss'] <- logRSS.road.control.60day.indiv$h1 - 
 
 
 #####
-logRSS.road.indiv <- rbind()
+logRSS.road.indiv <- setDT(logRSS.road.indiv)
+logRSS.road.indiv[,'COD'] <- as.factor(logRSS.road.indiv$COD)
+logRSS.road.indiv[,'ttd'] <- as.factor(logRSS.road.indiv$ttd)
 
-ggplot(setDT(logRSS)[ttd=='1 day'], aes(x, rss)) +
-  geom_line(aes(colour = COD)) +
-  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) 
+logRSS.road.indiv.se <- unique(logRSS.road.indiv[,.(se=se(rss), var), by = .(x, COD, ttd)])
+
+logRSS.road.pop <- merge(logRSS, logRSS.road.indiv.se, by = c('x', 'COD', 'ttd','var'))
+
+
+ggplot(data=logRSS.road.pop[ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
+
+
+ggplot(data=logRSS.road.pop[ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
+
+  
 
 ggplot(setDT(logRSS)[ttd=='60 days'], aes(x, rss)) +
   geom_line(aes(colour = COD)) +
