@@ -149,6 +149,8 @@ dat.meta[,.(N=uniqueN(wolfpop)), by=.(pop, COD)]
 
 quantile(dat$distance2, probs = c(0, 0.05, .95, 1), na.rm = T)
 quantile(dat$distance2, na.rm = T)
+quantile(dat$packDist_end, probs = c(0, 0.05, .95, 1), na.rm = T)
+quantile(dat$packDist_end, na.rm = T)
 dat[distance2 >=50000,.(unique(wolfID), .N), by=.(COD)]
 dat[,.(unique(wolfID), .N), by=.(COD)]
 
@@ -333,7 +335,7 @@ popeveryoneSoc<- summary(everyone.social)$coef$cond[-1, 1:2]
 sum.everyoneSoc<- summary(everyone.social)$coef$cond
 #saveRDS(sum.everyoneSoc, 'data/derived-data/summarypopeveryoneSoc_COD.Rds')
 
-AICtab(everyone.move, everyone.habitat, everyone, everyone.social, everyone.nn)
+AICtab(everyone.move, everyone.habitat, everyone, everyone.social)
 
 everyone.lastmo <- glmmTMB(case_ ~ log_sl:ToD_start +
                       log_sl:land_end_adj +
@@ -755,10 +757,10 @@ CDV.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day'
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),      
-                                                           roadDist_end = mean(roadDist_end, na.rm = T),
+                                                           roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
-                                                           packDist_end = mean(packDist_end, na.rm = T),
+                                                           packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('CDV', levels = levels(COD)),
                                                            ttd1 = 1,
                                                            wolf_step_id = NA, wolfID= 'RMNP_W02')]
@@ -775,10 +777,10 @@ CDV.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day
                                                         propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                         propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                         propwet_end= mean(propwet_end, na.rm = T),      
-                                                        roadDist_end = mean(roadDist_end, na.rm = T),
+                                                        roadDist_end = median(roadDist_end, na.rm = T),
                                                         distance2 = median(distance2, na.rm = T),
                                                         nnDist_end = median(nnDist_end, na.rm = T),
-                                                        packDist_end = mean(packDist_end, na.rm = T),
+                                                        packDist_end = median(packDist_end, na.rm = T),
                                                         COD = factor('CDV', levels = levels(COD)),
                                                         ttd1 = 60,
                                                         wolf_step_id = NA, wolfID= 'RMNP_W02')]
@@ -795,10 +797,10 @@ human.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('da
                                                         propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                         propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                         propwet_end= mean(propwet_end, na.rm = T),      
-                                                        roadDist_end = mean(roadDist_end, na.rm = T),
+                                                        roadDist_end = median(roadDist_end, na.rm = T),
                                                         distance2 = median(distance2, na.rm = T),
                                                         nnDist_end = median(nnDist_end, na.rm = T),
-                                                        packDist_end = mean(packDist_end, na.rm = T),
+                                                        packDist_end = median(packDist_end, na.rm = T),
                                                         COD = factor('human', levels = levels(COD)),
                                                         ttd1 = 1,
                                                         wolf_step_id = NA, wolfID= 'RMNP_W02')]
@@ -815,10 +817,10 @@ human.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('d
                                                          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                          propwet_end= mean(propwet_end, na.rm = T),      
-                                                         roadDist_end = mean(roadDist_end, na.rm = T),
+                                                         roadDist_end = median(roadDist_end, na.rm = T),
                                                          distance2 = median(distance2, na.rm = T),
                                                          nnDist_end = median(nnDist_end, na.rm = T),
-                                                         packDist_end = mean(packDist_end, na.rm = T),
+                                                         packDist_end = median(packDist_end, na.rm = T),
                                                          COD = factor('human', levels = levels(COD)),
                                                          ttd1 = 60,
                                                          wolf_step_id = NA, wolfID= 'RMNP_W02')]
@@ -835,10 +837,10 @@ control.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('
                                                         propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                         propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                         propwet_end= mean(propwet_end, na.rm = T),      
-                                                        roadDist_end = mean(roadDist_end, na.rm = T),
+                                                        roadDist_end = median(roadDist_end, na.rm = T),
                                                         distance2 = median(distance2, na.rm = T),
                                                         nnDist_end = median(nnDist_end, na.rm = T),
-                                                        packDist_end = mean(packDist_end, na.rm = T),
+                                                        packDist_end = median(packDist_end, na.rm = T),
                                                         COD = factor('control', levels = levels(COD)),
                                                         ttd1 = 1,
                                                         wolf_step_id = NA, wolfID= 'RMNP_W02')]
@@ -854,10 +856,10 @@ control.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                          propwet_end= mean(propwet_end, na.rm = T),      
-                                                         roadDist_end = mean(roadDist_end, na.rm = T),
+                                                         roadDist_end = median(roadDist_end, na.rm = T),
                                                          distance2 = median(distance2, na.rm = T),
                                                          nnDist_end = median(nnDist_end, na.rm = T),
-                                                         packDist_end = mean(packDist_end, na.rm = T),
+                                                         packDist_end = median(packDist_end, na.rm = T),
                                                          COD = factor('control', levels = levels(COD)),
                                                          ttd1 = 60,
                                                          wolf_step_id = NA, wolfID= 'RMNP_W02')]
@@ -881,10 +883,10 @@ p.h2.indiv <- function(ids, DT, mod, death, t2death){
             propforest_end_adj = mean(propforest_end_adj, na.rm = T),
             propopen_end_adj = mean(propopen_end_adj, na.rm = T),
             propwet_end= mean(propwet_end, na.rm = T), 
-            roadDist_end = mean(roadDist_end, na.rm = T),
+            roadDist_end = median(roadDist_end, na.rm = T),
             distance2 = median(distance2, na.rm = T),
             nnDist_end = median(nnDist_end, na.rm = T),
-            packDist_end = mean(packDist_end, na.rm = T),
+            packDist_end = median(packDist_end, na.rm = T),
             COD = factor(death, levels = levels(COD)),
             ttd1 = t2death,
             wolf_step_id = NA,
@@ -943,10 +945,10 @@ forest.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                              propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                              propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                              propwet_end= mean(propwet_end, na.rm = T),
-                                                             roadDist_end = mean(roadDist_end, na.rm = T),
+                                                             roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = median(distance2, na.rm = T),
                                                              nnDist_end = median(nnDist_end, na.rm = T),
-                                                             packDist_end = mean(packDist_end, na.rm = T),
+                                                             packDist_end = median(packDist_end, na.rm = T),
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA,
@@ -966,10 +968,10 @@ forest.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                               propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                               propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                               propwet_end= mean(propwet_end, na.rm = T),
-                                                              roadDist_end = mean(roadDist_end, na.rm = T),
+                                                              roadDist_end = median(roadDist_end, na.rm = T),
                                                               distance2 = median(distance2, na.rm = T),
                                                               nnDist_end = median(nnDist_end, na.rm = T),
-                                                              packDist_end = mean(packDist_end, na.rm = T),
+                                                              packDist_end = median(packDist_end, na.rm = T),
                                                               COD = factor('CDV', levels = levels(COD)),
                                                               ttd1 = 60,
                                                               wolf_step_id = NA, wolfID = NA)]
@@ -980,19 +982,20 @@ p.forest.CDV.60day.1.habitat <- predict(everyone.habitat, newdata = forest.CDV.6
 logRSS.forest.CDV.60day<- p.forest.CDV.60day.1 - p.CDV.60day.2
 logRSS.forest.CDV.60day.habitat<- p.forest.CDV.60day.1.habitat - p.CDV.60day.2.habitat
 
-logRSS.road <- data.frame(COD= 'CDV', ttd = '1 day', var = 'forest', rss = logRSS.forest.CDV.1day, x = seq(from = 0, to = 1, length.out = 100))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'CDV', ttd = '60 days', var = 'forest', rss = logRSS.forest.CDV.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.forest <- data.frame(COD= 'CDV', ttd = '1 day', var = 'forest', rss = logRSS.forest.CDV.1day, x = seq(from = 0, to = 1, length.out = 100))
+logRSS.forest <- rbind(logRSS.forest, data.frame(COD= 'CDV', ttd = '60 days', var = 'forest', rss = logRSS.forest.CDV.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.forest.habitat <- data.frame(COD= 'CDV', ttd = '1 day', var = 'forest', rss = logRSS.forest.CDV.1day.habitat, x = seq(from = 0, to = 1, length.out = 100))
 logRSS.forest.habitat <- rbind(logRSS.forest.habitat, data.frame(COD= 'CDV', ttd = '60 days', var = 'forest', rss = logRSS.forest.CDV.60day.habitat, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.forest.CDV.1day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
+
+p.forest.h1.indiv <- function(ids, DT, mod, death, t2death){
+    lapply(ids, function(i) {
     #unique(
-    dat[#wolfID == i,
+    DT[#wolfID == i,
       ,.(h1 = predict(
-        everyone,
+        mod,
         newdata = .SD[, .(
           ToD_start = factor('day', levels = levels(ToD_start)),
           log_sl = mean(log_sl),
@@ -1001,12 +1004,12 @@ p.forest.CDV.1day.1.indiv <-
           propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
           propopen_end_adj = mean(propopen_end_adj, na.rm = T),
           propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
+          roadDist_end = median(roadDist_end, na.rm = T),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
+          packDist_end = median(packDist_end, na.rm = T),
+          COD = factor(death, levels = levels(COD)),
+          ttd1 = t2death,
           wolf_step_id = NA,
           wolfID = i
         )],
@@ -1015,7 +1018,10 @@ p.forest.CDV.1day.1.indiv <-
       ), wolfID = i)]
     # )
   })
+}
 
+p.forest.CDV.1day.1.indiv <- p.forest.h1.indiv(ids = CDV.wolfID, DT=dat, mod=everyone, death = 'CDV', t2death = 1)
+  
 h1.forest.CDV.1day.indiv <- data.table(rbindlist(p.forest.CDV.1day.1.indiv),
                                      ttd = '1 day', COD = 'CDV', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
 
@@ -1030,34 +1036,8 @@ logRSS.forest.CDV.1day.indiv[,'rss'] <- logRSS.forest.CDV.1day.indiv$h1 - logRSS
 
 #### habitat model
 
-p.forest.CDV.1day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.CDV.1day.1.indiv.habitat <-p.forest.h1.indiv(ids = CDV.wolfID, DT=dat, mod=everyone.habitat, death = 'CDV', t2death = 1)
+
 
 h1.forest.CDV.1day.indiv.habitat <- data.table(rbindlist(p.forest.CDV.1day.1.indiv.habitat),
                                              ttd = '1 day', COD = 'CDV', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1073,34 +1053,7 @@ logRSS.forest.CDV.1day.indiv.habitat[,'rss'] <- logRSS.forest.CDV.1day.indiv.hab
 
 ### 60 days
 
-p.forest.CDV.60day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.CDV.60day.1.indiv <- p.forest.h1.indiv(ids = CDV.wolfID, DT=dat, mod=everyone, death = 'CDV', t2death = 60)
 
 h1.forest.CDV.60day.indiv <- data.table(rbindlist(p.forest.CDV.60day.1.indiv),
                                       ttd = '60 days', COD = 'CDV', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1116,34 +1069,8 @@ logRSS.forest.CDV.60day.indiv[,'rss'] <- logRSS.forest.CDV.60day.indiv$h1 - logR
 
 #### habitat model
 
-p.forest.CDV.60day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.CDV.60day.1.indiv.habitat <- p.forest.h1.indiv(ids = CDV.wolfID, DT=dat, mod=everyone.habitat, death = 'CDV', t2death = 60)
+
 
 h1.forest.CDV.60day.indiv.habitat <- data.table(rbindlist(p.forest.CDV.60day.1.indiv.habitat),
                                               ttd = '60 days', COD = 'CDV', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1170,10 +1097,10 @@ forest.human.1day.1 <-
     propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
     propopen_end_adj = mean(propopen_end_adj, na.rm = T),
     propwet_end= mean(propwet_end, na.rm = T),
-    roadDist_end = mean(roadDist_end, na.rm = T),
+    roadDist_end = median(roadDist_end, na.rm = T),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -1195,10 +1122,10 @@ forest.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                                 propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                                 propwet_end= mean(propwet_end, na.rm = T),
-                                                                roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                roadDist_end = median(roadDist_end, na.rm = T),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = mean(packDist_end, na.rm = T),
+                                                                packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('human', levels = levels(COD)),
                                                                 ttd1 = 60,
                                                                 wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -1210,41 +1137,15 @@ p.forest.human.60day.1.habitat <- predict(everyone.habitat, newdata = forest.hum
 logRSS.forest.human.60day<- p.forest.human.60day.1 - p.human.60day.2
 logRSS.forest.human.60day.habitat<- p.forest.human.60day.1.habitat - p.human.60day.2.habitat
 
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'human', ttd = '1 day', var = 'forest', rss = logRSS.forest.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'human', ttd = '60 days', var = 'forest', rss = logRSS.forest.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.forest <- rbind(logRSS.forest, data.frame(COD= 'human', ttd = '1 day', var = 'forest', rss = logRSS.forest.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.forest <- rbind(logRSS.forest, data.frame(COD= 'human', ttd = '60 days', var = 'forest', rss = logRSS.forest.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.forest.habitat <- rbind(logRSS.forest.habitat, data.frame(COD= 'human', ttd = '1 day', var = 'forest', rss = logRSS.forest.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
 logRSS.forest.habitat <- rbind(logRSS.forest.habitat, data.frame(COD= 'human', ttd = '60 days', var = 'forest', rss = logRSS.forest.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.forest.human.1day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.human.1day.1.indiv <- p.forest.h1.indiv(ids = human.wolfID, DT=dat, mod=everyone, death = 'human', t2death = 1)
+
 
 h1.forest.human.1day.indiv <- data.table(rbindlist(p.forest.human.1day.1.indiv),
                                        ttd = '1 day', COD = 'human', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1260,34 +1161,7 @@ logRSS.forest.human.1day.indiv[,'rss'] <- logRSS.forest.human.1day.indiv$h1 - lo
 
 #### habitat model
 
-p.forest.human.1day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.human.1day.1.indiv.habitat <- p.forest.h1.indiv(ids = human.wolfID, DT=dat, mod=everyone.habitat, death = 'human', t2death = 1)
 
 h1.forest.human.1day.indiv.habitat <- data.table(rbindlist(p.forest.human.1day.1.indiv.habitat),
                                                ttd = '1 day', COD = 'human', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1303,34 +1177,8 @@ logRSS.forest.human.1day.indiv.habitat[,'rss'] <- logRSS.forest.human.1day.indiv
 
 ### 60 days
 
-p.forest.human.60day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.human.60day.1.indiv <- p.forest.h1.indiv(ids = human.wolfID, DT=dat, mod=everyone, death = 'human', t2death = 60)
+
 
 h1.forest.human.60day.indiv <- data.table(rbindlist(p.forest.human.60day.1.indiv),
                                         ttd = '60 days', COD = 'human', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1346,34 +1194,8 @@ logRSS.forest.human.60day.indiv[,'rss'] <- logRSS.forest.human.60day.indiv$h1 - 
 
 #### habitat model
 
-p.forest.human.60day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.human.60day.1.indiv.habitat <- p.forest.h1.indiv(ids = human.wolfID, DT=dat, mod=everyone.habitat, death = 'human', t2death = 60)
+
 
 h1.forest.human.60day.indiv.habitat <- data.table(rbindlist(p.forest.human.60day.1.indiv.habitat),
                                                 ttd = '60 days', COD = 'human', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1401,10 +1223,10 @@ forest.control.1day.1 <-
     propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
     propopen_end_adj = mean(propopen_end_adj, na.rm = T),
     propwet_end= mean(propwet_end, na.rm = T),
-    roadDist_end = mean(roadDist_end, na.rm = T),
+    roadDist_end = median(roadDist_end, na.rm = T),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -1426,10 +1248,10 @@ forest.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = 
                                                                   propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                                   propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                                   propwet_end= mean(propwet_end, na.rm = T),
-                                                                  roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                  roadDist_end = median(roadDist_end, na.rm = T),
                                                                   distance2 = median(distance2, na.rm = T),
                                                                   nnDist_end = median(nnDist_end, na.rm = T),
-                                                                  packDist_end = mean(packDist_end, na.rm = T),
+                                                                  packDist_end = median(packDist_end, na.rm = T),
                                                                   COD = factor('control', levels = levels(COD)),
                                                                   ttd1 = 60,
                                                                   wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -1441,41 +1263,14 @@ p.forest.control.60day.1.habitat <- predict(everyone.habitat, newdata = forest.c
 logRSS.forest.control.60day<- p.forest.control.60day.1 - p.control.60day.2
 logRSS.forest.control.60day.habitat<- p.forest.control.60day.1.habitat - p.control.60day.2.habitat
 
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'control', ttd = '1 day', var = 'forest', rss = logRSS.forest.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'control', ttd = '60 days', var = 'forest', rss = logRSS.forest.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.forest <- rbind(logRSS.forest, data.frame(COD= 'control', ttd = '1 day', var = 'forest', rss = logRSS.forest.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.forest <- rbind(logRSS.forest, data.frame(COD= 'control', ttd = '60 days', var = 'forest', rss = logRSS.forest.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.forest.habitat <- rbind(logRSS.forest.habitat, data.frame(COD= 'control', ttd = '1 day', var = 'forest', rss = logRSS.forest.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
 logRSS.forest.habitat <- rbind(logRSS.forest.habitat, data.frame(COD= 'control', ttd = '60 days', var = 'forest', rss = logRSS.forest.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.forest.control.1day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.control.1day.1.indiv <- p.forest.h1.indiv(ids = control.wolfID, DT=dat, mod=everyone, death = 'control', t2death = 1)
 
 h1.forest.control.1day.indiv <- data.table(rbindlist(p.forest.control.1day.1.indiv),
                                          ttd = '1 day', COD = 'control', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1491,34 +1286,7 @@ logRSS.forest.control.1day.indiv[,'rss'] <- logRSS.forest.control.1day.indiv$h1 
 
 #### habitat model
 
-p.forest.control.1day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.control.1day.1.indiv.habitat <- p.forest.h1.indiv(ids = control.wolfID, DT=dat, mod=everyone.habitat, death = 'control', t2death = 1)
 
 h1.forest.control.1day.indiv.habitat <- data.table(rbindlist(p.forest.control.1day.1.indiv.habitat),
                                                  ttd = '1 day', COD = 'control', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1534,34 +1302,7 @@ logRSS.forest.control.1day.indiv.habitat[,'rss'] <- logRSS.forest.control.1day.i
 
 ### 60 days
 
-p.forest.control.60day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.control.60day.1.indiv <-p.forest.h1.indiv(ids = control.wolfID, DT=dat, mod=everyone, death = 'control', t2death = 60)
 
 h1.forest.control.60day.indiv <- data.table(rbindlist(p.forest.control.60day.1.indiv),
                                           ttd = '60 days', COD = 'control', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1577,34 +1318,8 @@ logRSS.forest.control.60day.indiv[,'rss'] <- logRSS.forest.control.60day.indiv$h
 
 #### habitat model
 
-p.forest.control.60day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.forest.control.60day.1.indiv.habitat <- p.forest.h1.indiv(ids = control.wolfID, DT=dat, mod=everyone.habitat, death = 'control', t2death = 60)
+
 
 h1.forest.control.60day.indiv.habitat <- data.table(rbindlist(p.forest.control.60day.1.indiv.habitat),
                                                   ttd = '60 days', COD = 'control', var = 'forest', x = seq(from = 0, to = 1, length.out = 100))
@@ -1641,14 +1356,14 @@ logRSS.forest.indiv[,'ttd'] <- as.factor(logRSS.forest.indiv$ttd)
 
 logRSS.forest.indiv.se <- unique(logRSS.forest.indiv[,.(se=se(rss), var), by = .(x, COD, ttd)])
 
-logRSS.forest.pop <- merge(logRSS.road, logRSS.forest.indiv.se, by = c('x', 'COD', 'ttd','var'))
+logRSS.forest.pop <- merge(logRSS.forest, logRSS.forest.indiv.se, by = c('x', 'COD', 'ttd','var'))
 
 
 ggplot(data=setDT(logRSS.forest.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Distance to road (m)") +
+  ylab("logRSS") + xlab("Forest") +
   ggtitle("1 days") 
 # 
 # ggplot(data=setDT(logRSS.forest.indiv)[ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -1660,7 +1375,7 @@ ggplot(data=setDT(logRSS.forest.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2)) +
-  ylab("logRSS") + xlab("Distance to road (m)") +
+  ylab("logRSS") + xlab("Forest") +
   ggtitle("60 days") 
 
 
@@ -1674,10 +1389,10 @@ open.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                                propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                                propwet_end= mean(propwet_end, na.rm = T),
-                                                               roadDist_end = mean(roadDist_end, na.rm = T),
+                                                               roadDist_end = median(roadDist_end, na.rm = T),
                                                                distance2 = median(distance2, na.rm = T),
                                                                nnDist_end = median(nnDist_end, na.rm = T),
-                                                               packDist_end = mean(packDist_end, na.rm = T),
+                                                               packDist_end = median(packDist_end, na.rm = T),
                                                                COD = factor('CDV', levels = levels(COD)),
                                                                ttd1 = 1,
                                                                wolf_step_id = NA,
@@ -1697,10 +1412,10 @@ open.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                               propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                               propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                                 propwet_end= mean(propwet_end, na.rm = T),
-                                                                roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                roadDist_end = median(roadDist_end, na.rm = T),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = mean(packDist_end, na.rm = T),
+                                                                packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('CDV', levels = levels(COD)),
                                                                 ttd1 = 60,
                                                                 wolf_step_id = NA, wolfID = NA)]
@@ -1711,19 +1426,20 @@ p.open.CDV.60day.1.habitat <- predict(everyone.habitat, newdata = open.CDV.60day
 logRSS.open.CDV.60day<- p.open.CDV.60day.1 - p.CDV.60day.2
 logRSS.open.CDV.60day.habitat<- p.open.CDV.60day.1.habitat - p.CDV.60day.2.habitat
 
-logRSS.road <- data.frame(COD= 'CDV', ttd = '1 day', var = 'open', rss = logRSS.open.CDV.1day, x = seq(from = 0, to = 1, length.out = 100))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'CDV', ttd = '60 days', var = 'open', rss = logRSS.open.CDV.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.open <- data.frame(COD= 'CDV', ttd = '1 day', var = 'open', rss = logRSS.open.CDV.1day, x = seq(from = 0, to = 1, length.out = 100))
+logRSS.open <- rbind(logRSS.open, data.frame(COD= 'CDV', ttd = '60 days', var = 'open', rss = logRSS.open.CDV.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.open.habitat <- data.frame(COD= 'CDV', ttd = '1 day', var = 'open', rss = logRSS.open.CDV.1day.habitat, x = seq(from = 0, to = 1, length.out = 100))
 logRSS.open.habitat <- rbind(logRSS.open.habitat, data.frame(COD= 'CDV', ttd = '60 days', var = 'open', rss = logRSS.open.CDV.60day.habitat, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.open.CDV.1day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
+
+p.open.h1.indiv <- function(ids, DT, mod, death, t2death){
+    lapply(ids, function(i) {
     #unique(
-    dat[#wolfID == i,
+    DT[#wolfID == i,
       ,.(h1 = predict(
-        everyone,
+        mod,
         newdata = .SD[, .(
           ToD_start = factor('day', levels = levels(ToD_start)),
           log_sl = mean(log_sl),
@@ -1732,12 +1448,12 @@ p.open.CDV.1day.1.indiv <-
           propforest_end_adj = mean(propforest_end_adj, na.rm = T),
           propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
           propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
+          roadDist_end = median(roadDist_end, na.rm = T),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
+          packDist_end = median(packDist_end, na.rm = T),
+          COD = factor(death, levels = levels(COD)),
+          ttd1 = t2death,
           wolf_step_id = NA,
           wolfID = i
         )],
@@ -1746,6 +1462,9 @@ p.open.CDV.1day.1.indiv <-
       ), wolfID = i)]
     # )
   })
+}
+
+p.open.CDV.1day.1.indiv <- p.open.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 1)
 
 h1.open.CDV.1day.indiv <- data.table(rbindlist(p.open.CDV.1day.1.indiv),
                                        ttd = '1 day', COD = 'CDV', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -1761,34 +1480,8 @@ logRSS.open.CDV.1day.indiv[,'rss'] <- logRSS.open.CDV.1day.indiv$h1 - logRSS.ope
 
 #### habitat model
 
-p.open.CDV.1day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.CDV.1day.1.indiv.habitat <- p.open.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 1)
+
 
 h1.open.CDV.1day.indiv.habitat <- data.table(rbindlist(p.open.CDV.1day.1.indiv.habitat),
                                                ttd = '1 day', COD = 'CDV', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -1804,34 +1497,7 @@ logRSS.open.CDV.1day.indiv.habitat[,'rss'] <- logRSS.open.CDV.1day.indiv.habitat
 
 ### 60 days
 
-p.open.CDV.60day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.CDV.60day.1.indiv <- p.open.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
 
 h1.open.CDV.60day.indiv <- data.table(rbindlist(p.open.CDV.60day.1.indiv),
                                         ttd = '60 days', COD = 'CDV', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -1847,34 +1513,8 @@ logRSS.open.CDV.60day.indiv[,'rss'] <- logRSS.open.CDV.60day.indiv$h1 - logRSS.o
 
 #### habitat model
 
-p.open.CDV.60day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.CDV.60day.1.indiv.habitat <- p.open.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 60)
+
 
 h1.open.CDV.60day.indiv.habitat <- data.table(rbindlist(p.open.CDV.60day.1.indiv.habitat),
                                                 ttd = '60 days', COD = 'CDV', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -1901,10 +1541,10 @@ open.human.1day.1 <-
     propforest_end_adj = mean(propforest_end_adj, na.rm = T),
     propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
     propwet_end= mean(propwet_end, na.rm = T),
-    roadDist_end = mean(roadDist_end, na.rm = T),
+    roadDist_end = median(roadDist_end, na.rm = T),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -1926,10 +1566,10 @@ open.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                                 propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                 propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                                   propwet_end= mean(propwet_end, na.rm = T),
-                                                                  roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                  roadDist_end = median(roadDist_end, na.rm = T),
                                                                   distance2 = median(distance2, na.rm = T),
                                                                   nnDist_end = median(nnDist_end, na.rm = T),
-                                                                  packDist_end = mean(packDist_end, na.rm = T),
+                                                                  packDist_end = median(packDist_end, na.rm = T),
                                                                   COD = factor('human', levels = levels(COD)),
                                                                   ttd1 = 60,
                                                                   wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -1941,41 +1581,14 @@ p.open.human.60day.1.habitat <- predict(everyone.habitat, newdata = open.human.6
 logRSS.open.human.60day<- p.open.human.60day.1 - p.human.60day.2
 logRSS.open.human.60day.habitat<- p.open.human.60day.1.habitat - p.human.60day.2.habitat
 
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'human', ttd = '1 day', var = 'open', rss = logRSS.open.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'human', ttd = '60 days', var = 'open', rss = logRSS.open.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.open <- rbind(logRSS.open, data.frame(COD= 'human', ttd = '1 day', var = 'open', rss = logRSS.open.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.open <- rbind(logRSS.open, data.frame(COD= 'human', ttd = '60 days', var = 'open', rss = logRSS.open.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.open.habitat <- rbind(logRSS.open.habitat, data.frame(COD= 'human', ttd = '1 day', var = 'open', rss = logRSS.open.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
 logRSS.open.habitat <- rbind(logRSS.open.habitat, data.frame(COD= 'human', ttd = '60 days', var = 'open', rss = logRSS.open.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.open.human.1day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.human.1day.1.indiv <- p.open.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 1)
 
 h1.open.human.1day.indiv <- data.table(rbindlist(p.open.human.1day.1.indiv),
                                          ttd = '1 day', COD = 'human', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -1991,34 +1604,7 @@ logRSS.open.human.1day.indiv[,'rss'] <- logRSS.open.human.1day.indiv$h1 - logRSS
 
 #### habitat model
 
-p.open.human.1day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.human.1day.1.indiv.habitat <- p.open.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 1)
 
 h1.open.human.1day.indiv.habitat <- data.table(rbindlist(p.open.human.1day.1.indiv.habitat),
                                                  ttd = '1 day', COD = 'human', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2034,34 +1620,8 @@ logRSS.open.human.1day.indiv.habitat[,'rss'] <- logRSS.open.human.1day.indiv.hab
 
 ### 60 days
 
-p.open.human.60day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.human.60day.1.indiv <- p.open.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
+
 
 h1.open.human.60day.indiv <- data.table(rbindlist(p.open.human.60day.1.indiv),
                                           ttd = '60 days', COD = 'human', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2077,34 +1637,8 @@ logRSS.open.human.60day.indiv[,'rss'] <- logRSS.open.human.60day.indiv$h1 - logR
 
 #### habitat model
 
-p.open.human.60day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.human.60day.1.indiv.habitat <- p.open.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 60)
+
 
 h1.open.human.60day.indiv.habitat <- data.table(rbindlist(p.open.human.60day.1.indiv.habitat),
                                                   ttd = '60 days', COD = 'human', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2123,8 +1657,7 @@ logRSS.open.human.60day.indiv.habitat[,'rss'] <- logRSS.open.human.60day.indiv.h
 
 #### control ####
 
-open.control.1day.1 <-
-  dat[wolfID %chin% dat.wnn.lastmo$wolfID, .(
+open.control.1day.1 <-dat[wolfID %chin% dat.wnn.lastmo$wolfID, .(
     ToD_start = factor('day', levels = levels(ToD_start)),
     log_sl = mean(log_sl),
     cos_ta = mean(cos_ta),
@@ -2132,10 +1665,10 @@ open.control.1day.1 <-
     propforest_end_adj = mean(propforest_end_adj, na.rm = T),
     propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
     propwet_end= mean(propwet_end, na.rm = T),
-    roadDist_end = mean(roadDist_end, na.rm = T),
+    roadDist_end = median(roadDist_end, na.rm = T),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -2157,10 +1690,10 @@ open.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                   propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                   propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
                                                                     propwet_end= mean(propwet_end, na.rm = T),
-                                                                    roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                    roadDist_end = median(roadDist_end, na.rm = T),
                                                                     distance2 = median(distance2, na.rm = T),
                                                                     nnDist_end = median(nnDist_end, na.rm = T),
-                                                                    packDist_end = mean(packDist_end, na.rm = T),
+                                                                    packDist_end = median(packDist_end, na.rm = T),
                                                                     COD = factor('control', levels = levels(COD)),
                                                                     ttd1 = 60,
                                                                     wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -2172,41 +1705,15 @@ p.open.control.60day.1.habitat <- predict(everyone.habitat, newdata = open.contr
 logRSS.open.control.60day<- p.open.control.60day.1 - p.control.60day.2
 logRSS.open.control.60day.habitat<- p.open.control.60day.1.habitat - p.control.60day.2.habitat
 
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'control', ttd = '1 day', var = 'open', rss = logRSS.open.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'control', ttd = '60 days', var = 'open', rss = logRSS.open.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.open <- rbind(logRSS.open, data.frame(COD= 'control', ttd = '1 day', var = 'open', rss = logRSS.open.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.open <- rbind(logRSS.open, data.frame(COD= 'control', ttd = '60 days', var = 'open', rss = logRSS.open.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.open.habitat <- rbind(logRSS.open.habitat, data.frame(COD= 'control', ttd = '1 day', var = 'open', rss = logRSS.open.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
 logRSS.open.habitat <- rbind(logRSS.open.habitat, data.frame(COD= 'control', ttd = '60 days', var = 'open', rss = logRSS.open.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.open.control.1day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.control.1day.1.indiv <- p.open.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 1)
+
 
 h1.open.control.1day.indiv <- data.table(rbindlist(p.open.control.1day.1.indiv),
                                            ttd = '1 day', COD = 'control', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2222,34 +1729,7 @@ logRSS.open.control.1day.indiv[,'rss'] <- logRSS.open.control.1day.indiv$h1 - lo
 
 #### habitat model
 
-p.open.control.1day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.control.1day.1.indiv.habitat <- p.open.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 1)
 
 h1.open.control.1day.indiv.habitat <- data.table(rbindlist(p.open.control.1day.1.indiv.habitat),
                                                    ttd = '1 day', COD = 'control', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2265,34 +1745,8 @@ logRSS.open.control.1day.indiv.habitat[,'rss'] <- logRSS.open.control.1day.indiv
 
 ### 60 days
 
-p.open.control.60day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.control.60day.1.indiv <- p.open.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 60)
+
 
 h1.open.control.60day.indiv <- data.table(rbindlist(p.open.control.60day.1.indiv),
                                             ttd = '60 days', COD = 'control', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2308,34 +1762,7 @@ logRSS.open.control.60day.indiv[,'rss'] <- logRSS.open.control.60day.indiv$h1 - 
 
 #### habitat model
 
-p.open.control.60day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('open', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = seq(from = 0, to = 1, length.out = 100),
-          propwet_end= mean(propwet_end, na.rm = T),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.open.control.60day.1.indiv.habitat <- p.open.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 60)
 
 h1.open.control.60day.indiv.habitat <- data.table(rbindlist(p.open.control.60day.1.indiv.habitat),
                                                     ttd = '60 days', COD = 'control', var = 'open', x = seq(from = 0, to = 1, length.out = 100))
@@ -2372,7 +1799,7 @@ logRSS.open.indiv[,'ttd'] <- as.factor(logRSS.open.indiv$ttd)
 
 logRSS.open.indiv.se <- unique(logRSS.open.indiv[,.(se=se(rss), var), by = .(x, COD, ttd)])
 
-logRSS.open.pop <- merge(logRSS.road, logRSS.open.indiv.se, by = c('x', 'COD', 'ttd','var'))
+logRSS.open.pop <- merge(logRSS.open, logRSS.open.indiv.se, by = c('x', 'COD', 'ttd','var'))
 
 
 ggplot(data=setDT(logRSS.open.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -2391,7 +1818,7 @@ ggplot(data=setDT(logRSS.open.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2)) +
-  ylab("logRSS") + xlab("Distance to road (m)") +
+  ylab("logRSS") + xlab("open") +
   ggtitle("60 days") 
 
 
@@ -2406,10 +1833,10 @@ wet.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('
                                                              propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                              propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                              propwet_end= seq(from = 0, to = 1, length.out = 100),
-                                                             roadDist_end = mean(roadDist_end, na.rm = T),
+                                                             roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = median(distance2, na.rm = T),
                                                              nnDist_end = median(nnDist_end, na.rm = T),
-                                                             packDist_end = mean(packDist_end, na.rm = T),
+                                                             packDist_end = median(packDist_end, na.rm = T),
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA,
@@ -2429,10 +1856,10 @@ wet.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                               propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                              propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                              propwet_end= seq(from = 0, to = 1, length.out = 100),
-                                                              roadDist_end = mean(roadDist_end, na.rm = T),
+                                                              roadDist_end = median(roadDist_end, na.rm = T),
                                                               distance2 = median(distance2, na.rm = T),
                                                               nnDist_end = median(nnDist_end, na.rm = T),
-                                                              packDist_end = mean(packDist_end, na.rm = T),
+                                                              packDist_end = median(packDist_end, na.rm = T),
                                                               COD = factor('CDV', levels = levels(COD)),
                                                               ttd1 = 60,
                                                               wolf_step_id = NA, wolfID = NA)]
@@ -2443,19 +1870,20 @@ p.wet.CDV.60day.1.habitat <- predict(everyone.habitat, newdata = wet.CDV.60day.1
 logRSS.wet.CDV.60day<- p.wet.CDV.60day.1 - p.CDV.60day.2
 logRSS.wet.CDV.60day.habitat<- p.wet.CDV.60day.1.habitat - p.CDV.60day.2.habitat
 
-logRSS.road <- data.frame(COD= 'CDV', ttd = '1 day', var = 'wet', rss = logRSS.wet.CDV.1day, x = seq(from = 0, to = 1, length.out = 100))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'CDV', ttd = '60 days', var = 'wet', rss = logRSS.wet.CDV.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.wet <- data.frame(COD= 'CDV', ttd = '1 day', var = 'wet', rss = logRSS.wet.CDV.1day, x = seq(from = 0, to = 1, length.out = 100))
+logRSS.wet <- rbind(logRSS.wet, data.frame(COD= 'CDV', ttd = '60 days', var = 'wet', rss = logRSS.wet.CDV.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.wet.habitat <- data.frame(COD= 'CDV', ttd = '1 day', var = 'wet', rss = logRSS.wet.CDV.1day.habitat, x = seq(from = 0, to = 1, length.out = 100))
 logRSS.wet.habitat <- rbind(logRSS.wet.habitat, data.frame(COD= 'CDV', ttd = '60 days', var = 'wet', rss = logRSS.wet.CDV.60day.habitat, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.wet.CDV.1day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
+
+p.wet.h1.indiv <- function(ids, DT, mod, death, t2death){
+    lapply(ids, function(i) {
     #unique(
-    dat[#wolfID == i,
+    DT[#wolfID == i,
       ,.(h1 = predict(
-        everyone,
+        mod,
         newdata = .SD[, .(
           ToD_start = factor('day', levels = levels(ToD_start)),
           log_sl = mean(log_sl),
@@ -2464,12 +1892,12 @@ p.wet.CDV.1day.1.indiv <-
           propforest_end_adj = mean(propforest_end_adj, na.rm = T),
           propopen_end_adj = mean(propopen_end_adj, na.rm = T),
           propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
+          roadDist_end = median(roadDist_end, na.rm = T),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
+          packDist_end = median(packDist_end, na.rm = T),
+          COD = factor(death, levels = levels(COD)),
+          ttd1 = t2death,
           wolf_step_id = NA,
           wolfID = i
         )],
@@ -2478,6 +1906,9 @@ p.wet.CDV.1day.1.indiv <-
       ), wolfID = i)]
     # )
   })
+}
+
+p.wet.CDV.1day.1.indiv <- p.wet.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 1)
 
 h1.wet.CDV.1day.indiv <- data.table(rbindlist(p.wet.CDV.1day.1.indiv),
                                      ttd = '1 day', COD = 'CDV', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2493,34 +1924,8 @@ logRSS.wet.CDV.1day.indiv[,'rss'] <- logRSS.wet.CDV.1day.indiv$h1 - logRSS.wet.C
 
 #### habitat model
 
-p.wet.CDV.1day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.CDV.1day.1.indiv.habitat <- p.wet.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 1)
+
 
 h1.wet.CDV.1day.indiv.habitat <- data.table(rbindlist(p.wet.CDV.1day.1.indiv.habitat),
                                              ttd = '1 day', COD = 'CDV', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2536,34 +1941,7 @@ logRSS.wet.CDV.1day.indiv.habitat[,'rss'] <- logRSS.wet.CDV.1day.indiv.habitat$h
 
 ### 60 days
 
-p.wet.CDV.60day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.CDV.60day.1.indiv <- p.wet.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
 
 h1.wet.CDV.60day.indiv <- data.table(rbindlist(p.wet.CDV.60day.1.indiv),
                                       ttd = '60 days', COD = 'CDV', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2579,34 +1957,8 @@ logRSS.wet.CDV.60day.indiv[,'rss'] <- logRSS.wet.CDV.60day.indiv$h1 - logRSS.wet
 
 #### habitat model
 
-p.wet.CDV.60day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.CDV.60day.1.indiv.habitat <- p.wet.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 60)
+
 
 h1.wet.CDV.60day.indiv.habitat <- data.table(rbindlist(p.wet.CDV.60day.1.indiv.habitat),
                                               ttd = '60 days', COD = 'CDV', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2633,10 +1985,10 @@ wet.human.1day.1 <-
     propforest_end_adj = mean(propforest_end_adj, na.rm = T),
     propopen_end_adj = mean(propopen_end_adj, na.rm = T),
     propwet_end= seq(from = 0, to = 1, length.out = 100),
-    roadDist_end = mean(roadDist_end, na.rm = T),
+    roadDist_end = median(roadDist_end, na.rm = T),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -2658,10 +2010,10 @@ wet.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                                 propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                                propwet_end= seq(from = 0, to = 1, length.out = 100),
-                                                                roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                roadDist_end = median(roadDist_end, na.rm = T),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = mean(packDist_end, na.rm = T),
+                                                                packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('human', levels = levels(COD)),
                                                                 ttd1 = 60,
                                                                 wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -2673,41 +2025,14 @@ p.wet.human.60day.1.habitat <- predict(everyone.habitat, newdata = wet.human.60d
 logRSS.wet.human.60day<- p.wet.human.60day.1 - p.human.60day.2
 logRSS.wet.human.60day.habitat<- p.wet.human.60day.1.habitat - p.human.60day.2.habitat
 
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'human', ttd = '1 day', var = 'wet', rss = logRSS.wet.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'human', ttd = '60 days', var = 'wet', rss = logRSS.wet.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.wet <- rbind(logRSS.wet, data.frame(COD= 'human', ttd = '1 day', var = 'wet', rss = logRSS.wet.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.wet <- rbind(logRSS.wet, data.frame(COD= 'human', ttd = '60 days', var = 'wet', rss = logRSS.wet.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.wet.habitat <- rbind(logRSS.wet.habitat, data.frame(COD= 'human', ttd = '1 day', var = 'wet', rss = logRSS.wet.human.1day, x = seq(from = 0, to = 1, length.out = 100)))
 logRSS.wet.habitat <- rbind(logRSS.wet.habitat, data.frame(COD= 'human', ttd = '60 days', var = 'wet', rss = logRSS.wet.human.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.wet.human.1day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.human.1day.1.indiv <- p.wet.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 1)
 
 h1.wet.human.1day.indiv <- data.table(rbindlist(p.wet.human.1day.1.indiv),
                                        ttd = '1 day', COD = 'human', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2723,34 +2048,8 @@ logRSS.wet.human.1day.indiv[,'rss'] <- logRSS.wet.human.1day.indiv$h1 - logRSS.w
 
 #### habitat model
 
-p.wet.human.1day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.human.1day.1.indiv.habitat <- p.wet.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 1)
+
 
 h1.wet.human.1day.indiv.habitat <- data.table(rbindlist(p.wet.human.1day.1.indiv.habitat),
                                                ttd = '1 day', COD = 'human', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2766,34 +2065,7 @@ logRSS.wet.human.1day.indiv.habitat[,'rss'] <- logRSS.wet.human.1day.indiv.habit
 
 ### 60 days
 
-p.wet.human.60day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.human.60day.1.indiv <-  p.wet.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
 
 h1.wet.human.60day.indiv <- data.table(rbindlist(p.wet.human.60day.1.indiv),
                                         ttd = '60 days', COD = 'human', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2809,34 +2081,8 @@ logRSS.wet.human.60day.indiv[,'rss'] <- logRSS.wet.human.60day.indiv$h1 - logRSS
 
 #### habitat model
 
-p.wet.human.60day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.human.60day.1.indiv.habitat <- p.wet.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 60)
+
 
 h1.wet.human.60day.indiv.habitat <- data.table(rbindlist(p.wet.human.60day.1.indiv.habitat),
                                                 ttd = '60 days', COD = 'human', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2864,10 +2110,10 @@ wet.control.1day.1 <-
     propforest_end_adj = mean(propforest_end_adj, na.rm = T),
     propopen_end_adj = mean(propopen_end_adj, na.rm = T),
     propwet_end= seq(from = 0, to = 1, length.out = 100),
-    roadDist_end = mean(roadDist_end, na.rm = T),
+    roadDist_end = median(roadDist_end, na.rm = T),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -2889,10 +2135,10 @@ wet.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fac
                                                                   propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                  propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                                  propwet_end= seq(from = 0, to = 1, length.out = 100),
-                                                                  roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                  roadDist_end = median(roadDist_end, na.rm = T),
                                                                   distance2 = median(distance2, na.rm = T),
                                                                   nnDist_end = median(nnDist_end, na.rm = T),
-                                                                  packDist_end = mean(packDist_end, na.rm = T),
+                                                                  packDist_end = median(packDist_end, na.rm = T),
                                                                   COD = factor('control', levels = levels(COD)),
                                                                   ttd1 = 60,
                                                                   wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -2904,41 +2150,14 @@ p.wet.control.60day.1.habitat <- predict(everyone.habitat, newdata = wet.control
 logRSS.wet.control.60day<- p.wet.control.60day.1 - p.control.60day.2
 logRSS.wet.control.60day.habitat<- p.wet.control.60day.1.habitat - p.control.60day.2.habitat
 
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'control', ttd = '1 day', var = 'wet', rss = logRSS.wet.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
-logRSS.road <- rbind(logRSS.road, data.frame(COD= 'control', ttd = '60 days', var = 'wet', rss = logRSS.wet.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.wet <- rbind(logRSS.wet, data.frame(COD= 'control', ttd = '1 day', var = 'wet', rss = logRSS.wet.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
+logRSS.wet <- rbind(logRSS.wet, data.frame(COD= 'control', ttd = '60 days', var = 'wet', rss = logRSS.wet.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 logRSS.wet.habitat <- rbind(logRSS.wet.habitat, data.frame(COD= 'control', ttd = '1 day', var = 'wet', rss = logRSS.wet.control.1day, x = seq(from = 0, to = 1, length.out = 100)))
 logRSS.wet.habitat <- rbind(logRSS.wet.habitat, data.frame(COD= 'control', ttd = '60 days', var = 'wet', rss = logRSS.wet.control.60day, x = seq(from = 0, to = 1, length.out = 100)))
 
 #### indivs ####
-p.wet.control.1day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.control.1day.1.indiv <- p.wet.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 1)
 
 h1.wet.control.1day.indiv <- data.table(rbindlist(p.wet.control.1day.1.indiv),
                                          ttd = '1 day', COD = 'control', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2954,34 +2173,7 @@ logRSS.wet.control.1day.indiv[,'rss'] <- logRSS.wet.control.1day.indiv$h1 - logR
 
 #### habitat model
 
-p.wet.control.1day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.control.1day.1.indiv.habitat <- p.wet.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 1)
 
 h1.wet.control.1day.indiv.habitat <- data.table(rbindlist(p.wet.control.1day.1.indiv.habitat),
                                                  ttd = '1 day', COD = 'control', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -2997,34 +2189,8 @@ logRSS.wet.control.1day.indiv.habitat[,'rss'] <- logRSS.wet.control.1day.indiv.h
 
 ### 60 days
 
-p.wet.control.60day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.control.60day.1.indiv <- p.wet.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 60)
+
 
 h1.wet.control.60day.indiv <- data.table(rbindlist(p.wet.control.60day.1.indiv),
                                           ttd = '60 days', COD = 'control', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -3040,34 +2206,7 @@ logRSS.wet.control.60day.indiv[,'rss'] <- logRSS.wet.control.60day.indiv$h1 - lo
 
 #### habitat model
 
-p.wet.control.60day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('wet', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= seq(from = 0, to = 1, length.out = 100),
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.wet.control.60day.1.indiv.habitat <-  p.wet.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 60)
 
 h1.wet.control.60day.indiv.habitat <- data.table(rbindlist(p.wet.control.60day.1.indiv.habitat),
                                                   ttd = '60 days', COD = 'control', var = 'wet', x = seq(from = 0, to = 1, length.out = 100))
@@ -3104,7 +2243,7 @@ logRSS.wet.indiv[,'ttd'] <- as.factor(logRSS.wet.indiv$ttd)
 
 logRSS.wet.indiv.se <- unique(logRSS.wet.indiv[,.(se=se(rss), var), by = .(x, COD, ttd)])
 
-logRSS.wet.pop <- merge(logRSS.road, logRSS.wet.indiv.se, by = c('x', 'COD', 'ttd','var'))
+logRSS.wet.pop <- merge(logRSS.wet, logRSS.wet.indiv.se, by = c('x', 'COD', 'ttd','var'))
 
 
 ggplot(data=setDT(logRSS.wet.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -3138,7 +2277,7 @@ road.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                           roadDist_end = seq(from = 0, to = 3000, length.out = 100),
                           distance2 = median(distance2, na.rm = T),
                           nnDist_end = median(nnDist_end, na.rm = T),
-                          packDist_end = mean(packDist_end, na.rm = T),
+                          packDist_end = median(packDist_end, na.rm = T),
                           COD = factor('CDV', levels = levels(COD)),
                           ttd1 = 1,
                           wolf_step_id = NA,
@@ -3161,7 +2300,7 @@ road.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                              roadDist_end = seq(from = 0, to = 3000, length.out = 100),
                                                              distance2 = median(distance2, na.rm = T),
                                                              nnDist_end = median(nnDist_end, na.rm = T),
-                                                             packDist_end = mean(packDist_end, na.rm = T),
+                                                             packDist_end = median(packDist_end, na.rm = T),
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 60,
                                                              wolf_step_id = NA, wolfID = NA)]
@@ -3179,12 +2318,13 @@ logRSS.road.habitat <- data.frame(COD= 'CDV', ttd = '1 day', var = 'road', rss =
 logRSS.road.habitat <- rbind(logRSS.road.habitat, data.frame(COD= 'CDV', ttd = '60 days', var = 'road', rss = logRSS.road.CDV.60day.habitat, x = seq(from = 0, to = 3000, length.out = 100)))
 
 #### indivs ####
-p.road.CDV.1day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
+
+p.road.h1.indiv <- function(ids, DT, mod, death, t2death){
+  lapply(ids, function(i) {
     #unique(
-    dat[#wolfID == i,
+    DT[#wolfID == i,
       ,.(h1 = predict(
-        everyone,
+        mod,
         newdata = .SD[, .(
           ToD_start = factor('day', levels = levels(ToD_start)),
           log_sl = mean(log_sl),
@@ -3196,9 +2336,9 @@ p.road.CDV.1day.1.indiv <-
           roadDist_end = seq(from = 0, to = 3000, length.out = 100),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
+          packDist_end = median(packDist_end, na.rm = T),
+          COD = factor(death, levels = levels(COD)),
+          ttd1 = t2death,
           wolf_step_id = NA,
           wolfID = i
         )],
@@ -3207,7 +2347,10 @@ p.road.CDV.1day.1.indiv <-
       ), wolfID = i)]
     # )
   })
+}
 
+p.road.CDV.1day.1.indiv <- p.road.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 1)
+  
 h1.road.CDV.1day.indiv <- data.table(rbindlist(p.road.CDV.1day.1.indiv),
                                    ttd = '1 day', COD = 'CDV', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
 
@@ -3222,34 +2365,7 @@ logRSS.road.CDV.1day.indiv[,'rss'] <- logRSS.road.CDV.1day.indiv$h1 - logRSS.roa
 
 #### habitat model
 
-p.road.CDV.1day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.CDV.1day.1.indiv.habitat <-  p.road.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 1)
 
 h1.road.CDV.1day.indiv.habitat <- data.table(rbindlist(p.road.CDV.1day.1.indiv.habitat),
                                           ttd = '1 day', COD = 'CDV', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3265,34 +2381,8 @@ logRSS.road.CDV.1day.indiv.habitat[,'rss'] <- logRSS.road.CDV.1day.indiv.habitat
 
 ### 60 days
 
-p.road.CDV.60day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.CDV.60day.1.indiv <-  p.road.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
+
 
 h1.road.CDV.60day.indiv <- data.table(rbindlist(p.road.CDV.60day.1.indiv),
                                     ttd = '60 days', COD = 'CDV', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3308,34 +2398,7 @@ logRSS.road.CDV.60day.indiv[,'rss'] <- logRSS.road.CDV.60day.indiv$h1 - logRSS.r
 
 #### habitat model
 
-p.road.CDV.60day.1.indiv.habitat <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.CDV.60day.1.indiv.habitat <- p.road.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 60)
 
 h1.road.CDV.60day.indiv.habitat <- data.table(rbindlist(p.road.CDV.60day.1.indiv.habitat),
                                            ttd = '60 days', COD = 'CDV', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3369,7 +2432,7 @@ road.human.1day.1 <-
     ),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -3394,7 +2457,7 @@ road.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                               roadDist_end = seq(from = 0, to = 3000, length.out = 100),
                                                               distance2 = median(distance2, na.rm = T),
                                                               nnDist_end = median(nnDist_end, na.rm = T),
-                                                              packDist_end = mean(packDist_end, na.rm = T),
+                                                              packDist_end = median(packDist_end, na.rm = T),
                                                               COD = factor('human', levels = levels(COD)),
                                                               ttd1 = 60,
                                                               wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3413,34 +2476,7 @@ logRSS.road.habitat <- rbind(logRSS.road.habitat, data.frame(COD= 'human', ttd =
 logRSS.road.habitat <- rbind(logRSS.road.habitat, data.frame(COD= 'human', ttd = '60 days', var = 'road', rss = logRSS.road.human.60day, x = seq(from = 0, to = 3000, length.out = 100)))
 
 #### indivs ####
-p.road.human.1day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.human.1day.1.indiv <- p.road.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 1)
 
 h1.road.human.1day.indiv <- data.table(rbindlist(p.road.human.1day.1.indiv),
                                      ttd = '1 day', COD = 'human', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3456,34 +2492,7 @@ logRSS.road.human.1day.indiv[,'rss'] <- logRSS.road.human.1day.indiv$h1 - logRSS
 
 #### habitat model
 
-p.road.human.1day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.human.1day.1.indiv.habitat <- p.road.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 1)
 
 h1.road.human.1day.indiv.habitat <- data.table(rbindlist(p.road.human.1day.1.indiv.habitat),
                                              ttd = '1 day', COD = 'human', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3499,34 +2508,8 @@ logRSS.road.human.1day.indiv.habitat[,'rss'] <- logRSS.road.human.1day.indiv.hab
 
 ### 60 days
 
-p.road.human.60day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.human.60day.1.indiv <- p.road.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
+
 
 h1.road.human.60day.indiv <- data.table(rbindlist(p.road.human.60day.1.indiv),
                                       ttd = '60 days', COD = 'human', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3542,34 +2525,7 @@ logRSS.road.human.60day.indiv[,'rss'] <- logRSS.road.human.60day.indiv$h1 - logR
 
 #### habitat model
 
-p.road.human.60day.1.indiv.habitat <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.human.60day.1.indiv.habitat <- p.road.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 60)
 
 h1.road.human.60day.indiv.habitat <- data.table(rbindlist(p.road.human.60day.1.indiv.habitat),
                                               ttd = '60 days', COD = 'human', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3604,7 +2560,7 @@ road.control.1day.1 <-
     ),
     distance2 = median(distance2, na.rm = T),
     nnDist_end = median(nnDist_end, na.rm = T),
-    packDist_end = mean(packDist_end, na.rm = T),
+    packDist_end = median(packDist_end, na.rm = T),
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
@@ -3629,7 +2585,7 @@ road.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 roadDist_end = seq(from = 0, to = 3000, length.out = 100),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = mean(packDist_end, na.rm = T),
+                                                                packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('control', levels = levels(COD)),
                                                                 ttd1 = 60,
                                                                 wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3648,34 +2604,7 @@ logRSS.road.habitat <- rbind(logRSS.road.habitat, data.frame(COD= 'control', ttd
 logRSS.road.habitat <- rbind(logRSS.road.habitat, data.frame(COD= 'control', ttd = '60 days', var = 'road', rss = logRSS.road.control.60day, x = seq(from = 0, to = 3000, length.out = 100)))
 
 #### indivs ####
-p.road.control.1day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.control.1day.1.indiv <- p.road.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 1)
 
 h1.road.control.1day.indiv <- data.table(rbindlist(p.road.control.1day.1.indiv),
                                        ttd = '1 day', COD = 'control', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3691,34 +2620,8 @@ logRSS.road.control.1day.indiv[,'rss'] <- logRSS.road.control.1day.indiv$h1 - lo
 
 #### habitat model
 
-p.road.control.1day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.control.1day.1.indiv.habitat <-  p.road.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 1)
+
 
 h1.road.control.1day.indiv.habitat <- data.table(rbindlist(p.road.control.1day.1.indiv.habitat),
                                                ttd = '1 day', COD = 'control', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3734,34 +2637,8 @@ logRSS.road.control.1day.indiv.habitat[,'rss'] <- logRSS.road.control.1day.indiv
 
 ### 60 days
 
-p.road.control.60day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.control.60day.1.indiv <- p.road.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 60)
+
 
 h1.road.control.60day.indiv <- data.table(rbindlist(p.road.control.60day.1.indiv),
                                         ttd = '60 days', COD = 'control', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3777,34 +2654,8 @@ logRSS.road.control.60day.indiv[,'rss'] <- logRSS.road.control.60day.indiv$h1 - 
 
 #### habitat model
 
-p.road.control.60day.1.indiv.habitat <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.habitat,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = seq(from = 0, to = 3000, length.out = 100),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.road.control.60day.1.indiv.habitat <- p.road.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 60)
+
 
 h1.road.control.60day.indiv.habitat <- data.table(rbindlist(p.road.control.60day.1.indiv.habitat),
                                                 ttd = '60 days', COD = 'control', var = 'road', x = seq(from = 0, to = 3000, length.out = 100))
@@ -3876,10 +2727,10 @@ nn.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('d
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),  
-                                                           roadDist_end = mean(roadDist_end, na.rm = T),
+                                                           roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = seq(from = 0, to = 7500, length.out = 150),
                                                            nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                                                             packDist_end = mean(packDist_end, na.rm = T),
+                                                             packDist_end = median(packDist_end, na.rm = T),
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3899,10 +2750,10 @@ nn.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T), 
-                                                           roadDist_end = mean(roadDist_end, na.rm = T),
+                                                           roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = seq(from = 0, to = 7500, length.out = 150),
                                                            nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                                                            packDist_end = mean(packDist_end, na.rm = T),
+                                                            packDist_end = median(packDist_end, na.rm = T),
                                                             COD = factor('CDV', levels = levels(COD)),
                                                               ttd1 = 60,
                                                               wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3921,13 +2772,13 @@ logRSS.social <- data.frame(COD= 'CDV', ttd = '1 day', var = 'nn', rss = logRSS.
 logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '60 days', var = 'nn', rss = logRSS.nn.CDV.60day.social, x = seq(from = 0, to = 7500, length.out = 150)))
 
 #### indivs ####
-CDV.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='CDV', wolfID])
-p.nn.CDV.1day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
+
+p.nn.h1.indiv <- function(ids, DT, mod, death, t2death){
+    lapply(ids, function(i) {
     #unique(
-      dat[#wolfID == i,
+      DT[#wolfID == i,
                     ,.(h1 = predict(
-                      everyone,
+                      mod,
                       newdata = .SD[, .(
                         ToD_start = factor('day', levels = levels(ToD_start)),
                         log_sl = mean(log_sl),
@@ -3936,12 +2787,12 @@ p.nn.CDV.1day.1.indiv <-
                         propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                         propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                         propwet_end= mean(propwet_end, na.rm = T), 
-                        roadDist_end = mean(roadDist_end, na.rm = T),
+                        roadDist_end = median(roadDist_end, na.rm = T),
                         distance2 = seq(from = 0, to = 7500, length.out = 150),
                         nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                        packDist_end = mean(packDist_end, na.rm = T),
-                        COD = factor('CDV', levels = levels(COD)),
-                        ttd1 = 1,
+                        packDist_end = median(packDist_end, na.rm = T),
+                        COD = factor(death, levels = levels(COD)),
+                        ttd1 = t2death,
                         wolf_step_id = NA,
                         wolfID = i
                       )],
@@ -3950,7 +2801,10 @@ p.nn.CDV.1day.1.indiv <-
                     ), wolfID = i)]
    # )
   })
+}
 
+p.nn.CDV.1day.1.indiv <- p.nn.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 1)
+  
 h1.nn.CDV.1day.indiv <- data.table(rbindlist(p.nn.CDV.1day.1.indiv),
             ttd = '1 day', COD = 'CDV', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
 
@@ -3965,34 +2819,7 @@ logRSS.nn.CDV.1day.indiv[,'rss'] <- logRSS.nn.CDV.1day.indiv$h1 - logRSS.nn.CDV.
 
 #### social model
 
-p.nn.CDV.1day.1.indiv.social <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.CDV.1day.1.indiv.social <- p.nn.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', t2death = 1)
 
 h1.nn.CDV.1day.indiv.social <- data.table(rbindlist(p.nn.CDV.1day.1.indiv.social),
                                    ttd = '1 day', COD = 'CDV', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4008,34 +2835,7 @@ logRSS.nn.CDV.1day.indiv.social[,'rss'] <- logRSS.nn.CDV.1day.indiv.social$h1 - 
 
 ### 60 days
 
-p.nn.CDV.60day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.CDV.60day.1.indiv <- p.nn.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
 
 h1.nn.CDV.60day.indiv <- data.table(rbindlist(p.nn.CDV.60day.1.indiv),
                                    ttd = '60 days', COD = 'CDV', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4051,34 +2851,7 @@ logRSS.nn.CDV.60day.indiv[,'rss'] <- logRSS.nn.CDV.60day.indiv$h1 - logRSS.nn.CD
 
 #### social model
 
-p.nn.CDV.60day.1.indiv.social <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.CDV.60day.1.indiv.social <- p.nn.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', t2death = 60)
 
 h1.nn.CDV.60day.indiv.social <- data.table(rbindlist(p.nn.CDV.60day.1.indiv.social),
                                           ttd = '60 days', COD = 'CDV', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4102,10 +2875,10 @@ nn.human.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),  
-                                                           roadDist_end = mean(roadDist_end, na.rm = T),
+                                                           roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = seq(from = 0, to = 7500, length.out = 150),
                                                            nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                                                           packDist_end = mean(packDist_end, na.rm = T),
+                                                           packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('human', levels = levels(COD)),
                                                            ttd1 = 1,
                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4125,10 +2898,10 @@ nn.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                             propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                             propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                             propwet_end= mean(propwet_end, na.rm = T), 
-                                                            roadDist_end = mean(roadDist_end, na.rm = T),
+                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                             distance2 = seq(from = 0, to = 7500, length.out = 150),
                                                             nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                                                            packDist_end = mean(packDist_end, na.rm = T),
+                                                            packDist_end = median(packDist_end, na.rm = T),
                                                             COD = factor('human', levels = levels(COD)),
                                                             ttd1 = 60,
                                                             wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4147,35 +2920,8 @@ logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '1 day', va
 logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '60 days', var = 'nn', rss = logRSS.nn.human.60day.social, x = seq(from = 0, to = 7500, length.out = 150)))
 
 #### indivs ####
-human.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='human', wolfID])
-p.nn.human.1day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+
+p.nn.human.1day.1.indiv <- p.nn.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 1)
 
 h1.nn.human.1day.indiv <- data.table(rbindlist(p.nn.human.1day.1.indiv),
                                    ttd = '1 day', COD = 'human', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4190,34 +2936,7 @@ logRSS.nn.human.1day.indiv[,'rss'] <- logRSS.nn.human.1day.indiv$h1 - logRSS.nn.
 
 #### social model
 
-p.nn.human.1day.1.indiv.social <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.human.1day.1.indiv.social <- p.nn.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', t2death = 1)
 
 h1.nn.human.1day.indiv.social <- data.table(rbindlist(p.nn.human.1day.1.indiv.social),
                                           ttd = '1 day', COD = 'human', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4233,34 +2952,7 @@ logRSS.nn.human.1day.indiv.social[,'rss'] <- logRSS.nn.human.1day.indiv.social$h
 
 ### 60 days
 
-p.nn.human.60day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.human.60day.1.indiv <- p.nn.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
 
 h1.nn.human.60day.indiv <- data.table(rbindlist(p.nn.human.60day.1.indiv),
                                     ttd = '60 days', COD = 'human', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4275,34 +2967,7 @@ logRSS.nn.human.60day.indiv[,'rss'] <- logRSS.nn.human.60day.indiv$h1 - logRSS.n
 
 #### social model
 
-p.nn.human.60day.1.indiv.social <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.human.60day.1.indiv.social <- p.nn.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', t2death = 60)
 
 h1.nn.human.60day.indiv.social <- data.table(rbindlist(p.nn.human.60day.1.indiv.social),
                                            ttd = '60 days', COD = 'human', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4325,10 +2990,10 @@ nn.control.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),  
-                                                           roadDist_end = mean(roadDist_end, na.rm = T),
+                                                           roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = seq(from = 0, to = 7500, length.out = 150),
                                                            nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                                                           packDist_end = mean(packDist_end, na.rm = T),
+                                                           packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('control', levels = levels(COD)),
                                                            ttd1 = 1,
                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4348,10 +3013,10 @@ nn.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                             propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                             propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                             propwet_end= mean(propwet_end, na.rm = T), 
-                                                            roadDist_end = mean(roadDist_end, na.rm = T),
+                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                             distance2 = seq(from = 0, to = 7500, length.out = 150),
                                                             nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-                                                            packDist_end = mean(packDist_end, na.rm = T),
+                                                            packDist_end = median(packDist_end, na.rm = T),
                                                             COD = factor('control', levels = levels(COD)),
                                                             ttd1 = 60,
                                                             wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4371,35 +3036,9 @@ logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '60 days'
 
 
 #### indivs ####
-control.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='control', wolfID])
-p.nn.control.1day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+
+p.nn.control.1day.1.indiv <- p.nn.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 1)
+
 
 h1.nn.control.1day.indiv <- data.table(rbindlist(p.nn.control.1day.1.indiv),
                                    ttd = '1 day', COD = 'control', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4415,34 +3054,7 @@ logRSS.nn.control.1day.indiv[,'rss'] <- logRSS.nn.control.1day.indiv$h1 - logRSS
 
 #### social model
 
-p.nn.control.1day.1.indiv.social <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.control.1day.1.indiv.social <- p.nn.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', t2death = 1)
 
 h1.nn.control.1day.indiv.social <- data.table(rbindlist(p.nn.control.1day.1.indiv.social),
                                           ttd = '1 day', COD = 'control', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4458,34 +3070,7 @@ logRSS.nn.control.1day.indiv.social[,'rss'] <- logRSS.nn.control.1day.indiv.soci
 
 ### 60 days
 
-p.nn.control.60day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.control.60day.1.indiv <- p.nn.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 60)
 
 h1.nn.control.60day.indiv <- data.table(rbindlist(p.nn.control.60day.1.indiv),
                                     ttd = '60 days', COD = 'control', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4502,34 +3087,7 @@ logRSS.nn.control.60day.indiv[,'rss'] <- logRSS.nn.control.60day.indiv$h1 - logR
 
 #### social model
 
-p.nn.control.60day.1.indiv.social <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = seq(from = 0, to = 7500, length.out = 150),
-          nnDist_end = seq(from = 0, to = 7500, length.out = 150),
-          packDist_end = mean(packDist_end, na.rm = T),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.nn.control.60day.1.indiv.social <- p.nn.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', t2death = 60)
 
 h1.nn.control.60day.indiv.social <- data.table(rbindlist(p.nn.control.60day.1.indiv.social),
                                            ttd = '60 days', COD = 'control', var = 'nn', x = seq(from = 0, to = 7500, length.out = 150))
@@ -4624,10 +3182,10 @@ pack.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),  
-                                                           roadDist_end = mean(roadDist_end, na.rm = T),
+                                                           roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
-                                                           packDist_end = seq(0, 3000, length.out = 100),
+                                                           packDist_end = seq(0, 15000, length.out = 150),
                                                            COD = factor('CDV', levels = levels(COD)),
                                                            ttd1 = 1,
                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4647,10 +3205,10 @@ pack.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                             propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                             propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                             propwet_end= mean(propwet_end, na.rm = T), 
-                                                            roadDist_end = mean(roadDist_end, na.rm = T),
+                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                             distance2 = median(distance2, na.rm = T),
                                                             nnDist_end = median(nnDist_end, na.rm = T),
-                                                            packDist_end = seq(0, 3000, length.out = 100),
+                                                            packDist_end = seq(0, 15000, length.out = 150),
                                                             COD = factor('CDV', levels = levels(COD)),
                                                             ttd1 = 60,
                                                             wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4662,20 +3220,21 @@ logRSS.pack.CDV.60day<- p.pack.CDV.60day.1 - p.CDV.60day.2
 logRSS.pack.CDV.60day.social<- p.pack.CDV.60day.1.social - p.CDV.60day.2.social
 
 
-logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day, x = seq(from = 0, to = 3000, length.out = 100)))
-logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day, x = seq(from = 0, to = 3000, length.out = 100)))
+logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day, x = seq(from = 0, to = 15000, length.out = 150)))
 
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day.social, x = seq(from = 0, to = 3000, length.out = 100)))
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day.social, x = seq(from = 0, to = 3000, length.out = 100)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
 
 #### indivs ####
 
-p.pack.CDV.1day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
+
+p.pack.h1.indiv <- function(ids, DT, mod, death, t2death){
+    lapply(ids, function(i) {
     #unique(
-    dat[#wolfID == i,
+    DT[#wolfID == i,
       ,.(h1 = predict(
-        everyone,
+        mod,
         newdata = .SD[, .(
           ToD_start = factor('day', levels = levels(ToD_start)),
           log_sl = mean(log_sl),
@@ -4684,12 +3243,12 @@ p.pack.CDV.1day.1.indiv <-
           propforest_end_adj = mean(propforest_end_adj, na.rm = T),
           propopen_end_adj = mean(propopen_end_adj, na.rm = T),
           propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
+          roadDist_end = median(roadDist_end, na.rm = T),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
+          packDist_end = seq(0, 15000, length.out = 150),
+          COD = factor(death, levels = levels(COD)),
+          ttd1 = t2death,
           wolf_step_id = NA,
           wolfID = i
         )],
@@ -4698,9 +3257,12 @@ p.pack.CDV.1day.1.indiv <-
       ), wolfID = i)]
     # )
   })
+  }
+
+p.pack.CDV.1day.1.indiv <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 1)
 
 h1.pack.CDV.1day.indiv <- data.table(rbindlist(p.pack.CDV.1day.1.indiv),
-                                   ttd = '1 day', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                   ttd = '1 day', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.CDV.1day.indiv <- data.table(rbindlist(p.CDV.1day.2.indiv),
@@ -4713,37 +3275,10 @@ logRSS.pack.CDV.1day.indiv[,'rss'] <- logRSS.pack.CDV.1day.indiv$h1 - logRSS.pac
 
 #### social model
 
-p.pack.CDV.1day.1.indiv.social <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.CDV.1day.1.indiv.social <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', t2death = 1)
 
 h1.pack.CDV.1day.indiv.social <- data.table(rbindlist(p.pack.CDV.1day.1.indiv.social),
-                                          ttd = '1 day', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                          ttd = '1 day', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.CDV.1day.indiv.social <- data.table(rbindlist(p.CDV.1day.2.indiv.social),
@@ -4756,37 +3291,11 @@ logRSS.pack.CDV.1day.indiv.social[,'rss'] <- logRSS.pack.CDV.1day.indiv.social$h
 
 ### 60 days
 
-p.pack.CDV.60day.1.indiv <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.CDV.60day.1.indiv <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
+
 
 h1.pack.CDV.60day.indiv <- data.table(rbindlist(p.pack.CDV.60day.1.indiv),
-                                    ttd = '60 days', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                    ttd = '60 days', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.CDV.60day.indiv <- data.table(rbindlist(p.CDV.60day.2.indiv),
@@ -4799,37 +3308,11 @@ logRSS.pack.CDV.60day.indiv[,'rss'] <- logRSS.pack.CDV.60day.indiv$h1 - logRSS.p
 
 #### social model
 
-p.pack.CDV.60day.1.indiv.social <-
-  lapply(CDV.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('CDV', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.CDV.60day.1.indiv.social <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', t2death = 60)
+
 
 h1.pack.CDV.60day.indiv.social <- data.table(rbindlist(p.pack.CDV.60day.1.indiv.social),
-                                           ttd = '60 days', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                           ttd = '60 days', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 
@@ -4850,10 +3333,10 @@ pack.human.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                              propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                              propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                              propwet_end= mean(propwet_end, na.rm = T),  
-                                                             roadDist_end = mean(roadDist_end, na.rm = T),
+                                                             roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = median(distance2, na.rm = T),
                                                              nnDist_end = median(nnDist_end, na.rm = T),
-                                                             packDist_end = seq(0, 3000, length.out = 100),
+                                                             packDist_end = seq(0, 15000, length.out = 150),
                                                              COD = factor('human', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4873,10 +3356,10 @@ pack.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                               propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                               propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                               propwet_end= mean(propwet_end, na.rm = T), 
-                                                              roadDist_end = mean(roadDist_end, na.rm = T),
+                                                              roadDist_end = median(roadDist_end, na.rm = T),
                                                               distance2 = median(distance2, na.rm = T),
                                                               nnDist_end = median(nnDist_end, na.rm = T),
-                                                              packDist_end = seq(0, 3000, length.out = 100),
+                                                              packDist_end = seq(0, 15000, length.out = 150),
                                                               COD = factor('human', levels = levels(COD)),
                                                               ttd1 = 60,
                                                               wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -4888,45 +3371,18 @@ p.pack.human.60day.1.social <- predict(everyone.social, newdata = pack.human.60d
 logRSS.pack.human.60day<- p.pack.human.60day.1 - p.human.60day.2
 logRSS.pack.human.60day.social<- p.pack.human.60day.1.social - p.human.60day.2.social
 
-logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day, x = seq(from = 0, to = 3000, length.out = 100)))
-logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day, x = seq(from = 0, to = 3000, length.out = 100)))
+logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day, x = seq(from = 0, to = 15000, length.out = 150)))
 
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day.social, x = seq(from = 0, to = 3000, length.out = 100)))
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day.social, x = seq(from = 0, to = 3000, length.out = 100)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
 
 #### indivs ####
 
-p.pack.human.1day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.human.1day.1.indiv <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 1)
 
 h1.pack.human.1day.indiv <- data.table(rbindlist(p.pack.human.1day.1.indiv),
-                                     ttd = '1 day', COD = 'human', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                     ttd = '1 day', COD = 'human', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 h2.pack.human.1day.indiv <- data.table(rbindlist(p.human.1day.2.indiv),
                                      ttd = '1 day', COD = 'human', var = 'boundary')
@@ -4938,37 +3394,11 @@ logRSS.pack.human.1day.indiv[,'rss'] <- logRSS.pack.human.1day.indiv$h1 - logRSS
 
 #### social model
 
-p.pack.human.1day.1.indiv.social <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.human.1day.1.indiv.social <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', t2death = 1)
+
 
 h1.pack.human.1day.indiv.social <- data.table(rbindlist(p.pack.human.1day.1.indiv.social),
-                                            ttd = '1 day', COD = 'human', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                            ttd = '1 day', COD = 'human', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.human.1day.indiv.social <- data.table(rbindlist(p.human.1day.2.indiv.social),
@@ -4981,37 +3411,11 @@ logRSS.pack.human.1day.indiv.social[,'rss'] <- logRSS.pack.human.1day.indiv.soci
 
 ### 60 days
 
-p.pack.human.60day.1.indiv <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.human.60day.1.indiv <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
+
 
 h1.pack.human.60day.indiv <- data.table(rbindlist(p.pack.human.60day.1.indiv),
-                                      ttd = '60 days', COD = 'human', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                      ttd = '60 days', COD = 'human', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 h2.pack.human.60day.indiv <- data.table(rbindlist(p.human.60day.2.indiv),
                                       ttd = '60 days', COD = 'human', var = 'boundary')
@@ -5023,37 +3427,10 @@ logRSS.pack.human.60day.indiv[,'rss'] <- logRSS.pack.human.60day.indiv$h1 - logR
 
 #### social model
 
-p.pack.human.60day.1.indiv.social <-
-  lapply(human.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('human', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.human.60day.1.indiv.social <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', t2death = 60)
 
 h1.pack.human.60day.indiv.social <- data.table(rbindlist(p.pack.human.60day.1.indiv.social),
-                                             ttd = '60 days', COD = 'human', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                             ttd = '60 days', COD = 'human', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.human.60day.indiv.social <- data.table(rbindlist(p.human.60day.2.indiv.social),
@@ -5073,10 +3450,10 @@ pack.control.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fac
                                                                propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                                propwet_end= mean(propwet_end, na.rm = T),  
-                                                               roadDist_end = mean(roadDist_end, na.rm = T),
+                                                               roadDist_end = median(roadDist_end, na.rm = T),
                                                                distance2 = median(distance2, na.rm = T),
                                                                nnDist_end = median(nnDist_end, na.rm = T),
-                                                               packDist_end = seq(0, 3000, length.out = 100),
+                                                               packDist_end = seq(0, 15000, length.out = 150),
                                                                COD = factor('control', levels = levels(COD)),
                                                                ttd1 = 1,
                                                                wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -5096,10 +3473,10 @@ pack.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                                 propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                                 propwet_end= mean(propwet_end, na.rm = T), 
-                                                                roadDist_end = mean(roadDist_end, na.rm = T),
+                                                                roadDist_end = median(roadDist_end, na.rm = T),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = seq(0, 3000, length.out = 100),
+                                                                packDist_end = seq(0, 15000, length.out = 150),
                                                                 COD = factor('control', levels = levels(COD)),
                                                                 ttd1 = 60,
                                                                 wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -5111,46 +3488,19 @@ p.pack.control.60day.1.social <- predict(everyone.social, newdata = pack.control
 logRSS.pack.control.60day<- p.pack.control.60day.1 - p.control.60day.2
 logRSS.pack.control.60day.social<- p.pack.control.60day.1.social - p.control.60day.2.social
 
-logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day, x = seq(from = 0, to = 3000, length.out = 100)))
-logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day, x = seq(from = 0, to = 3000, length.out = 100)))
+logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day, x = seq(from = 0, to = 15000, length.out = 150)))
 
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day.social, x = seq(from = 0, to = 3000, length.out = 100)))
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day.social, x = seq(from = 0, to = 3000, length.out = 100)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
 
 
 #### indivs ####
 
-p.pack.control.1day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.control.1day.1.indiv <- p.pack.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 1)
 
 h1.pack.control.1day.indiv <- data.table(rbindlist(p.pack.control.1day.1.indiv),
-                                       ttd = '1 day', COD = 'control', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                       ttd = '1 day', COD = 'control', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.control.1day.indiv <- data.table(rbindlist(p.control.1day.2.indiv),
@@ -5163,37 +3513,11 @@ logRSS.pack.control.1day.indiv[,'rss'] <- logRSS.pack.control.1day.indiv$h1 - lo
 
 #### social model
 
-p.pack.control.1day.1.indiv.social <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 1,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.control.1day.1.indiv.social <- p.pack.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', t2death = 1)
+
 
 h1.pack.control.1day.indiv.social <- data.table(rbindlist(p.pack.control.1day.1.indiv.social),
-                                              ttd = '1 day', COD = 'control', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                              ttd = '1 day', COD = 'control', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 h2.pack.control.1day.indiv.social <- data.table(rbindlist(p.control.1day.2.indiv.social),
@@ -5206,37 +3530,11 @@ logRSS.pack.control.1day.indiv.social[,'rss'] <- logRSS.pack.control.1day.indiv.
 
 ### 60 days
 
-p.pack.control.60day.1.indiv <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.control.60day.1.indiv <- p.pack.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 60)
+
 
 h1.pack.control.60day.indiv <- data.table(rbindlist(p.pack.control.60day.1.indiv),
-                                        ttd = '60 days', COD = 'control', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                        ttd = '60 days', COD = 'control', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 
@@ -5250,37 +3548,10 @@ logRSS.pack.control.60day.indiv[,'rss'] <- logRSS.pack.control.60day.indiv$h1 - 
 
 #### social model
 
-p.pack.control.60day.1.indiv.social <-
-  lapply(control.wolfID, function(i) {
-    #unique(
-    dat[#wolfID == i,
-      ,.(h1 = predict(
-        everyone.social,
-        newdata = .SD[, .(
-          ToD_start = factor('day', levels = levels(ToD_start)),
-          log_sl = mean(log_sl),
-          cos_ta = mean(cos_ta),
-          # land_end_adj = factor('forest', levels = levels(land_end_adj)),
-          propforest_end_adj = mean(propforest_end_adj, na.rm = T),
-          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
-          propwet_end= mean(propwet_end, na.rm = T), 
-          roadDist_end = mean(roadDist_end, na.rm = T),
-          distance2 = median(distance2, na.rm = T),
-          nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 3000, length.out = 100),
-          COD = factor('control', levels = levels(COD)),
-          ttd1 = 60,
-          wolf_step_id = NA,
-          wolfID = i
-        )],
-        type = "link",
-        re.form = NULL
-      ), wolfID = i)]
-    # )
-  })
+p.pack.control.60day.1.indiv.social <- p.pack.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', t2death = 60)
 
 h1.pack.control.60day.indiv.social <- data.table(rbindlist(p.pack.control.60day.1.indiv.social),
-                                               ttd = '60 days', COD = 'control', var = 'boundary', x = seq(from = 0, to = 3000, length.out = 100))
+                                               ttd = '60 days', COD = 'control', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
 
 
 
