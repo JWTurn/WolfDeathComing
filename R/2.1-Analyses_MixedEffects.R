@@ -198,10 +198,10 @@ summary(everyone)
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
 #saveRDS(popeveryone, 'data/derived-data/popeveryone_COD.Rds')
-sum.everyone<- summary(everyone)$coef$cond
+sum.everyone<- tidy(everyone)
 #saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD.Rds')
 
-everyone.ran_vals <-broom.mixed::tidy(everyone, effect= 'ran_vals')
+everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
 # everyone.ran_pars <-broom.mixed::tidy(everyone, effect= 'ran_pars')
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
@@ -210,37 +210,6 @@ everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 #   pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
 #   mutate(method = "ME")
 
-
-everyone.nn <- glmmTMB(case_ ~ log_sl:ToD_start +
-                      # log_sl:land_end_adj +
-                        log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
-                        log_sl:COD + #cos_ta:COD + 
-                      I(log(ttd1 + 1)):log_sl:COD + #I(log(ttd1 + 1)):cos_ta:COD +
-                      (1|wolf_step_id) +
-                      (0 + (log_sl)|wolfID) +
-                     # (0 + (cos_ta)|wolfID) +
-                      (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
-                     # (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
-                      # COD:land_end_adj + I(log(1+roadDist_end)):COD +
-                      # COD:I(log(ttd1 + 1)):land_end_adj +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
-                       COD:propforest_end_adj + COD:propopen_end_adj + COD:propwet_end + I(log(1+roadDist_end)):COD +
-                       COD:I(log(ttd1 + 1)):propforest_end_adj +  COD:I(log(ttd1 + 1)):propopen_end_adj +  COD:I(log(ttd1 + 1)):propwet_end +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
-                       
-                       # (0 + land_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):land_end_adj)|wolfID) +
-                       (0 + propforest_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):propforest_end_adj)|wolfID) +
-                       (0 + propopen_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):propopen_end_adj)|wolfID) +
-                       (0 + propwet_end|wolfID) + (0 + (I(log(ttd1 + 1)):propwet_end)|wolfID) +
-                       (0 + I(log(1+roadDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+roadDist_end)))|wolfID) +
-                      
-                      I(log(1+nnDist_end)):COD + I(log(1+packDist_end)):COD +
-                      I(log(ttd1 + 1)):I(log(1+nnDist_end)):COD + I(log(ttd1 + 1)):I(log(1+packDist_end)):COD +
-                      
-                      (0 + I(log(1+nnDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+nnDist_end)))|wolfID) +
-                      (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
-                    , family=poisson(),
-                    data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
-                    map = list(theta=factor(c(NA,1:14))), start = list(theta=c(log(1000),seq(0,0, length.out = 14))))
-summary(everyone.nn)
 
 
 #### by model ####
@@ -336,43 +305,6 @@ sum.everyoneSoc<- summary(everyone.social)$coef$cond
 #saveRDS(sum.everyoneSoc, 'data/derived-data/summarypopeveryoneSoc_COD.Rds')
 
 AICtab(everyone.move, everyone.habitat, everyone, everyone.social)
-
-everyone.lastmo <- glmmTMB(case_ ~ log_sl:ToD_start +
-                      log_sl:land_end_adj +
-                      log(ttd1+1):log_sl + cos_ta + log(ttd1+1):cos_ta +
-                      (1|wolf_step_id) +
-                      (0 + (log_sl)|wolfID) +
-                      (0 + (cos_ta)|wolfID) +
-                      (0 + (log(ttd1+1):log_sl)|wolfID) +
-                      (0 + (log(ttd1+1):cos_ta)|wolfID) +
-                      land_end_adj + log(1+roadDist_end) +
-                      log(ttd1+1):land_end_adj +  log(ttd1+1):log(1+roadDist_end) +
-                      
-                      (0 + land_end_adj|wolfID) + (0 + (log(ttd1+1):land_end_adj)|wolfID) +
-                      (0 + (log(1+roadDist_end))|wolfID) + (0 + (log(ttd1+1):log(1+roadDist_end))|wolfID) +
-                      
-                      log(1+distance2) + log(1+packDistadj_end) +
-                      log(ttd1+1):log(1+distance2) + log(ttd1+1):log(1+packDistadj_end) +
-                      
-                      (0 + (log(1+distance2))|wolfID) + (0 + (log(ttd1+1):log(1+distance2))|wolfID) +
-                      (0 + (log(1+packDistadj_end))|wolfID) + (0 + (log(ttd1+1):log(1+packDistadj_end))|wolfID)
-                    , family=poisson(),
-                    data = dat[ttd1<=31 & wolfID %chin% dat.wnn.lastmo$wolfID], doFit=FALSE)
-
-everyone.lastmo$parameters$theta[1] <- log(1e3)
-nvar_parm <- length(everyone.lastmo$parameters$theta)
-everyone.lastmo$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
-everyone.lastmo <- glmmTMB:::fitTMB(everyone.lastmo)
-summary(everyone.lastmo)
-
-summary(everyone.lastmo)$coef$cond[-1, "Estimate"]
-popeveryone.lastmo<- summary(everyone.lastmo)$coef$cond[-1, 1:2]
-saveRDS(popeveryone.lastmo, 'data/derived-data/popeveryone_lastmo.Rds')
-summary(everyone.lastmo)$varcor
-
-everyone.lastmo.ran_vals <-broom.mixed::tidy(everyone.lastmo, effect= 'ran_vals')
-everyone.lastmo.se <-setDT(everyone.lastmo.ran_vals)[group=='wolfID']
-
 
 
 #### GATHERING RESULTS ####
@@ -2250,7 +2182,7 @@ ggplot(data=setDT(logRSS.wet.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Open") +
+  ylab("logRSS") + xlab("wet") +
   ggtitle("1 days") 
 # 
 # ggplot(data=setDT(logRSS.wet.indiv)[ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -2262,7 +2194,7 @@ ggplot(data=setDT(logRSS.wet.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2)) +
-  ylab("logRSS") + xlab("Distance to road (m)") +
+  ylab("logRSS") + xlab("wet") +
   ggtitle("60 days") 
 
 #### ROAD DIST ####
@@ -3185,7 +3117,7 @@ pack.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
-                                                           packDist_end = seq(0, 15000, length.out = 150),
+                                                           packDist_end = seq(0, max(packDist_end), length.out = 150),
                                                            COD = factor('CDV', levels = levels(COD)),
                                                            ttd1 = 1,
                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3208,7 +3140,7 @@ pack.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                             roadDist_end = median(roadDist_end, na.rm = T),
                                                             distance2 = median(distance2, na.rm = T),
                                                             nnDist_end = median(nnDist_end, na.rm = T),
-                                                            packDist_end = seq(0, 15000, length.out = 150),
+                                                            packDist_end = seq(0, max(packDist_end), length.out = 150),
                                                             COD = factor('CDV', levels = levels(COD)),
                                                             ttd1 = 60,
                                                             wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3246,7 +3178,7 @@ p.pack.h1.indiv <- function(ids, DT, mod, death, t2death){
           roadDist_end = median(roadDist_end, na.rm = T),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, 15000, length.out = 150),
+          packDist_end = seq(0, max(packDist_end), length.out = 150),
           COD = factor(death, levels = levels(COD)),
           ttd1 = t2death,
           wolf_step_id = NA,
@@ -3336,7 +3268,7 @@ pack.human.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                              roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = median(distance2, na.rm = T),
                                                              nnDist_end = median(nnDist_end, na.rm = T),
-                                                             packDist_end = seq(0, 15000, length.out = 150),
+                                                             packDist_end = seq(0, max(packDist_end), length.out = 150),
                                                              COD = factor('human', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3359,7 +3291,7 @@ pack.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                               roadDist_end = median(roadDist_end, na.rm = T),
                                                               distance2 = median(distance2, na.rm = T),
                                                               nnDist_end = median(nnDist_end, na.rm = T),
-                                                              packDist_end = seq(0, 15000, length.out = 150),
+                                                              packDist_end = seq(0, max(packDist_end), length.out = 150),
                                                               COD = factor('human', levels = levels(COD)),
                                                               ttd1 = 60,
                                                               wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3453,7 +3385,7 @@ pack.control.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fac
                                                                roadDist_end = median(roadDist_end, na.rm = T),
                                                                distance2 = median(distance2, na.rm = T),
                                                                nnDist_end = median(nnDist_end, na.rm = T),
-                                                               packDist_end = seq(0, 15000, length.out = 150),
+                                                               packDist_end = seq(0, max(packDist_end), length.out = 150),
                                                                COD = factor('control', levels = levels(COD)),
                                                                ttd1 = 1,
                                                                wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3476,7 +3408,7 @@ pack.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 roadDist_end = median(roadDist_end, na.rm = T),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = seq(0, 15000, length.out = 150),
+                                                                packDist_end = seq(0, max(packDist_end), length.out = 150),
                                                                 COD = factor('control', levels = levels(COD)),
                                                                 ttd1 = 60,
                                                                 wolf_step_id = NA, wolfID = 'RMNP_W02')]
@@ -3575,69 +3507,450 @@ logRSS.pack.indiv.social <- rbind(logRSS.pack.control.1day.indiv.social, logRSS.
                                 logRSS.pack.CDV.1day.indiv.social, logRSS.pack.CDV.60day.indiv.social)
 
 
-logRSS.indiv <- rbind(logRSS.road.indiv, logRSS.nn.indiv, logRSS.pack.indiv)
-logRSS.indiv.model <- rbind(logRSS.road.indiv.habitat, logRSS.nn.indiv.social, logRSS.pack.indiv.social)
+#### all ###
 
-logRSS <- rbind(logRSS.road, logRSS.nn)
-logRSS.model <- rbind(logRSS.road.habitat, logRSS.social)
+logRSS.indiv <- rbind(logRSS.forest.indiv, logRSS.open.indiv, logRSS.wet.indiv, logRSS.road.indiv, 
+                      logRSS.nn.indiv, logRSS.pack.indiv)
+logRSS.indiv.model <- rbind(logRSS.forest.indiv.habitat, logRSS.open.indiv.habitat, logRSS.wet.indiv.habitat, logRSS.road.indiv.habitat, 
+                      logRSS.nn.indiv.social, logRSS.pack.indiv.social)
 
-#saveRDS(logRSS.nn.indiv, 'data/derived-data/logRSS_nn_indiv.Rds')
-#saveRDS(logRSS.nn.indiv.social, 'data/derived-data/logRSS_nn_indiv_social.Rds')
+logRSS <- rbind(logRSS.forest, logRSS.open, logRSS.wet, logRSS.road, logRSS.nn)
+logRSS.model <- rbind(logRSS.forest.habitat, logRSS.open.habitat, logRSS.wet.habitat, logRSS.road.habitat, logRSS.social)
+
+#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv2.Rds')
+#saveRDS(logRSS.indiv.model, 'data/derived-data/logRSS_indiv_model2.Rds')
 
 
-#saveRDS(logRSS.nn, 'data/derived-data/logRSS_nn.Rds')
-#saveRDS(logRSS.social, 'data/derived-data/logRSS_social.Rds')
+#saveRDS(logRSS, 'data/derived-data/logRSS2.Rds')
+#saveRDS(logRSS.model, 'data/derived-data/logRSS_model2.Rds')
 
 
 ##### graphs ####
-logRSS.nn.indiv <- setDT(logRSS.nn.indiv)
-logRSS.nn.indiv[,'COD'] <- as.factor(logRSS.nn.indiv$COD)
-logRSS.nn.indiv[,'ttd'] <- as.factor(logRSS.nn.indiv$ttd)
+logRSS.pack.indiv <- setDT(logRSS.pack.indiv)
+logRSS.pack.indiv[,'COD'] <- as.factor(logRSS.pack.indiv$COD)
+logRSS.pack.indiv[,'ttd'] <- as.factor(logRSS.pack.indiv$ttd)
 
-logRSS.nn.indiv.se <- unique(logRSS.nn.indiv[,.(se=se(rss), var), by = .(x, COD, ttd)])
+logRSS.pack.indiv.se <- unique(logRSS.pack.indiv[,.(se=se(rss)), by = .(x, COD, ttd, var)])
 
-logRSS.nn.pop <- merge(logRSS.nn, logRSS.nn.indiv.se, by = c('x', 'COD', 'ttd','var'))
+logRSS.pack.pop <- merge(setDT(logRSS.nn)[var=='boundary'], logRSS.pack.indiv.se, by = c('x', 'COD', 'ttd','var'))
 
 
-ggplot(data=setDT(logRSS.nn.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
+ggplot(data=setDT(logRSS.pack.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
 
 
-ggplot(data=setDT(logRSS.nn.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
+ggplot(data=setDT(logRSS.pack.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
 
 
 
-logRSS.nn.indiv.social <- setDT(logRSS.nn.indiv.social)
-logRSS.nn.indiv.social[,'COD'] <- as.factor(logRSS.nn.indiv.social$COD)
-logRSS.nn.indiv.social[,'ttd'] <- as.factor(logRSS.nn.indiv.social$ttd)
+logRSS.pack.indiv.social <- setDT(logRSS.pack.indiv.social)
+logRSS.pack.indiv.social[,'COD'] <- as.factor(logRSS.pack.indiv.social$COD)
+logRSS.pack.indiv.social[,'ttd'] <- as.factor(logRSS.pack.indiv.social$ttd)
 
-logRSS.nn.indiv.social.se <- unique(logRSS.nn.indiv.social[,.(se=se(rss), var), by = .(x, COD, ttd)])
+logRSS.pack.indiv.social.se <- unique(logRSS.pack.indiv.social[,.(se=se(rss), var), by = .(x, COD, ttd)])
 
-logRSS.nn.pop.social <- merge(logRSS.social, logRSS.nn.indiv.social.se, by = c('x', 'COD', 'ttd','var'))
+logRSS.pack.pop.social <- merge(setDT(logRSS.social)[var=='boundary'], logRSS.pack.indiv.social.se, by = c('x', 'COD', 'ttd','var'))
 
 
-ggplot(data=setDT(logRSS.nn.pop.social)[ttd=='1 day'], aes(x, rss, colour=COD)) +
+ggplot(data=setDT(logRSS.pack.pop.social)[ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Distance to NN (m)") +
   ggtitle("1 day") 
 
-# ggplot(data=setDT(logRSS.nn.indiv.social)[ttd=='1 day'], aes(x, rss, colour=COD)) +
+# ggplot(data=setDT(logRSS.pack.indiv.social)[ttd=='1 day'], aes(x, rss, colour=COD)) +
 #   geom_point() +
 #   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)# +
 #   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
 
 
-ggplot(data=setDT(logRSS.nn.pop.social)[ttd=='60 days'], aes(x, rss, colour=COD)) +
+ggplot(data=setDT(logRSS.pack.pop.social)[ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Distance to NN (m)") +
   ggtitle("60 days") 
 
+
+#### GRAPHS ####
+
+logRSS.indiv <- setDT(logRSS.indiv)
+logRSS.indiv[,'COD'] <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
+logRSS.indiv[,'ttd'] <- as.factor(logRSS.indiv$ttd)
+
+logRSS.indiv.se <- unique(logRSS.indiv[,.(se=se(rss)), by = .(x, var, COD, ttd)])
+
+logRSS.pop <- merge(setDT(logRSS), logRSS.indiv.se, by = c('x', 'COD', 'ttd','var'))
+
+
+logRSS.indiv.model <- setDT(logRSS.indiv.model)
+logRSS.indiv.model[,'COD'] <- factor(logRSS.indiv.model$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
+logRSS.indiv.model[,'ttd'] <- as.factor(logRSS.indiv.model$ttd)
+
+logRSS.indiv.model.se <- unique(logRSS.indiv.model[,.(se=se(rss)), by = .(x, var, COD, ttd)])
+
+logRSS.pop.model <- merge(setDT(logRSS.model), logRSS.indiv.model.se, by = c('x', 'COD', 'ttd','var'))
+
+
+#### FOREST not sig ####
+forest.1 <- ggplot(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Proportion of forest") +
+  ggtitle("1 day")  +
+  ylim(-0.7,1.3) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+forest.60 <- ggplot(data=logRSS.pop[var == 'forest'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Proportion of forest") +
+  ggtitle("60 days")  +
+  ylim(-0.7,1.3) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+forest.1|forest.60
+
+
+ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_smooth() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion of forest") +
+  ggtitle("1 day") 
+
+
+
+#### OPEN sig ####
+open.1 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Proportion of open") +
+  ggtitle("1 day")  +
+  ylim(-3,1) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+open.60 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Proportion of open") +
+  ggtitle("60 days")  +
+  ylim(-3,1) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+open.1|open.60
+
+
+#### WET not sig ####
+wet.1 <- ggplot(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Proportion of wet") +
+  ggtitle("1 day")  +
+  ylim(-1.5,1.7) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+wet.60 <- ggplot(data=logRSS.pop[var == 'wet'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Proportion of wet") +
+  ggtitle("60 days")  +
+  ylim(-1.5,1.7) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+wet.1|wet.60
+
+# ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+#   geom_smooth() +
+#   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+#   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+#   ylab("logRSS") + xlab("Proportion of forest") +
+#   ggtitle("1 day") 
+
+
+
+#### ROAD control sig ####
+road.1 <- ggplot(data=logRSS.pop[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to road (m)") +
+  ggtitle("1 day")  +
+  ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+road.60 <- ggplot(data=logRSS.pop[var == 'road'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to road (m)") +
+  ggtitle("60 days")  +
+  ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+road.1|road.60
+
+ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to road") +
+  ggtitle("1 day") 
+
+ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to road") +
+  ggtitle("60 days") 
+
+road.1.model <- ggplot(data=logRSS.pop.model[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to road (m)") +
+  ggtitle("1 day")  +
+  ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+road.60.model <- ggplot(data=logRSS.pop.model[var == 'road'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to road (m)") +
+  ggtitle("60 days")  +
+  ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+road.1.model|road.60.model
+
+
+#### NN  sig ####
+nn.1 <- ggplot(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to nn (m)") +
+  ggtitle("1 day")  +
+ # ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+nn.60 <- ggplot(data=logRSS.pop[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to nn (m)") +
+  ggtitle("60 days")  +
+ # ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+nn.1|nn.60
+
+
+ggplot(data=setDT(logRSS.indiv)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to nn") +
+  ggtitle("1 day") 
+
+ggplot(data=setDT(logRSS.indiv)[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to nn") +
+  ggtitle("60 days") 
+
+nn.1.model <- ggplot(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to nn (m)") +
+  ggtitle("1 day")  +
+  ylim(-1,8) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+nn.60.model <- ggplot(data=logRSS.pop.model[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to nn (m)") +
+  ggtitle("60 days")  +
+  ylim(-1,8) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+nn.1.model|nn.60.model
+
+
+ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to nn") +
+  ggtitle("1 day") 
+
+ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to nn") +
+  ggtitle("60 days") 
