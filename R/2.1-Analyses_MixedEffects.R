@@ -305,6 +305,39 @@ popeveryoneSoc<- summary(everyone.social)$coef$cond[-1, 1:2]
 sum.everyoneSoc<- summary(everyone.social)$coef$cond
 #saveRDS(sum.everyoneSoc, 'data/derived-data/summarypopeveryoneSoc_COD.Rds')
 
+
+everyone.pack <- glmmTMB(case_ ~ log_sl:ToD_start +
+                             log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
+                             # log_sl:COD + cos_ta:COD + 
+                             # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
+                             (1|wolf_step_id) +
+                             # (0 + (log_sl)|wolfID) +
+                             # (0 + (cos_ta)|wolfID) +
+                             # (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
+                             # (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
+                             # COD:land_end_adj + I(log(1+roadDist_end)):COD +
+                             # COD:I(log(ttd1 + 1)):land_end_adj +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
+                             # 
+                             # (0 + land_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):land_end_adj)|wolfID) +
+                             # (0 + I(log(1+roadDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+roadDist_end)))|wolfID) +
+                             # 
+                            # I(log(1+distance2)):COD + 
+                           I(log(1+packDist_end)):COD +
+                           #  I(log(ttd1 + 1)):I(log(1+distance2)):COD + 
+                           I(log(ttd1 + 1)):I(log(1+packDist_end)):COD +
+                             
+                            # (0 + I(log(1+distance2))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+distance2)))|wolfID) +
+                             (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
+                           , family=poisson(),
+                           data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
+                           map = list(theta=factor(c(NA,1:2))), start = list(theta=c(log(1000),seq(0,0, length.out = 2))))
+summary(everyone.pack)
+popeveryonePack<- summary(everyone.pack)$coef$cond[-1, 1:2]
+#saveRDS(popeveryonePack, 'data/derived-data/popeveryonePack_COD.Rds')
+sum.everyonePack<- summary(everyone.pack)$coef$cond
+#saveRDS(sum.everyonePack, 'data/derived-data/summarypopeveryonePack_COD.Rds')
+
+
 AICtab(everyone.move, everyone.habitat, everyone, everyone.social)
 
 
@@ -569,115 +602,6 @@ main.move/ttd.move
 main.hab/ttd.hab
 main.dist/ttd.dist
 
-##### last mo NEED TO UPDATE NAMES ####
-everyone.lastmo.all.indiv<- merge(everyone.lastmo.all.indiv, dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
-everyone.lastmo.all.indiv$COD <- factor(everyone.lastmo.all.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
-
-minmax <- setDT(everyone.lastmo.all.indiv)[,.(min= min(estimate), max=max(estimate)), by = .(term, COD)]
-everyone.lastmo.all.betas <- minmax[min!= max]
-everyone.lastmo.all.betas.names <- unique(everyone.lastmo.all.betas$term)
-
-everyone.lastmo.all.betas.names <- c("log_sl", "cos_ta", 
-                              "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
-                              "log(1 + distance2)", "log(1 + packDistadj_end)",
-                              "log(ttd1 + 1):log_sl", "log(ttd1 + 1):cos_ta", 
-                              "log(ttd1 + 1):land_end_adjforest", "log(ttd1 + 1):land_end_adjopen", "log(ttd1 + 1):land_end_adjwet", "log(ttd1 + 1):log(1 + roadDist_end)", 
-                              "log(ttd1 + 1):log(1 + distance2)", "log(ttd1 + 1):log(1 + packDistadj_end)")
-
-everyone.lastmo.all.indiv.betas <- everyone.lastmo.all.indiv[term %chin% everyone.lastmo.all.betas.names]
-# everyone.lastmo.betas <- c("log_sl", "cos_ta", "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "log(1 + roadDist_end)",
-#                 "log(1 + distance2)", "log(1 + packDistadj_end)")
-
-everyone.lastmo.all.indiv.betas$term <- factor(everyone.lastmo.all.indiv.betas$term, levels = everyone.lastmo.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
-                                                                                                                     "nnDist", "boundaryDist",
-                                                                                                                     "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
-                                                                                                                     "nnDist-ttd", "boundaryDist-ttd"))
-
-everyone.lastmo.all.indiv.betas$COD[is.na(everyone.lastmo.all.indiv.betas$COD)] <- "control"
-
-#saveRDS(everyone.lastmo.all.indiv.betas, 'data/derived-data/everyone_lastmo_betas.Rds')
-
-everyone.lastmo.ttd <- everyone.lastmo.all.indiv.betas[term %like% "ttd", ]
-
-ttd.vars.lastmo <- ggplot(everyone.lastmo.ttd, aes(term, (estimate), fill = COD)) +
-  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
-               outlier.color = NA, lwd = 0.6,
-               alpha = 0.25) +
-  geom_jitter(aes(color = COD),
-              position = position_jitterdodge(.35),
-              size = 2, alpha = 0.4) +
-  #ggtitle('Interaction with community identity') +
-  geom_hline(aes(yintercept = 0), lty = 2) +
-  theme(#legend.position = 'none',
-    axis.title = element_text(size = 16, color = 'black'),
-    axis.text = element_text(size = 14, color = 'black'),
-    plot.title=element_text(size = 16, hjust=0),
-    axis.line = element_line(colour = "black"),
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    strip.background = element_rect(colour="black", size = 1, fill = "white"),
-    strip.text = element_text(size = 14)) +
-  xlab('') +
-  ylab('beta') +
-  # ggtitle("b) case") +
-  scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
-
-
-ggplot(everyone.lastmo.ttd[term== 'wet-ttd' | term== 'boundaryDist-ttd'], aes(term, (estimate), fill = COD)) +
-  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
-               outlier.color = NA, lwd = 0.6,
-               alpha = 0.25) +
-  geom_jitter(aes(color = COD),
-              position = position_jitterdodge(.35),
-              size = 2, alpha = 0.4) +
-  #ggtitle('Interaction with community identity') +
-  geom_hline(aes(yintercept = 0), lty = 2) +
-  theme(#legend.position = 'none',
-    axis.title = element_text(size = 16, color = 'black'),
-    axis.text = element_text(size = 14, color = 'black'),
-    plot.title=element_text(size = 16, hjust=0),
-    axis.line = element_line(colour = "black"),
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    strip.background = element_rect(colour="black", size = 1, fill = "white"),
-    strip.text = element_text(size = 14)) +
-  xlab('') +
-  ylab('beta') +
-  # ggtitle("b) case") +
-  scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
-
-
-everyone.lastmo.main <- everyone.lastmo.all.indiv.betas[!(term %like% "ttd"), ]
-
-main.vars.lastmo <- ggplot(everyone.lastmo.main, aes(term, (estimate), fill = COD)) +
-  geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
-               outlier.color = NA, lwd = 0.6,
-               alpha = 0.25) +
-  geom_jitter(aes(color = COD),
-              position = position_jitterdodge(.35),
-              size = 2, alpha = 0.4) +
-  #ggtitle('Interaction with community identity') +
-  geom_hline(aes(yintercept = 0), lty = 2) +
-  theme(#legend.position = 'none',
-    axis.title = element_text(size = 16, color = 'black'),
-    axis.text = element_text(size = 14, color = 'black'),
-    plot.title=element_text(size = 16, hjust=0),
-    axis.line = element_line(colour = "black"),
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(),
-    strip.background = element_rect(colour="black", size = 1, fill = "white"),
-    strip.text = element_text(size = 14)) +
-  xlab('') +
-  ylab('beta') +
-  # ggtitle("b) case") +
-  scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) #+ ylim(-2,2)
-
-ttd.vars.lastmo
-main.vars.lastmo
-
 
 
 #### RSS ####
@@ -696,10 +620,11 @@ CDV.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day'
                                                            packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('CDV', levels = levels(COD)),
                                                            ttd1 = 1,
-                                                           wolf_step_id = NA, wolfID= 'RMNP_W02')]
+                                                           wolf_step_id = NA, wolfID= NA)]
 p.CDV.1day.2 <- predict(everyone, newdata = CDV.1day.2, type='link', re.form = NA)
 p.CDV.1day.2.habitat <- predict(everyone.habitat, newdata = CDV.1day.2, type='link', re.form = NA)
 p.CDV.1day.2.social <- predict(everyone.social, newdata = CDV.1day.2, type='link', re.form = NA)
+p.CDV.1day.2.pack <- predict(everyone.pack, newdata = CDV.1day.2, type='link', re.form = NA)
 
 
 
@@ -716,10 +641,11 @@ CDV.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day
                                                         packDist_end = median(packDist_end, na.rm = T),
                                                         COD = factor('CDV', levels = levels(COD)),
                                                         ttd1 = 60,
-                                                        wolf_step_id = NA, wolfID= 'RMNP_W02')]
+                                                        wolf_step_id = NA, wolfID= NA)]
 p.CDV.60day.2 <- predict(everyone, newdata = CDV.60day.2, type='link', re.form = NA)
 p.CDV.60day.2.habitat <- predict(everyone.habitat, newdata = CDV.60day.2, type='link', re.form = NA)
 p.CDV.60day.2.social <- predict(everyone.social, newdata = CDV.60day.2, type='link', re.form = NA)
+p.CDV.60day.2.pack <- predict(everyone.pack, newdata = CDV.60day.2, type='link', re.form = NA)
 
 
 ### human ###
@@ -736,10 +662,11 @@ human.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('da
                                                         packDist_end = median(packDist_end, na.rm = T),
                                                         COD = factor('human', levels = levels(COD)),
                                                         ttd1 = 1,
-                                                        wolf_step_id = NA, wolfID= 'RMNP_W02')]
+                                                        wolf_step_id = NA, wolfID= NA)]
 p.human.1day.2 <- predict(everyone, newdata = human.1day.2, type='link', re.form = NA)
 p.human.1day.2.habitat <- predict(everyone.habitat, newdata = human.1day.2, type='link', re.form = NA)
 p.human.1day.2.social <- predict(everyone.social, newdata = human.1day.2, type='link', re.form = NA)
+p.human.1day.2.pack <- predict(everyone.pack, newdata = human.1day.2, type='link', re.form = NA)
 
 
 
@@ -756,10 +683,11 @@ human.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('d
                                                          packDist_end = median(packDist_end, na.rm = T),
                                                          COD = factor('human', levels = levels(COD)),
                                                          ttd1 = 60,
-                                                         wolf_step_id = NA, wolfID= 'RMNP_W02')]
+                                                         wolf_step_id = NA, wolfID= NA)]
 p.human.60day.2 <- predict(everyone, newdata = human.60day.2, type='link', re.form = NA)
 p.human.60day.2.habitat <- predict(everyone.habitat, newdata = human.60day.2, type='link', re.form = NA)
 p.human.60day.2.social <- predict(everyone.social, newdata = human.60day.2, type='link', re.form = NA)
+p.human.60day.2.pack <- predict(everyone.pack, newdata = human.60day.2, type='link', re.form = NA)
 
 
 ### control ###
@@ -776,10 +704,11 @@ control.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('
                                                         packDist_end = median(packDist_end, na.rm = T),
                                                         COD = factor('control', levels = levels(COD)),
                                                         ttd1 = 1,
-                                                        wolf_step_id = NA, wolfID= 'RMNP_W02')]
+                                                        wolf_step_id = NA, wolfID= NA)]
 p.control.1day.2 <- predict(everyone, newdata = control.1day.2, type='link', re.form = NA)
 p.control.1day.2.habitat <- predict(everyone.habitat, newdata = control.1day.2, type='link', re.form = NA)
 p.control.1day.2.social <- predict(everyone.social, newdata = control.1day.2, type='link', re.form = NA)
+p.control.1day.2.pack <- predict(everyone.pack, newdata = control.1day.2, type='link', re.form = NA)
 
 
 control.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day', levels = levels(ToD_start)),
@@ -795,10 +724,11 @@ control.60day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                          packDist_end = median(packDist_end, na.rm = T),
                                                          COD = factor('control', levels = levels(COD)),
                                                          ttd1 = 60,
-                                                         wolf_step_id = NA, wolfID= 'RMNP_W02')]
+                                                         wolf_step_id = NA, wolfID= NA)]
 p.control.60day.2 <- predict(everyone, newdata = control.60day.2, type='link', re.form = NA)
 p.control.60day.2.habitat <- predict(everyone.habitat, newdata = control.60day.2, type='link', re.form = NA)
 p.control.60day.2.social <- predict(everyone.social, newdata = control.60day.2, type='link', re.form = NA)
+p.control.60day.2.pack <- predict(everyone.pack, newdata = control.60day.2, type='link', re.form = NA)
 
 
 ### INDIVs ###
@@ -837,10 +767,12 @@ CDV.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='CDV', wolfI
 p.CDV.1day.2.indiv <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 1)
 p.CDV.1day.2.indiv.habitat <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 1)
 p.CDV.1day.2.indiv.social <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', t2death = 1)
-  
+p.CDV.1day.2.indiv.pack <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', t2death = 1)
+
 p.CDV.60day.2.indiv <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
 p.CDV.60day.2.indiv.habitat <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', t2death = 60)
 p.CDV.60day.2.indiv.social <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', t2death = 60)
+p.CDV.60day.2.indiv.pack <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', t2death = 60)
 
 
 ### human ###
@@ -849,10 +781,12 @@ human.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='human', w
 p.human.1day.2.indiv <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 1)
 p.human.1day.2.indiv.habitat <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 1)
 p.human.1day.2.indiv.social <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', t2death = 1)
+p.human.1day.2.indiv.pack <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', t2death = 1)
 
 p.human.60day.2.indiv <- p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
 p.human.60day.2.indiv.habitat <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', t2death = 60)
 p.human.60day.2.indiv.social <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', t2death = 60)
+p.human.60day.2.indiv.pack <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', t2death = 60)
 
 
 ### control ###
@@ -861,10 +795,12 @@ control.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='control
 p.control.1day.2.indiv <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 1)
 p.control.1day.2.indiv.habitat <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 1)
 p.control.1day.2.indiv.social <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', t2death = 1)
+p.control.1day.2.indiv.pack <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', t2death = 1)
 
 p.control.60day.2.indiv <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', t2death = 60)
 p.control.60day.2.indiv.habitat <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', t2death = 60)
 p.control.60day.2.indiv.social <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', t2death = 60)
+p.control.60day.2.indiv.pack <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', t2death = 60)
 
 
 
@@ -885,7 +821,7 @@ forest.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA,
-                                                             wolfID = 'RMNP_W02')]
+                                                             wolfID = NA)]
 
 p.forest.CDV.1day.1 <- predict(everyone, newdata = forest.CDV.1day.1, type='link', re.form = NA)
 p.forest.CDV.1day.1.habitat <- predict(everyone.habitat, newdata = forest.CDV.1day.1, type='link', re.form = NA)
@@ -1037,7 +973,7 @@ forest.human.1day.1 <-
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.forest.human.1day.1 <- predict(everyone, newdata = forest.human.1day.1, type='link', re.form = NA)
@@ -1061,7 +997,7 @@ forest.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('human', levels = levels(COD)),
                                                                 ttd1 = 60,
-                                                                wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                wolf_step_id = NA, wolfID = NA)]
 
 p.forest.human.60day.1 <- predict(everyone, newdata = forest.human.60day.1, type='link', re.form = NA)
 p.forest.human.60day.1.habitat <- predict(everyone.habitat, newdata = forest.human.60day.1, type='link', re.form = NA)
@@ -1163,7 +1099,7 @@ forest.control.1day.1 <-
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.forest.control.1day.1 <- predict(everyone, newdata = forest.control.1day.1, type='link', re.form = NA)
@@ -1187,7 +1123,7 @@ forest.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = 
                                                                   packDist_end = median(packDist_end, na.rm = T),
                                                                   COD = factor('control', levels = levels(COD)),
                                                                   ttd1 = 60,
-                                                                  wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                  wolf_step_id = NA, wolfID = NA)]
 
 p.forest.control.60day.1 <- predict(everyone, newdata = forest.control.60day.1, type='link', re.form = NA)
 p.forest.control.60day.1.habitat <- predict(everyone.habitat, newdata = forest.control.60day.1, type='link', re.form = NA)
@@ -1329,7 +1265,7 @@ open.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                                COD = factor('CDV', levels = levels(COD)),
                                                                ttd1 = 1,
                                                                wolf_step_id = NA,
-                                                               wolfID = 'RMNP_W02')]
+                                                               wolfID = NA)]
 
 p.open.CDV.1day.1 <- predict(everyone, newdata = open.CDV.1day.1, type='link', re.form = NA)
 p.open.CDV.1day.1.habitat <- predict(everyone.habitat, newdata = open.CDV.1day.1, type='link', re.form = NA)
@@ -1481,7 +1417,7 @@ open.human.1day.1 <-
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.open.human.1day.1 <- predict(everyone, newdata = open.human.1day.1, type='link', re.form = NA)
@@ -1505,7 +1441,7 @@ open.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                                   packDist_end = median(packDist_end, na.rm = T),
                                                                   COD = factor('human', levels = levels(COD)),
                                                                   ttd1 = 60,
-                                                                  wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                  wolf_step_id = NA, wolfID = NA)]
 
 p.open.human.60day.1 <- predict(everyone, newdata = open.human.60day.1, type='link', re.form = NA)
 p.open.human.60day.1.habitat <- predict(everyone.habitat, newdata = open.human.60day.1, type='link', re.form = NA)
@@ -1605,7 +1541,7 @@ open.control.1day.1 <-dat[wolfID %chin% dat.wnn.lastmo$wolfID, .(
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.open.control.1day.1 <- predict(everyone, newdata = open.control.1day.1, type='link', re.form = NA)
@@ -1629,7 +1565,7 @@ open.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                     packDist_end = median(packDist_end, na.rm = T),
                                                                     COD = factor('control', levels = levels(COD)),
                                                                     ttd1 = 60,
-                                                                    wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                    wolf_step_id = NA, wolfID = NA)]
 
 p.open.control.60day.1 <- predict(everyone, newdata = open.control.60day.1, type='link', re.form = NA)
 p.open.control.60day.1.habitat <- predict(everyone.habitat, newdata = open.control.60day.1, type='link', re.form = NA)
@@ -1773,7 +1709,7 @@ wet.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 1,
                                                              wolf_step_id = NA,
-                                                             wolfID = 'RMNP_W02')]
+                                                             wolfID = NA)]
 
 p.wet.CDV.1day.1 <- predict(everyone, newdata = wet.CDV.1day.1, type='link', re.form = NA)
 p.wet.CDV.1day.1.habitat <- predict(everyone.habitat, newdata = wet.CDV.1day.1, type='link', re.form = NA)
@@ -1925,7 +1861,7 @@ wet.human.1day.1 <-
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.wet.human.1day.1 <- predict(everyone, newdata = wet.human.1day.1, type='link', re.form = NA)
@@ -1949,7 +1885,7 @@ wet.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                                 packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('human', levels = levels(COD)),
                                                                 ttd1 = 60,
-                                                                wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                wolf_step_id = NA, wolfID = NA)]
 
 p.wet.human.60day.1 <- predict(everyone, newdata = wet.human.60day.1, type='link', re.form = NA)
 p.wet.human.60day.1.habitat <- predict(everyone.habitat, newdata = wet.human.60day.1, type='link', re.form = NA)
@@ -2050,7 +1986,7 @@ wet.control.1day.1 <-
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.wet.control.1day.1 <- predict(everyone, newdata = wet.control.1day.1, type='link', re.form = NA)
@@ -2074,7 +2010,7 @@ wet.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fac
                                                                   packDist_end = median(packDist_end, na.rm = T),
                                                                   COD = factor('control', levels = levels(COD)),
                                                                   ttd1 = 60,
-                                                                  wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                  wolf_step_id = NA, wolfID = NA)]
 
 p.wet.control.60day.1 <- predict(everyone, newdata = wet.control.60day.1, type='link', re.form = NA)
 p.wet.control.60day.1.habitat <- predict(everyone.habitat, newdata = wet.control.60day.1, type='link', re.form = NA)
@@ -2214,7 +2150,7 @@ road.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                           COD = factor('CDV', levels = levels(COD)),
                           ttd1 = 1,
                           wolf_step_id = NA,
-                          wolfID = 'RMNP_W02')]
+                          wolfID = NA)]
 
 p.road.CDV.1day.1 <- predict(everyone, newdata = road.CDV.1day.1, type='link', re.form = NA)
 p.road.CDV.1day.1.habitat <- predict(everyone.habitat, newdata = road.CDV.1day.1, type='link', re.form = NA)
@@ -2369,7 +2305,7 @@ road.human.1day.1 <-
     COD = factor('human', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.road.human.1day.1 <- predict(everyone, newdata = road.human.1day.1, type='link', re.form = NA)
@@ -2393,7 +2329,7 @@ road.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                               packDist_end = median(packDist_end, na.rm = T),
                                                               COD = factor('human', levels = levels(COD)),
                                                               ttd1 = 60,
-                                                              wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                              wolf_step_id = NA, wolfID = NA)]
 
 p.road.human.60day.1 <- predict(everyone, newdata = road.human.60day.1, type='link', re.form = NA)
 p.road.human.60day.1.habitat <- predict(everyone.habitat, newdata = road.human.60day.1, type='link', re.form = NA)
@@ -2497,7 +2433,7 @@ road.control.1day.1 <-
     COD = factor('control', levels = levels(COD)),
     ttd1 = 1,
     wolf_step_id = NA,
-    wolfID = 'RMNP_W02'
+    wolfID = NA
   )]
 
 p.road.control.1day.1 <- predict(everyone, newdata = road.control.1day.1, type='link', re.form = NA)
@@ -2521,7 +2457,7 @@ road.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 packDist_end = median(packDist_end, na.rm = T),
                                                                 COD = factor('control', levels = levels(COD)),
                                                                 ttd1 = 60,
-                                                                wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                wolf_step_id = NA, wolfID = NA)]
 
 p.road.control.60day.1 <- predict(everyone, newdata = road.control.60day.1, type='link', re.form = NA)
 p.road.control.60day.1.habitat <- predict(everyone.habitat, newdata = road.control.60day.1, type='link', re.form = NA)
@@ -2666,7 +2602,7 @@ nn.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(pop = factor('GHA26',
                                                              packDist_end = median(packDist_end, na.rm = T),
                                                              COD = factor('CDV', levels = levels(COD)),
                                                              ttd1 = 1,
-                                                             wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                             wolf_step_id = NA, wolfID = NA)]
 
 p.nn.CDV.1day.1 <- predict(everyone, newdata = nn.CDV.1day.1, type='link', re.form = NA)
 p.nn.CDV.1day.1.social <- predict(everyone.social, newdata = nn.CDV.1day.1, type='link', re.form = NA)
@@ -2689,7 +2625,7 @@ nn.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(pop = factor('GHA26'
                                                             packDist_end = median(packDist_end, na.rm = T),
                                                             COD = factor('CDV', levels = levels(COD)),
                                                               ttd1 = 60,
-                                                              wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                              wolf_step_id = NA, wolfID = NA)]
 p.nn.CDV.60day.1 <- predict(everyone, newdata = nn.CDV.60day.1, type='link', re.form=NA)
 p.nn.CDV.60day.1.social <- predict(everyone.social, newdata = nn.CDV.60day.1, type='link', re.form=NA)
 
@@ -2814,7 +2750,7 @@ nn.human.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('human', levels = levels(COD)),
                                                            ttd1 = 1,
-                                                           wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                           wolf_step_id = NA, wolfID = NA)]
 
 p.nn.human.1day.1 <- predict(everyone, newdata = nn.human.1day.1, type='link', re.form = NA)
 p.nn.human.1day.1.social <- predict(everyone.social, newdata = nn.human.1day.1, type='link', re.form = NA)
@@ -2837,7 +2773,7 @@ nn.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                             packDist_end = median(packDist_end, na.rm = T),
                                                             COD = factor('human', levels = levels(COD)),
                                                             ttd1 = 60,
-                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                            wolf_step_id = NA, wolfID = NA)]
 p.nn.human.60day.1 <- predict(everyone, newdata = nn.human.60day.1, type='link', re.form=NA)
 p.nn.human.60day.1.social <- predict(everyone.social, newdata = nn.human.60day.1, type='link', re.form=NA)
 
@@ -2929,7 +2865,7 @@ nn.control.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                            packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('control', levels = levels(COD)),
                                                            ttd1 = 1,
-                                                           wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                           wolf_step_id = NA, wolfID = NA)]
 
 p.nn.control.1day.1 <- predict(everyone, newdata = nn.control.1day.1, type='link', re.form = NA)
 p.nn.control.1day.1.social <- predict(everyone.social, newdata = nn.control.1day.1, type='link', re.form = NA)
@@ -2952,7 +2888,7 @@ nn.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                             packDist_end = median(packDist_end, na.rm = T),
                                                             COD = factor('control', levels = levels(COD)),
                                                             ttd1 = 60,
-                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                            wolf_step_id = NA, wolfID = NA)]
 p.nn.control.60day.1 <- predict(everyone, newdata = nn.control.60day.1, type='link', re.form=NA)
 p.nn.control.60day.1.social <- predict(everyone.social, newdata = nn.control.60day.1, type='link', re.form=NA)
 
@@ -3118,17 +3054,19 @@ pack.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
-                                                           packDist_end = seq(0, max(packDist_end), length.out = 150),
+                                                           packDist_end = seq(0, 15000, length.out = 150),
                                                            COD = factor('CDV', levels = levels(COD)),
                                                            ttd1 = 1,
-                                                           wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                           wolf_step_id = NA, wolfID = NA)]
 
 p.pack.CDV.1day.1 <- predict(everyone, newdata = pack.CDV.1day.1, type='link', re.form = NA)
 p.pack.CDV.1day.1.social <- predict(everyone.social, newdata = pack.CDV.1day.1, type='link', re.form = NA)
+p.pack.CDV.1day.1.pack <- predict(everyone.pack, newdata = pack.CDV.1day.1, type='link', re.form = NA)
 
 
 logRSS.pack.CDV.1day<- p.pack.CDV.1day.1 - p.CDV.1day.2
 logRSS.pack.CDV.1day.social<- p.pack.CDV.1day.1.social - p.CDV.1day.2.social
+logRSS.pack.CDV.1day.pack<- p.pack.CDV.1day.1.pack - p.CDV.1day.2.pack
 
 
 pack.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day', levels = levels(ToD_start)),
@@ -3141,23 +3079,28 @@ pack.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor
                                                             roadDist_end = median(roadDist_end, na.rm = T),
                                                             distance2 = median(distance2, na.rm = T),
                                                             nnDist_end = median(nnDist_end, na.rm = T),
-                                                            packDist_end = seq(0, max(packDist_end), length.out = 150),
+                                                            packDist_end = seq(0, 15000, length.out = 150),
                                                             COD = factor('CDV', levels = levels(COD)),
                                                             ttd1 = 60,
-                                                            wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                            wolf_step_id = NA, wolfID = NA)]
 p.pack.CDV.60day.1 <- predict(everyone, newdata = pack.CDV.60day.1, type='link', re.form=NA)
 p.pack.CDV.60day.1.social <- predict(everyone.social, newdata = pack.CDV.60day.1, type='link', re.form=NA)
+p.pack.CDV.60day.1.pack <- predict(everyone.pack, newdata = pack.CDV.60day.1, type='link', re.form=NA)
 
 
 logRSS.pack.CDV.60day<- p.pack.CDV.60day.1 - p.CDV.60day.2
 logRSS.pack.CDV.60day.social<- p.pack.CDV.60day.1.social - p.CDV.60day.2.social
+logRSS.pack.CDV.60day.pack<- p.pack.CDV.60day.1.social - p.CDV.60day.2.pack
 
 
 logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day, x = seq(from = 0, to = 15000, length.out = 150)))
 logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day, x = seq(from = 0, to = 15000, length.out = 150)))
 
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+# logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+# logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '1 day', var = 'boundary', rss = logRSS.pack.CDV.1day.pack, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'CDV', ttd = '60 days', var = 'boundary', rss = logRSS.pack.CDV.60day.pack, x = seq(from = 0, to = 15000, length.out = 150)))
 
 #### indivs ####
 
@@ -3179,7 +3122,7 @@ p.pack.h1.indiv <- function(ids, DT, mod, death, t2death){
           roadDist_end = median(roadDist_end, na.rm = T),
           distance2 = median(distance2, na.rm = T),
           nnDist_end = median(nnDist_end, na.rm = T),
-          packDist_end = seq(0, max(packDist_end), length.out = 150),
+          packDist_end = seq(0, 15000, length.out = 150),
           COD = factor(death, levels = levels(COD)),
           ttd1 = t2death,
           wolf_step_id = NA,
@@ -3222,6 +3165,21 @@ logRSS.pack.CDV.1day.indiv.social <- merge(h1.pack.CDV.1day.indiv.social, h2.pac
 logRSS.pack.CDV.1day.indiv.social[,'rss'] <- logRSS.pack.CDV.1day.indiv.social$h1 - logRSS.pack.CDV.1day.indiv.social$h2
 
 
+#### pack model
+p.pack.CDV.1day.1.indiv.pack <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', t2death = 1)
+
+h1.pack.CDV.1day.indiv.pack <- data.table(rbindlist(p.pack.CDV.1day.1.indiv.pack),
+                                            ttd = '1 day', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
+
+
+h2.pack.CDV.1day.indiv.pack <- data.table(rbindlist(p.CDV.1day.2.indiv.pack),
+                                            ttd = '1 day', COD = 'CDV', var = 'boundary')
+
+
+logRSS.pack.CDV.1day.indiv.pack <- merge(h1.pack.CDV.1day.indiv.pack, h2.pack.CDV.1day.indiv.pack, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.pack.CDV.1day.indiv.pack[,'rss'] <- logRSS.pack.CDV.1day.indiv.pack$h1 - logRSS.pack.CDV.1day.indiv.pack$h2
+
+
 ### 60 days
 
 p.pack.CDV.60day.1.indiv <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', t2death = 60)
@@ -3256,6 +3214,22 @@ h2.pack.CDV.60day.indiv.social <- data.table(rbindlist(p.CDV.60day.2.indiv.socia
 logRSS.pack.CDV.60day.indiv.social <- merge(h1.pack.CDV.60day.indiv.social, h2.pack.CDV.60day.indiv.social, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
 logRSS.pack.CDV.60day.indiv.social[,'rss'] <- logRSS.pack.CDV.60day.indiv.social$h1 - logRSS.pack.CDV.60day.indiv.social$h2
 
+#### pack model
+
+p.pack.CDV.60day.1.indiv.pack <- p.pack.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', t2death = 60)
+
+
+h1.pack.CDV.60day.indiv.pack <- data.table(rbindlist(p.pack.CDV.60day.1.indiv.pack),
+                                             ttd = '60 days', COD = 'CDV', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
+
+
+
+h2.pack.CDV.60day.indiv.pack <- data.table(rbindlist(p.CDV.60day.2.indiv.pack),
+                                             ttd = '60 days', COD = 'CDV', var = 'boundary')
+
+
+logRSS.pack.CDV.60day.indiv.pack <- merge(h1.pack.CDV.60day.indiv.pack, h2.pack.CDV.60day.indiv.pack, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.pack.CDV.60day.indiv.pack[,'rss'] <- logRSS.pack.CDV.60day.indiv.pack$h1 - logRSS.pack.CDV.60day.indiv.pack$h2
 
 #### human ####
 
@@ -3269,17 +3243,19 @@ pack.human.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                              roadDist_end = median(roadDist_end, na.rm = T),
                                                              distance2 = median(distance2, na.rm = T),
                                                              nnDist_end = median(nnDist_end, na.rm = T),
-                                                             packDist_end = seq(0, max(packDist_end), length.out = 150),
+                                                             packDist_end = seq(0, 15000, length.out = 150),
                                                              COD = factor('human', levels = levels(COD)),
                                                              ttd1 = 1,
-                                                             wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                             wolf_step_id = NA, wolfID = NA)]
 
 p.pack.human.1day.1 <- predict(everyone, newdata = pack.human.1day.1, type='link', re.form = NA)
 p.pack.human.1day.1.social <- predict(everyone.social, newdata = pack.human.1day.1, type='link', re.form = NA)
+p.pack.human.1day.1.pack <- predict(everyone.pack, newdata = pack.human.1day.1, type='link', re.form = NA)
 
 
 logRSS.pack.human.1day<- p.pack.human.1day.1 - p.human.1day.2
 logRSS.pack.human.1day.social<- p.pack.human.1day.1.social - p.human.1day.2.social
+logRSS.pack.human.1day.pack<- p.pack.human.1day.1.pack - p.human.1day.2.pack
 
 
 pack.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day', levels = levels(ToD_start)),
@@ -3292,23 +3268,28 @@ pack.human.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fact
                                                               roadDist_end = median(roadDist_end, na.rm = T),
                                                               distance2 = median(distance2, na.rm = T),
                                                               nnDist_end = median(nnDist_end, na.rm = T),
-                                                              packDist_end = seq(0, max(packDist_end), length.out = 150),
+                                                              packDist_end = seq(0, 15000, length.out = 150),
                                                               COD = factor('human', levels = levels(COD)),
                                                               ttd1 = 60,
-                                                              wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                              wolf_step_id = NA, wolfID = NA)]
 p.pack.human.60day.1 <- predict(everyone, newdata = pack.human.60day.1, type='link', re.form=NA)
 p.pack.human.60day.1.social <- predict(everyone.social, newdata = pack.human.60day.1, type='link', re.form=NA)
+p.pack.human.60day.1.pack <- predict(everyone.pack, newdata = pack.human.60day.1, type='link', re.form=NA)
 
 
 
 logRSS.pack.human.60day<- p.pack.human.60day.1 - p.human.60day.2
 logRSS.pack.human.60day.social<- p.pack.human.60day.1.social - p.human.60day.2.social
+logRSS.pack.human.60day.pack<- p.pack.human.60day.1.pack - p.human.60day.2.pack
 
 logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day, x = seq(from = 0, to = 15000, length.out = 150)))
 logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day, x = seq(from = 0, to = 15000, length.out = 150)))
 
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+# logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+# logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '1 day', var = 'boundary', rss = logRSS.pack.human.1day.pack, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'human', ttd = '60 days', var = 'boundary', rss = logRSS.pack.human.60day.pack, x = seq(from = 0, to = 15000, length.out = 150)))
 
 #### indivs ####
 
@@ -3342,6 +3323,23 @@ logRSS.pack.human.1day.indiv.social <- merge(h1.pack.human.1day.indiv.social, h2
 logRSS.pack.human.1day.indiv.social[,'rss'] <- logRSS.pack.human.1day.indiv.social$h1 - logRSS.pack.human.1day.indiv.social$h2
 
 
+#### pack model
+
+p.pack.human.1day.1.indiv.pack <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', t2death = 1)
+
+
+h1.pack.human.1day.indiv.pack <- data.table(rbindlist(p.pack.human.1day.1.indiv.pack),
+                                              ttd = '1 day', COD = 'human', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
+
+
+h2.pack.human.1day.indiv.pack <- data.table(rbindlist(p.human.1day.2.indiv.pack),
+                                              ttd = '1 day', COD = 'human', var = 'boundary')
+
+
+logRSS.pack.human.1day.indiv.pack <- merge(h1.pack.human.1day.indiv.pack, h2.pack.human.1day.indiv.pack, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.pack.human.1day.indiv.pack[,'rss'] <- logRSS.pack.human.1day.indiv.pack$h1 - logRSS.pack.human.1day.indiv.pack$h2
+
+
 ### 60 days
 
 p.pack.human.60day.1.indiv <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', t2death = 60)
@@ -3373,6 +3371,20 @@ h2.pack.human.60day.indiv.social <- data.table(rbindlist(p.human.60day.2.indiv.s
 logRSS.pack.human.60day.indiv.social <- merge(h1.pack.human.60day.indiv.social, h2.pack.human.60day.indiv.social, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
 logRSS.pack.human.60day.indiv.social[,'rss'] <- logRSS.pack.human.60day.indiv.social$h1 - logRSS.pack.human.60day.indiv.social$h2
 
+#### pack model
+
+p.pack.human.60day.1.indiv.pack <- p.pack.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', t2death = 60)
+
+h1.pack.human.60day.indiv.pack <- data.table(rbindlist(p.pack.human.60day.1.indiv.pack),
+                                               ttd = '60 days', COD = 'human', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
+
+
+h2.pack.human.60day.indiv.pack <- data.table(rbindlist(p.human.60day.2.indiv.pack),
+                                               ttd = '60 days', COD = 'human', var = 'boundary')
+
+
+logRSS.pack.human.60day.indiv.pack <- merge(h1.pack.human.60day.indiv.pack, h2.pack.human.60day.indiv.pack, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.pack.human.60day.indiv.pack[,'rss'] <- logRSS.pack.human.60day.indiv.pack$h1 - logRSS.pack.human.60day.indiv.pack$h2
 
 #### control ####
 
@@ -3386,17 +3398,19 @@ pack.control.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fac
                                                                roadDist_end = median(roadDist_end, na.rm = T),
                                                                distance2 = median(distance2, na.rm = T),
                                                                nnDist_end = median(nnDist_end, na.rm = T),
-                                                               packDist_end = seq(0, max(packDist_end), length.out = 150),
+                                                               packDist_end = seq(0, 15000, length.out = 150),
                                                                COD = factor('control', levels = levels(COD)),
                                                                ttd1 = 1,
-                                                               wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                               wolf_step_id = NA, wolfID = NA)]
 
 p.pack.control.1day.1 <- predict(everyone, newdata = pack.control.1day.1, type='link', re.form = NA)
 p.pack.control.1day.1.social <- predict(everyone.social, newdata = pack.control.1day.1, type='link', re.form = NA)
+p.pack.control.1day.1.pack <- predict(everyone.pack, newdata = pack.control.1day.1, type='link', re.form = NA)
 
 
 logRSS.pack.control.1day<- p.pack.control.1day.1 - p.control.1day.2
 logRSS.pack.control.1day.social<- p.pack.control.1day.1.social - p.control.1day.2.social
+logRSS.pack.control.1day.pack<- p.pack.control.1day.1.pack - p.control.1day.2.pack
 
 
 pack.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day', levels = levels(ToD_start)),
@@ -3409,24 +3423,28 @@ pack.control.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = fa
                                                                 roadDist_end = median(roadDist_end, na.rm = T),
                                                                 distance2 = median(distance2, na.rm = T),
                                                                 nnDist_end = median(nnDist_end, na.rm = T),
-                                                                packDist_end = seq(0, max(packDist_end), length.out = 150),
+                                                                packDist_end = seq(0, 15000, length.out = 150),
                                                                 COD = factor('control', levels = levels(COD)),
                                                                 ttd1 = 60,
-                                                                wolf_step_id = NA, wolfID = 'RMNP_W02')]
+                                                                wolf_step_id = NA, wolfID = NA)]
 p.pack.control.60day.1 <- predict(everyone, newdata = pack.control.60day.1, type='link', re.form=NA)
 p.pack.control.60day.1.social <- predict(everyone.social, newdata = pack.control.60day.1, type='link', re.form=NA)
+p.pack.control.60day.1.pack <- predict(everyone.pack, newdata = pack.control.60day.1, type='link', re.form=NA)
 
 
 
 logRSS.pack.control.60day<- p.pack.control.60day.1 - p.control.60day.2
 logRSS.pack.control.60day.social<- p.pack.control.60day.1.social - p.control.60day.2.social
+logRSS.pack.control.60day.pack<- p.pack.control.60day.1.pack - p.control.60day.2.pack
 
 logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day, x = seq(from = 0, to = 15000, length.out = 150)))
 logRSS.nn <- rbind(logRSS.nn, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day, x = seq(from = 0, to = 15000, length.out = 150)))
 
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
-logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+# logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day.social, x = seq(from = 0, to = 15000, length.out = 150)))
+# logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day.social, x = seq(from = 0, to = 15000, length.out = 150)))
 
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '1 day', var = 'boundary', rss = logRSS.pack.control.1day.pack, x = seq(from = 0, to = 15000, length.out = 150)))
+logRSS.social <- rbind(logRSS.social, data.frame(COD= 'control', ttd = '60 days', var = 'boundary', rss = logRSS.pack.control.60day.pack, x = seq(from = 0, to = 15000, length.out = 150)))
 
 #### indivs ####
 
@@ -3459,6 +3477,23 @@ h2.pack.control.1day.indiv.social <- data.table(rbindlist(p.control.1day.2.indiv
 
 logRSS.pack.control.1day.indiv.social <- merge(h1.pack.control.1day.indiv.social, h2.pack.control.1day.indiv.social, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
 logRSS.pack.control.1day.indiv.social[,'rss'] <- logRSS.pack.control.1day.indiv.social$h1 - logRSS.pack.control.1day.indiv.social$h2
+
+
+#### pack model
+
+p.pack.control.1day.1.indiv.pack <- p.pack.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', t2death = 1)
+
+
+h1.pack.control.1day.indiv.pack <- data.table(rbindlist(p.pack.control.1day.1.indiv.pack),
+                                                ttd = '1 day', COD = 'control', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
+
+
+h2.pack.control.1day.indiv.pack <- data.table(rbindlist(p.control.1day.2.indiv.pack),
+                                                ttd = '1 day', COD = 'control', var = 'boundary')
+
+
+logRSS.pack.control.1day.indiv.pack <- merge(h1.pack.control.1day.indiv.pack, h2.pack.control.1day.indiv.pack, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.pack.control.1day.indiv.pack[,'rss'] <- logRSS.pack.control.1day.indiv.pack$h1 - logRSS.pack.control.1day.indiv.pack$h2
 
 
 ### 60 days
@@ -3496,6 +3531,21 @@ logRSS.pack.control.60day.indiv.social <- merge(h1.pack.control.60day.indiv.soci
 logRSS.pack.control.60day.indiv.social[,'rss'] <- logRSS.pack.control.60day.indiv.social$h1 - logRSS.pack.control.60day.indiv.social$h2
 
 
+#### pack model
+
+p.pack.control.60day.1.indiv.pack <- p.pack.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', t2death = 60)
+
+h1.pack.control.60day.indiv.pack <- data.table(rbindlist(p.pack.control.60day.1.indiv.pack),
+                                                 ttd = '60 days', COD = 'control', var = 'boundary', x = seq(from = 0, to = 15000, length.out = 150))
+
+
+
+h2.pack.control.60day.indiv.pack <- data.table(rbindlist(p.control.60day.2.indiv.pack),
+                                                 ttd = '60 days', COD = 'control', var = 'boundary')
+
+
+logRSS.pack.control.60day.indiv.pack <- merge(h1.pack.control.60day.indiv.pack, h2.pack.control.60day.indiv.pack, by = c('wolfID', 'ttd', 'COD', 'var'), all.x = T)
+logRSS.pack.control.60day.indiv.pack[,'rss'] <- logRSS.pack.control.60day.indiv.pack$h1 - logRSS.pack.control.60day.indiv.pack$h2
 
 
 ##### gathering RSS
@@ -3507,13 +3557,19 @@ logRSS.pack.indiv.social <- rbind(logRSS.pack.control.1day.indiv.social, logRSS.
                                 logRSS.pack.human.1day.indiv.social, logRSS.pack.human.60day.indiv.social, 
                                 logRSS.pack.CDV.1day.indiv.social, logRSS.pack.CDV.60day.indiv.social)
 
+logRSS.pack.indiv.pack <- rbind(logRSS.pack.control.1day.indiv.pack, logRSS.pack.control.60day.indiv.pack, 
+                                  logRSS.pack.human.1day.indiv.pack, logRSS.pack.human.60day.indiv.pack, 
+                                  logRSS.pack.CDV.1day.indiv.pack, logRSS.pack.CDV.60day.indiv.pack)
+
 
 #### all ###
 
 logRSS.indiv <- rbind(logRSS.forest.indiv, logRSS.open.indiv, logRSS.wet.indiv, logRSS.road.indiv, 
                       logRSS.nn.indiv, logRSS.pack.indiv)
+# logRSS.indiv.model <- rbind(logRSS.forest.indiv.habitat, logRSS.open.indiv.habitat, logRSS.wet.indiv.habitat, logRSS.road.indiv.habitat, 
+#                       logRSS.nn.indiv.social, logRSS.pack.indiv.social)
 logRSS.indiv.model <- rbind(logRSS.forest.indiv.habitat, logRSS.open.indiv.habitat, logRSS.wet.indiv.habitat, logRSS.road.indiv.habitat, 
-                      logRSS.nn.indiv.social, logRSS.pack.indiv.social)
+                            logRSS.nn.indiv.social, logRSS.pack.indiv.pack)
 
 logRSS <- rbind(logRSS.forest, logRSS.open, logRSS.wet, logRSS.road, logRSS.nn)
 logRSS.model <- rbind(logRSS.forest.habitat, logRSS.open.habitat, logRSS.wet.habitat, logRSS.road.habitat, logRSS.social)
@@ -3597,6 +3653,8 @@ logRSS.indiv.model[,'ttd'] <- as.factor(logRSS.indiv.model$ttd)
 logRSS.indiv.model.se <- unique(logRSS.indiv.model[,.(se=se(rss)), by = .(x, var, COD, ttd)])
 
 logRSS.pop.model <- merge(setDT(logRSS.model), logRSS.indiv.model.se, by = c('x', 'COD', 'ttd','var'))
+logRSS.pop.model[,'COD'] <- factor(logRSS.pop.model$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
+logRSS.pop.model[,'ttd'] <- as.factor(logRSS.pop.model$ttd)
 
 
 #### FOREST not sig ####
@@ -3651,7 +3709,8 @@ ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], aes(x, rss, colo
 
 
 forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
   # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3673,7 +3732,8 @@ forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], ae
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 forest.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
   # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3739,7 +3799,8 @@ open.60 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='60 days'], aes(x, rss, co
 open.1|open.60
 
 open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
   # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3761,7 +3822,8 @@ open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x,
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 open.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
   # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3828,7 +3890,8 @@ wet.60 <- ggplot(data=logRSS.pop[var == 'wet'& ttd=='60 days'], aes(x, rss, colo
 wet.1|wet.60
 
 wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
   # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3850,7 +3913,8 @@ wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, r
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 wet.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
   # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3981,8 +4045,9 @@ road.60.model <- ggplot(data=logRSS.pop.model[var == 'road'& ttd=='60 days'], ae
 road.1.model|road.60.model
 
 
-road.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+road.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='1 day'], aes(x, -rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
   # geom_line(data=logRSS.pop.model[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -3998,13 +4063,14 @@ road.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='1 d
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,2.5) +
+  #ylim(-10,2.5) +
   scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
   scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
-road.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+road.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='60 days'], aes(x, -rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
   # geom_line(data=logRSS.pop.model[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -4020,12 +4086,12 @@ road.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='60
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,2.5) +
+  #ylim(-10,2.5) +
   scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
   scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
-road.1.model.b|road.60.model.b
+road.1.b|road.60.b
 
 #### NN  sig ####
 nn.1 <- ggplot(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -4127,7 +4193,8 @@ nn.1.model|nn.60.model
 
 
 nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
  # geom_line(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -4149,7 +4216,8 @@ nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day']
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 nn.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
   # geom_line(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
@@ -4176,5 +4244,151 @@ nn.1.model.b|nn.60.model.b
 
 
 
+#### PACK  sig ####
+pack.1 <- ggplot(data=logRSS.pop[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to pack (m)") +
+  ggtitle("1 day")  +
+  # ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
+
+pack.60 <- ggplot(data=logRSS.pop[var == 'boundary'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to pack (m)") +
+  ggtitle("60 days")  +
+  # ylim(-2,12) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+pack.1|pack.60
+
+
+ggplot(data=setDT(logRSS.indiv)[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to pack") +
+  ggtitle("1 day") 
+
+ggplot(data=setDT(logRSS.indiv)[var == 'boundary'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_smooth(method = 'loess') +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Dist to pack") +
+  ggtitle("60 days") 
+
+pack.1.model <- ggplot(data=logRSS.pop.model[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to pack (m)") +
+  ggtitle("1 day")  +
+  ylim(-1,8) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+pack.60.model <- ggplot(data=logRSS.pop.model[var == 'boundary'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line() +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylab("logRSS") + xlab("Distance to pack (m)") +
+  ggtitle("60 days")  +
+  ylim(-1,8) +
+  # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+pack.1.model|pack.60.model
+
+
+pack.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+  # geom_line(data=logRSS.pop.model[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
+  ggtitle("a) 1 day") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+ 
+  # ylim(-.5,6) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+pack.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'boundary'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+  # geom_line(data=logRSS.pop.model[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
+  ggtitle("b) 60 days") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-.5,6) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+pack.1.model.b|pack.60.model.b
 
