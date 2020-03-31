@@ -159,7 +159,8 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 
 #### everyone ####
 
-everyone <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone <- glmmTMB(case_ ~# pop + 
+                      log_sl:ToD_start +
                        # log_sl:land_end_adj +
                       log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                         log_sl:COD + cos_ta:COD + 
@@ -2652,7 +2653,7 @@ ggplot(data=setDT(logRSS.road.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
 
 #### NN DIST ####
 #### CDV ####
-nn.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day', levels = levels(ToD_start)),
+nn.CDV.1day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(pop = factor('GHA26', levels = levels(pop)), ToD_start = factor('day', levels = levels(ToD_start)),
                                                              log_sl = mean(log_sl),
                                                              cos_ta = mean(cos_ta),
                                                              #land_end_adj = factor('forest', levels = levels(land_end_adj)),
@@ -2675,7 +2676,7 @@ logRSS.nn.CDV.1day<- p.nn.CDV.1day.1 - p.CDV.1day.2
 logRSS.nn.CDV.1day.social<- p.nn.CDV.1day.1.social - p.CDV.1day.2.social
 
 
-nn.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day', levels = levels(ToD_start)),
+nn.CDV.60day.1 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(pop = factor('GHA26', levels = levels(pop)), ToD_start = factor('day', levels = levels(ToD_start)),
                                                             log_sl = mean(log_sl),
                                                             cos_ta = mean(cos_ta),
                                                            # land_end_adj = factor('forest', levels = levels(land_end_adj)),
@@ -3649,12 +3650,57 @@ ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], aes(x, rss, colo
   ggtitle("1 day") 
 
 
+forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion forest") +
+  ggtitle("a) 1 day") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-1.2,1) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+forest.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion forest") +
+  ggtitle("b) 60 days") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-1.2,1) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+forest.1.b|forest.60.b
 
 #### OPEN sig ####
 open.1 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
-  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .1), show.legend = F)+
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3674,7 +3720,7 @@ open.1 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colou
 open.60 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line() +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
-  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2), show.legend = F)+
+  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .1), show.legend = F)+
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3691,6 +3737,52 @@ open.60 <- ggplot(data=logRSS.pop[var == 'open'& ttd=='60 days'], aes(x, rss, co
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 open.1|open.60
+
+open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion open") +
+  ggtitle("a) 1 day") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-2,2) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+open.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion open") +
+  ggtitle("b) 60 days") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-2,2) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+open.1.b|open.60.b
 
 
 #### WET not sig ####
@@ -3734,6 +3826,53 @@ wet.60 <- ggplot(data=logRSS.pop[var == 'wet'& ttd=='60 days'], aes(x, rss, colo
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 wet.1|wet.60
+
+wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion wet") +
+  ggtitle("a) 1 day") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-1,2.5) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+wet.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Proportion wet") +
+  ggtitle("b) 60 days") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-1,2.5) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+wet.1.b|wet.60.b
+
 
 # ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
 #   geom_smooth() +
@@ -3842,6 +3981,52 @@ road.60.model <- ggplot(data=logRSS.pop.model[var == 'road'& ttd=='60 days'], ae
 road.1.model|road.60.model
 
 
+road.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+  # geom_line(data=logRSS.pop.model[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Distance to road (m)") +
+  ggtitle("a) 1 day") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-10,2.5) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+road.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+  # geom_line(data=logRSS.pop.model[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Distance to road (m)") +
+  ggtitle("b) 60 days") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-10,2.5) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+road.1.model.b|road.60.model.b
+
 #### NN  sig ####
 nn.1 <- ggplot(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
@@ -3941,16 +4126,55 @@ nn.60.model <- ggplot(data=logRSS.pop.model[var == 'nn'& ttd=='60 days'], aes(x,
 nn.1.model|nn.60.model
 
 
-ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_smooth(method = 'loess') +
+nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+ # geom_line(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Dist to nn") +
-  ggtitle("1 day") 
+  ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
+  ggtitle("a) 1 day") +
+  theme_bw()  + theme(
+  #panel.background =element_rect(colour = "black", fill=NA, size=1),
+  panel.border = element_blank(), 
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  ylim(-.5,6) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
-ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_smooth(method = 'loess') +
+nn.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
+  geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+  # geom_line(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Dist to nn") +
-  ggtitle("60 days") 
+  ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
+  ggtitle("b) 60 days") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+ ylim(-.5,6) +
+  scale_colour_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  scale_fill_manual("", values = c("deepskyblue", "purple", "dark green"))  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+nn.1.model.b|nn.60.model.b
+
+
+
+
+
+
+
