@@ -338,7 +338,7 @@ sum.everyonePack<- summary(everyone.pack)$coef$cond
 #saveRDS(sum.everyonePack, 'data/derived-data/summarypopeveryonePack_COD.Rds')
 
 
-AICtab(everyone.move, everyone.habitat, everyone, everyone.social)
+AICtab(everyone.move, everyone.habitat, everyone, everyone.social, everyone.pack)
 
 
 #### GATHERING RESULTS ####
