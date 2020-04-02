@@ -488,9 +488,11 @@ move.ttd <-ggplot(everyone.move.ttd, aes(x=term, y=estimate, colour=COD)) +
     panel.background = element_blank(),
     strip.background = element_rect(colour="black", size = 1, fill = "white"),
     strip.text = element_text(size = 14)) +
+  scale_x_discrete(breaks=c("log_sl-ttd", "cos_ta-ttd"),
+                   labels=c("lnSL x TTD", "cosTA x TTD")) +
   xlab('') +
   ylab('beta') +
-  ggtitle("Movement") +
+  #ggtitle("Movement") +
   scale_fill_manual(values = gcolors) +
   scale_color_manual(values = gcolors) #+ ylim(-.35,.3)
 
@@ -4069,7 +4071,7 @@ nn.1.model|nn.60.model
 
 
 nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
  # geom_line(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -4092,7 +4094,7 @@ nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day']
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 nn.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
   # geom_line(data=logRSS.pop.model[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -4226,7 +4228,7 @@ pack.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'boundary'& ttd==
   # geom_line(data=logRSS.pop.model[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
+  ylab("logRSS") + xlab("Distance to pack boundary (m)") +
   ggtitle("b) 1 day") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
@@ -4250,7 +4252,7 @@ pack.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'boundary'& ttd=
   # geom_line(data=logRSS.pop.model[var == 'boundary'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
+  ylab("logRSS") + xlab("Distance to pack boundary (m)") +
   ggtitle("a) 60 days") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
