@@ -3535,6 +3535,28 @@ logRSS.pop.model[,'COD'] <- factor(logRSS.pop.model$COD, levels = c('control','h
 logRSS.pop.model[,'ttd'] <- as.factor(logRSS.pop.model$ttd)
 
 
+#### TIMELINE ####
+
+ttd.days <-data.frame(time = c(-60, -1,0), days = c("-60 days", "-1 day",""), end = c('','','0 days'))
+ttd <- ggplot(ttd.days, aes(time, 0))+
+  geom_point() +
+  geom_line(size=1) +
+  geom_text(aes(x = time, y = 0.01, label = days))+
+  geom_text(aes(x = time, y = -0.01, label = end))+
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.y = element_blank(), axis.text.y = element_blank(), axis.title.y = element_blank(),
+    axis.line.x = element_blank()) +
+  theme(plot.title=element_text(size=15,hjust = 0.05),axis.text.x = element_blank(), axis.title = element_blank()) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank())+ theme(axis.ticks = element_blank()) +
+   ylim(-0.015, 0.015)+
+ ggtitle("Time to death") + theme(plot.title = element_text(hjust = 0.5))
+
+
 #### FOREST not sig ####
 forest.1 <- ggplot(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_line() +
@@ -3594,7 +3616,7 @@ forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], ae
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion forest") +
-  ggtitle("b) 1 day") +
+ # ggtitle("b) 1 day") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3604,7 +3626,7 @@ forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], ae
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-1.2,1) +
+  ylim(-2,2.5) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3612,12 +3634,12 @@ forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], ae
 forest.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm', show.legend = F) +
   # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion forest") +
-  ggtitle("a) 60 days") +
+ # ggtitle("a) 60 days") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3627,7 +3649,7 @@ forest.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='60 days'],
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-1.2,1) +
+  ylim(-2,2.5) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3684,7 +3706,7 @@ open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x,
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion open") +
-  ggtitle("b) 1 day") +
+ # ggtitle("b) 1 day") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3694,7 +3716,7 @@ open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x,
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2) +
+  ylim(-2,2.5) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3702,12 +3724,12 @@ open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x,
 open.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm', show.legend = F) +
   # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion open") +
-  ggtitle("a) 60 days") +
+  #ggtitle("a) 60 days") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3717,7 +3739,7 @@ open.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='60 days'], aes
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2) +
+  ylim(-2,2.5) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3775,7 +3797,7 @@ wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, r
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion wet") +
-  ggtitle("b) 1 day") +
+  #ggtitle("b) 1 day") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3785,7 +3807,7 @@ wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, r
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-1,2.5) +
+  ylim(-2,2.5) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3793,12 +3815,12 @@ wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, r
 wet.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='60 days'], aes(x, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm', show.legend = F) +
   # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion wet") +
-  ggtitle("a) 60 days") +
+  #ggtitle("a) 60 days") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3808,12 +3830,13 @@ wet.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='60 days'], aes(x
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-1,2.5) +
+  ylim(-2,2.5)+
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
-wet.60.b|wet.1.b
+#### ALL HAB GRAPH ####
+ttd/(forest.60.b|forest.1.b)/(open.60.b|open.1.b)/(wet.60.b|wet.1.b)
 
 
 # ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
