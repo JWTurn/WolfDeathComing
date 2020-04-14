@@ -203,13 +203,14 @@ sum.everyone<- tidy(everyone)
 #saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD.Rds')
 
 everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
-# everyone.ran_pars <-broom.mixed::tidy(everyone, effect= 'ran_pars')
+# everyone.ran_pars <-tidy(everyone, effect= 'ran_pars')
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
 # everyone.all.indiv <- coef(everyone)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
 #   pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
 #   mutate(method = "ME")
+
 
 
 
@@ -3459,58 +3460,8 @@ logRSS.model <- rbind(logRSS.forest.habitat, logRSS.open.habitat, logRSS.wet.hab
 #saveRDS(logRSS.model, 'data/derived-data/logRSS_model2.Rds')
 
 
-##### graphs ####
-logRSS.pack.indiv <- setDT(logRSS.pack.indiv)
-logRSS.pack.indiv[,'COD'] <- as.factor(logRSS.pack.indiv$COD)
-logRSS.pack.indiv[,'ttd'] <- as.factor(logRSS.pack.indiv$ttd)
-
-logRSS.pack.indiv.se <- unique(logRSS.pack.indiv[,.(se=se(rss)), by = .(x, COD, ttd, var)])
-
-logRSS.pack.pop <- merge(setDT(logRSS.nn)[var=='boundary'], logRSS.pack.indiv.se, by = c('x', 'COD', 'ttd','var'))
-
-
-ggplot(data=setDT(logRSS.pack.pop)[ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_line() +
-  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
-  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
-
-
-ggplot(data=setDT(logRSS.pack.pop)[ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_line() +
-  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
-  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
-
-
-
-logRSS.pack.indiv.social <- setDT(logRSS.pack.indiv.social)
-logRSS.pack.indiv.social[,'COD'] <- as.factor(logRSS.pack.indiv.social$COD)
-logRSS.pack.indiv.social[,'ttd'] <- as.factor(logRSS.pack.indiv.social$ttd)
-
-logRSS.pack.indiv.social.se <- unique(logRSS.pack.indiv.social[,.(se=se(rss), var), by = .(x, COD, ttd)])
-
-logRSS.pack.pop.social <- merge(setDT(logRSS.social)[var=='boundary'], logRSS.pack.indiv.social.se, by = c('x', 'COD', 'ttd','var'))
-
-
-ggplot(data=setDT(logRSS.pack.pop.social)[ttd=='1 day'], aes(x, rss, colour=COD)) +
-  geom_line() +
-  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
-  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Distance to NN (m)") +
-  ggtitle("1 day") 
-
-# ggplot(data=setDT(logRSS.pack.indiv.social)[ttd=='1 day'], aes(x, rss, colour=COD)) +
-#   geom_point() +
-#   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7)# +
-#   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))
-
-
-ggplot(data=setDT(logRSS.pack.pop.social)[ttd=='60 days'], aes(x, rss, colour=COD)) +
-  geom_line() +
-  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
-  geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Distance to NN (m)") +
-  ggtitle("60 days") 
-
+logRSS.indiv.cor <- dcast(logRSS.indiv.model, wolfID + COD + var + x ~ ttd, value.var = 'rss')
+logRSS.indiv.cor[,cor.test(`1 day`,`60 days`), by= .(COD, var)]
 
 #### GRAPHS ####
 
@@ -3616,7 +3567,7 @@ forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], ae
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion forest") +
- # ggtitle("b) 1 day") +
+  ggtitle("1 day") + theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3639,7 +3590,7 @@ forest.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='60 days'],
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Proportion forest") +
- # ggtitle("a) 60 days") +
+  ggtitle("60 days") + theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -3836,7 +3787,7 @@ wet.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='60 days'], aes(x
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 #### ALL HAB GRAPH ####
-ttd/(forest.60.b|forest.1.b)/(open.60.b|open.1.b)/(wet.60.b|wet.1.b)
+(forest.60.b|forest.1.b)/(open.60.b|open.1.b)/(wet.60.b|wet.1.b)
 
 
 # ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
