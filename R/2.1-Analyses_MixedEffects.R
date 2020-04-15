@@ -366,7 +366,7 @@ everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.n
 
 
 #saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_COD.Rds')
-#everyone.indiv<-readRDS('data/derived-data/everyone_betas_lastmoNN.Rds')
+everyone.indiv<-readRDS('data/derived-data/everyone_betas_COD.Rds')
 everyone.ttd <- everyone.indiv[term %like% "ttd", ]
 
 everyone.main <- everyone.indiv[!(term %like% "ttd"), ]
@@ -3464,6 +3464,12 @@ logRSS.indiv.cor <- dcast(logRSS.indiv.model, wolfID + COD + var + x ~ ttd, valu
 logRSS.indiv.cor[,cor.test(`1 day`,`60 days`), by= .(COD, var)]
 
 #### GRAPHS ####
+logRSS.indiv <- readRDS('data/derived-data/logRSS_indiv2.Rds')
+logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model2.Rds')
+
+
+logRSS <- readRDS('data/derived-data/logRSS2.Rds')
+logRSS.model <- readRDS('data/derived-data/logRSS_model2.Rds')
 
 logRSS.indiv <- setDT(logRSS.indiv)
 logRSS.indiv[,'COD'] <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
@@ -4041,7 +4047,7 @@ nn.60.model <- ggplot(data=logRSS.pop.model[var == 'nn'& ttd=='60 days'], aes(x,
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
-nn.1.model|nn.60.model
+nn.60.model|nn.1.model
 
 
 nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
@@ -4052,7 +4058,7 @@ nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day']
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
- # ggtitle("b) 1 day") +
+ ggtitle("1 day") +
   theme_bw()  + theme(
   #panel.background =element_rect(colour = "black", fill=NA, size=1),
   panel.border = element_blank(), 
@@ -4075,7 +4081,7 @@ nn.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 day
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
   ylab("logRSS") + xlab("Distance to nearest neighbor (m)") +
- # ggtitle("a) 60 days") +
+ ggtitle("60 days") +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
     panel.border = element_blank(), 
@@ -4085,13 +4091,14 @@ nn.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 day
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
- ylim(-.5,6) +
+  ylim(-.5,6) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 
-ttd/(nn.60.model.b|nn.1.model.b)
+
+(nn.60.model.b|nn.1.model.b)
 
 
 
