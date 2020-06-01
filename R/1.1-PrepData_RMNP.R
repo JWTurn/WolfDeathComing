@@ -79,7 +79,7 @@ crs14 <- sp::CRS("+init=epsg:32614")
 #### filter to those that die ####
 dat.focal <- setDT(dat.meta)[pop=='RMNP' & use!='n' & !is.na(PackID)]
 dat.focal[,'packbound'] <- ifelse(dat.focal$PackID == 'RC', 'GL', dat.focal$PackID)
-dat.focal <- dat.focal[WolfID != 'W08'] #doesn't have enough data
+dat.focal <- dat.focal[!(WolfID %chin% c('W08'))] #doesn't have enough data
 focals <- dat.focal$WolfID
 
 DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
@@ -87,7 +87,6 @@ DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "Wolf
   filter(id %in% focals) 
   
   
-
 
 
 
@@ -100,7 +99,6 @@ dat_all <- dat_all %>%
 
 dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
   dplyr::select(id, sr) %>% unnest(cols = c(sr))
-
 
 
 #### layers ####
@@ -228,6 +226,65 @@ ssf <- dat_all %>%
 
 
 ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
+
+dat_all <- dat_all %>%
+  mutate(steps = map(trk, function(x) {
+    x %>% amt::track_resample(rate = minutes(120), tolerance = minutes(10)) %>%
+      amt::filter_min_n_burst(min_n = 3) %>%
+      amt::steps_by_burst() %>% amt::random_steps(n=10)
+  }))
+
+#### movement parmeters ####
+SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
+  #print(ID)
+  #create track from dataset
+  trk <- track(x.col, y.col, date.col, ID, crs) %>%
+    #function turns locs into steps
+    steps()
+  #remove any steps that span more than 2hr
+  trk$dt_ <- difftime(trk$t2_, trk$t1_, unit='hours')
+  trk <- subset(trk, trk$dt_ > 1.9 & trk$dt_ < 2.1, drop = T)
+  #generate random steps
+  trk %>%
+    random_steps() %>%
+    sl_distr_params()
+}
+
+TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
+  #print(ID)
+  #create track from dataset
+  trk <- track(x.col, y.col, date.col, ID, crs) %>%
+    #function turns locs into steps
+    steps()
+  #remove any steps that span more than 2hr
+  trk$dt_ <- difftime(trk$t2_, trk$t1_, unit='hours')
+  trk <- subset(trk, trk$dt_ > 1.9 & trk$dt_ < 2.1, drop = T)
+  #generate random steps
+  trk %>%
+    random_steps() %>%
+    ta_distr_params()
+}
+
+sl <- dat_all %>% mutate(slparam = lapply(steps, sl_distr_params)) %>%
+  dplyr::select(id, slparam) %>% unnest(cols = c(slparam))
+
+
+DT.prep <- merge(dat[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
+                 by.y = c('WolfID','PackID'), all.x = T)
+DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
+DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
+
+
+slParams <- DT.prep[ttd<=61, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+                                                sl_distr = "gamma", ta_distr = "vonmises"),
+                    by = id]
+
+taParams <- DT.prep[ttd<=61, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+                                                sl_distr = "gamma", ta_distr = "vonmises"),
+                    by = id]
+
+Params <- merge(slParams, taParams[,.(id,kappa)], by = 'id')
+
 
 ## proportions didn't pull right because of layer name, don't know how to fix
 locs_start <- sp::SpatialPoints(data.frame(ssf.all$x1_, ssf.all$y1_))
@@ -398,7 +455,7 @@ ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y 
 
 # saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
 
-
+saveRDS(Params, 'data/derived-data/moveParams_RMNP.Rds')
 
 
 

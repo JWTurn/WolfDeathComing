@@ -283,6 +283,60 @@ ssf <- dat_all %>%
 
 ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 
+
+#### movement parmeters ####
+SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
+  #print(ID)
+  #create track from dataset
+  trk <- track(x.col, y.col, date.col, ID, crs) %>%
+    #function turns locs into steps
+    steps()
+  #remove any steps that span more than 2hr
+  trk$dt_ <- difftime(trk$t2_, trk$t1_, unit='hours')
+  trk <- subset(trk, trk$dt_ > 1.9 & trk$dt_ < 2.1, drop = T)
+  #generate random steps
+  trk %>%
+    random_steps() %>%
+    sl_distr_params()
+}
+
+TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
+  #print(ID)
+  #create track from dataset
+  trk <- track(x.col, y.col, date.col, ID, crs) %>%
+    #function turns locs into steps
+    steps()
+  #remove any steps that span more than 2hr
+  trk$dt_ <- difftime(trk$t2_, trk$t1_, unit='hours')
+  trk <- subset(trk, trk$dt_ > 1.9 & trk$dt_ < 2.1, drop = T)
+  #generate random steps
+  trk %>%
+    random_steps() %>%
+    ta_distr_params()
+}
+
+
+
+DT.prep <- merge(dat.all[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
+                 by.y = c('WolfID','PackID'), all.x = T)
+DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
+DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
+
+
+slParams <- DT.prep[ttd<=61, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+                                     sl_distr = "gamma", ta_distr = "vonmises"),
+                    by = id]
+
+taParams <- DT.prep[ttd<=61, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+                                     sl_distr = "gamma", ta_distr = "vonmises"),
+                    by = id]
+
+Params <- merge(slParams, taParams[,.(id,kappa)], by = 'id')
+
+sl <- dat_all %>% mutate(slparam = lapply(steps, sl_distr_params)) %>%
+  dplyr::select(id, slparam) %>% unnest(cols = c(slparam))
+
+
 ## proportions didn't pull right because of layer name, don't know how to fix
 locs_start <- sp::SpatialPoints(data.frame(ssf.all$x1_, ssf.all$y1_))
 locs_end <- sp::SpatialPoints(data.frame(ssf.all$x2_, ssf.all$y2_))
@@ -471,6 +525,11 @@ ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y 
 # saveRDS(ssf.soc, 'data/derived-data/ssfAll_GHA26.Rds')
 
 
+moveRMNP <- readRDS('data/derived-data/moveParams_RMNP.Rds')
+moveRMNP[,wolfID := paste('RMNP', id, sep = '_')]
+Params[,wolfID := paste('GHA26', id, sep = '_')]
+Params <- rbind(moveRMNP, Params)
+saveRDS(Params, 'data/derived-data/moveParams_all.Rds')
 
 
 
