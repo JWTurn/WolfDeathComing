@@ -51,6 +51,8 @@ dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
 
 dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 
+dat$packDist_end <- ifelse(dat$packDistadj_end >=0, dat$packDistadj_end, 0)
+
 summary(dat$land_end)
 
 # dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
@@ -354,11 +356,11 @@ everyone.indiv$COD[is.na(everyone.indiv$COD)] <- "control"
 
 unique(everyone.indiv$term)
 everyone.all.betas.names <- c("log_sl", "cos_ta", 
-                             "land_end_adjforest", "land_end_adjopen", "land_end_adjwet", "I(log(1 + roadDist_end))",
-                             "I(log(1 + distance2))", "I(log(1 + packDistadj_end))",
+                             "propforest_end_adj", "propopen_end_adj", "propwet_end", "I(log(1 + roadDist_end))",
+                             "I(log(1 + distance2))", "I(log(1 + packDist_end))",
                              "I(log(ttd1 + 1)):log_sl", "I(log(ttd1 + 1)):cos_ta", 
-                             "I(log(ttd1 + 1)):land_end_adjforest", "I(log(ttd1 + 1)):land_end_adjopen", "I(log(ttd1 + 1)):land_end_adjwet", "I(log(ttd1 + 1)):I(log(1 + roadDist_end))",
-                             "I(log(ttd1 + 1)):I(log(1 + distance2))", "I(log(ttd1 + 1)):I(log(1 + packDistadj_end))")
+                             "I(log(ttd1 + 1)):propforest_end_adj", "I(log(ttd1 + 1)):propopen_end_adj", "I(log(ttd1 + 1)):propwet_end", "I(log(ttd1 + 1)):I(log(1 + roadDist_end))",
+                             "I(log(ttd1 + 1)):I(log(1 + distance2))", "I(log(ttd1 + 1)):I(log(1 + packDist_end))")
 everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
                                                                                                                      "nnDist", "boundaryDist",
                                                                                                                      "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
