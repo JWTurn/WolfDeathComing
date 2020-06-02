@@ -39,7 +39,7 @@ move <- dat.wide[, .(spd = unlist(spd), dir=unlist(dir), ttd= unlist(ttd)), by=.
 move[,spd_hr :=spd/500]
 
 gcolors <- c("deepskyblue", "purple", "dark green")
-speed <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=ttd, y=spd_hr, color = COD)) + 
+speed <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=-ttd, y=spd_hr, color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F)+
@@ -56,7 +56,7 @@ speed <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=ttd, y=spd_hr, color = C
 speed 
 
 
-direction <- ggplot(data=move, aes(x=ttd, y=dir, color = COD)) + 
+direction <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE)+
@@ -75,7 +75,7 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=ttd, y=spd_hr, color = COD)) + 
+speed2 <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=-ttd, y=spd_hr, color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F)+
@@ -92,7 +92,7 @@ speed2 <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=ttd, y=spd_hr, color = 
 speed2 
 
 
-direction2 <- ggplot(data=move, aes(x=ttd, y=dir, color = COD)) + 
+direction2 <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = T)+
