@@ -25,9 +25,28 @@ dat.pop <- setDT(dat.pop)[effect =='fixed' & (term %like% 'log_sl:COD' |term %li
 params <- readRDS('data/derived-data/moveParams_all.Rds')
 
 
+
 dat.wide <- dcast(data =dat, wolfID + COD ~ term, value.var = 'estimate')
 
 dat.wide <- setDT(merge(dat.wide, params[,.(wolfID,shape, scale, kappa)], by = 'wolfID', all.x = T))
+
+cod.params <- dat.wide[,.(mean.shp = mean(shape, na.rm = T), se.shp = se(shape),
+                          mean.scl = mean(scale, na.rm = T), se.scl = se(scale), 
+                          mean.kap = mean(kappa, na.rm = T), se.kap = se(kappa)), by =.(COD)]
+dat.pop$term <- gsub('[[:punct:]]', '', dat.pop$term)
+dat.pop$term <- gsub(' ', '', dat.pop$term)
+dat.pop$term <- gsub('1', '', dat.pop$term)
+dat.pop[,'COD'] <- ifelse(dat.pop$term %like% 'control', 'control',
+                          ifelse(dat.pop$term %like% 'human', 'human', 'CDV'))
+dat.pop$term <- gsub('CODcontrol', '', dat.pop$term)
+dat.pop$term <- gsub('CODhuman', '', dat.pop$term)
+dat.pop$term <- gsub('CODCDV', '', dat.pop$term)
+dat.pop$term <- gsub('Ilog', '_', dat.pop$term)
+
+dat.pop.wide <- dcast(data =dat.pop, COD ~ term, value.var = c('estimate', 'std.error'))
+dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
+
+
 
 t2d <- seq(0, 61, length.out = 100)
 
@@ -117,5 +136,29 @@ move.pop <- move[,.(mean.spd = mean(spd, na.rm = T), se.spd = se(spd),
 ggplot(move.pop, aes( x = -ttd, y= mean.spd, color = COD))+
   geom_line() +
   geom_ribbon(aes(-ttd, ymin = (mean.spd - 1.96*se.spd), ymax = (mean.spd + 1.96*se.spd), fill=COD, alpha = .2), show.legend = F)
+
+
+
+
+####pop####
+
+dat.pop.wide[, spd:= list(list((mean.shp+estimate_logsl+(estimate_logsl_ttd*t2d))*(mean.scl))), by=.(COD)]
+dat.pop.wide[, spd.upr:= list(list((mean.shp+(estimate_logsl + (1.96*std.error_logsl))+((estimate_logsl_ttd + (1.96*std.error_logsl_ttd))*t2d))*(mean.scl))), by=.(COD)]
+dat.pop.wide[, spd.lwr:= list(list((mean.shp+(estimate_logsl - (1.96*std.error_logsl))+((estimate_logsl_ttd - (1.96*std.error_logsl_ttd))*t2d))*(mean.scl))), by=.(COD)]
+
+dat.pop.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
+dat.pop.wide[, ttd:= list(list(seq(1,61,length.out = 100))), by=.(wolfID)]
+
+dat.pop.wide[, ttd:= list(list(seq(1,61,length.out = 100))), by=.(COD)]
+
+move.pop <- dat.pop.wide[, .(spd = unlist(spd), spd.upr=unlist(spd.upr), spd.lwr=unlist(spd.lwr), ttd= unlist(ttd)), by=.(COD)]
+move.pop[,spd_hr :=spd/500]
+move.pop[,spd.upr_hr :=spd.upr/500]
+move.pop[,spd.lwr_hr :=spd.lwr/500]
+
+ggplot(move.pop, aes( x = -ttd, y= spd, color = COD))+
+  geom_line() +
+  geom_ribbon(aes(-ttd, ymin = (spd.lwr), ymax = (spd.upr), fill=COD, alpha = .2), show.legend = F)
+
 
 
