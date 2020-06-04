@@ -100,6 +100,17 @@ ta <- ggplot(dat[ua == 'used'], aes(ta_)) +
   geom_density()
 sl|ta
 
+
+ggplot(dat[ua == 'used' & pop == 'GHA26' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_)) +
+  geom_density(color='blue') + #geom_histogram(bins = 500) +
+  facet_wrap(vars(wolfID))
+
+ggplot(dat[ua == 'used' & pop == 'RMNP' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_)) +
+  geom_density(color='blue') + #geom_histogram(bins = 500) +
+  facet_wrap(vars(wolfID))
+
+
+
 ggplot(dat[ ua =='used' & COD=='cdv'], aes(ttd1, (distance2), color = wolfID)) +
   geom_point() + geom_smooth(method = lm, se=F)
  
