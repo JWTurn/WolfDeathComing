@@ -75,7 +75,7 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=-ttd, y=spd_hr, color = COD)) + 
+speed2 <- ggplot(data=move, aes(x=-ttd, y=spd_hr, color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F)+
@@ -109,3 +109,13 @@ direction2 <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) +
 direction2
 
 speed2|direction2
+
+
+move.pop <- move[,.(mean.spd = mean(spd, na.rm = T), se.spd = se(spd), 
+                    mean.dir = mean(dir, na.rm = T), se.dir = se(dir)), by=.(ttd,COD)]
+
+ggplot(move.pop, aes( x = -ttd, y= mean.spd, color = COD))+
+  geom_line() +
+  geom_ribbon(aes(-ttd, ymin = (mean.spd - 1.96*se.spd), ymax = (mean.spd + 1.96*se.spd), fill=COD, alpha = .2), show.legend = F)
+
+

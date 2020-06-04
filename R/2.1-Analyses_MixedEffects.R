@@ -80,8 +80,9 @@ dat$land_end_adj <- as.factor(dat$land_end_adj)
 
 
 ######
-ggplot(dat, aes(sl_, colour = wolfID)) +
-  geom_density()
+ggplot(dat[ua == 'used'], aes(ttd1, sl_,colour = COD)) +
+ # geom_point() +
+  geom_smooth() 
 
 sl.wolf <- ggplot(dat[ua == 'used'], aes(sl_, colour = wolfID)) +
   geom_density()
