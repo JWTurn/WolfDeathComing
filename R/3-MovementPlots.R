@@ -69,7 +69,7 @@ direction <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) +
   scale_fill_manual("", values = gcolors)  +  
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
   ggtitle("b)") +
-  xlab("Time to death (days)") + ylab("direction")
+  xlab("Time to death (days)") + ylab("Concentration of turn angle")
 direction
 
 speed|direction
@@ -105,7 +105,7 @@ direction2 <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) +
   scale_fill_manual("", values = gcolors)  +  
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
   ggtitle("b)") +
-  xlab("Time to death (days)") + ylab("direction")
+  xlab("Time to death (days)") + ylab("Concentration of turn angle")
 direction2
 
 speed2|direction2
