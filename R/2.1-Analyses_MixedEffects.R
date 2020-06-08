@@ -39,7 +39,7 @@ dat<-dat[ttd1>=0 & ttd2>=0]
 dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
 dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
 
-
+params <- readRDS('data/derived-data/moveParams_all.Rds')
 
 dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
 
@@ -100,8 +100,19 @@ ta <- ggplot(dat[ua == 'used'], aes(ta_)) +
 sl|ta
 
 
-ggplot(dat[ua == 'used' & pop == 'GHA26' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_)) +
-  geom_density(color='blue') + #geom_histogram(bins = 500) +
+gam <- dat[ua == 'used',.(vals = MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]],
+                         param = names(MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]])), by = .(wolfID)]
+gam.wide <- dcast(gam, wolfID ~ param, value.var = "vals")
+
+gam <- dat[ua == 'used',.(vals = MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]],
+                          param = names(MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]])), by = .(wolfID)]
+
+gam.wolves <- merge(dat[case_==TRUE,.(wolfID, sl_)], params, by = c('wolfID'), all.x = T)
+
+
+ggplot(gam.wolves[wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_, ..density..)) +
+  geom_histogram(binwidth = 100) +
+  #geom_line(aes( y=dgamma(sl_, shape[1], scale[1])), color="blue", size = 1) +
   facet_wrap(vars(wolfID))
 
 ggplot(dat[ua == 'used' & pop == 'RMNP' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_)) +
