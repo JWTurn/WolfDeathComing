@@ -25,7 +25,7 @@ dat.RMNP$datetime <- as.POSIXct(dat.RMNP$datetime, tz = 'UTC', "%Y-%m-%d %H:%M:%
 ### clusters data ----
 dat.clusters.RMNP <- fread(paste0(raw, 'InvestigatedPoints0131_cleaned20180614.csv'))
 dat.clusters.RMNP[,'packID'] <- factor(dat.clusters.RMNP$Pack_ID, c('Baldy Lake', 'No Collar', 'Whitewater Lake', 'Gunn Lake',
-                           'Deep Lake', 'Ranck Creek', 'Lake Audy', 'Spruce Lake', 'Birdtail Valley', 'Block'),
+                           'Deep Lake', 'Ranch Creek', 'Lake Audy', 'Spruce Lake', 'Birdtail Valley', 'Block'),
                            labels = c('BD', 'NA', 'WW', 'GL', 'DL', 'RC', 'AD', 'SL', 'BT', 'BL'))
 dat.clusters.RMNP$Clstr_Strt <- as.POSIXct(dat.clusters.RMNP$Clstr_Strt, tz = 'UTC', "%Y-%m-%d")
 dat.clusters.RMNP$Clstr_End <- as.POSIXct(dat.clusters.RMNP$Clstr_End, tz = 'UTC', "%Y-%m-%d")
@@ -111,7 +111,8 @@ makePackRange(dat.clusters.RMNP, 'BD')
 makePackRange(dat.clusters.RMNP, 'BL')
 makePackRange(dat.clusters.RMNP, 'BT')
 makePackRange(dat.clusters.RMNP, 'DL')
-makePackRange(dat.clusters.RMNP, 'GL')
+makePackRange(dat.clusters.RMNP[year==2016], 'GL')
+makePackRange(dat.clusters.RMNP[year==2017], 'RC')
 makePackRange(dat.clusters.RMNP, 'SL')
 makePackRange(dat.clusters.RMNP, 'WW')
 
