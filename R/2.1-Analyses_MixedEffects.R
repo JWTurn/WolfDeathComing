@@ -31,7 +31,6 @@ dat.GHA26[,'pop'] <- 'GHA26'
 dat.GHA26$wolfID <- paste(dat.GHA26$pop, dat.GHA26$id, sep = '_')
 dat<-rbind(dat.RMNP, dat.GHA26, fill=T)
 
-dat[,.(nstep = uniqueN(as.character(step_id_)), nstepjum = uniqueN(stepjum)), by = .(wolfID)]
 
 dat<-dat[ttd1>=0 & ttd2>=0]
 
