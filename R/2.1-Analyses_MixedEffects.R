@@ -100,12 +100,12 @@ ta <- ggplot(dat[ua == 'used'], aes(ta_)) +
 sl|ta
 
 
-gam <- dat[ua == 'used',.(vals = MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]],
-                         param = names(MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]])), by = .(wolfID)]
-gam.wide <- dcast(gam, wolfID ~ param, value.var = "vals")
-
-gam <- dat[ua == 'used',.(vals = MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]],
-                          param = names(MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]])), by = .(wolfID)]
+# gam <- dat[ua == 'used',.(vals = MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]],
+#                          param = names(MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]])), by = .(wolfID)]
+# gam.wide <- dcast(gam, wolfID ~ param, value.var = "vals")
+# 
+# gam <- dat[ua == 'used',.(vals = MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]],
+#                           param = names(MASS::fitdistr(sl_, "gamma", lower = c(0,0))[[1]])), by = .(wolfID)]
 
 gam.wolves <- merge(dat[case_==TRUE,.(wolfID, sl_)], params, by = c('wolfID'), all.x = T)
 
