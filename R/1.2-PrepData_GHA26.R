@@ -275,7 +275,7 @@ ssf <- dat_all %>%
              SA_kde_end = factor(SA_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              TU_kde_start = factor(TU_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
              TU_kde_end = factor(TU_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             log_sl = log(sl_),
+             log_sl = log(sl_ +1),
              cos_ta = cos(ta_))
   }))
 

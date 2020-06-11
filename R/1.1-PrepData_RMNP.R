@@ -219,7 +219,7 @@ ssf <- dat_all %>%
              WW_kde_end = factor(WW_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              # lnparkdist_start = log(boundary_dist_start + 1),
              # lnparkdist_end = log(boundary_dist_end + 1),
-             log_sl = log(sl_),
+             log_sl = log(sl_ + 1),
              cos_ta = cos(ta_))
   }))
 
