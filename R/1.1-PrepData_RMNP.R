@@ -439,7 +439,7 @@ ssfW26 <- createSSFnnbyFocal(ssf.all, "W26")
 ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 
 ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW14, ssfW15, ssfW16, ssfW19, ssfW20, ssfW22, ssfW25, ssfW26, ssfW27)
-ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
+ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID=packbound, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 
 
