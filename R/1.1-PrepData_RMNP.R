@@ -88,9 +88,9 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 
 #### layers ####
 
-prepland <- raster(paste0(raw, 'RMNPlandcover2015_wgs84.tif'), resolution = c(30, 30))
-land <- raster::projectRaster(from=prepland, crs = crs14)
-res(land) <- c(30, 30)
+land <- raster(paste0(raw, 'RMNPlandcover2015_wgs84.tif'), resolution = c(30, 30))
+# land <- raster::projectRaster(from=prepland, crs = crs14)
+# res(prepland) <- c(30, 30)
 #cland <- fread(paste0(raw, 'rcl_cowu.csv'))
 cland2 <- fread(paste0(raw, 'rcl_fine.csv'))
 land <- raster::reclassify(land, cland2)
@@ -118,7 +118,7 @@ names(urban) <- "urban"
 # The d value is what determines the buffer size if you want to change it.
 ## If you're doing multiple landcover classes, you only need to run this line once, as long as each of the habitat variables has the same resolution
 # (e.g., the "Wetland" here could be any cover type)
-Buff100 <- focalWeight(mixed, d=100, type = 'circle')
+Buff100 <- focalWeight(land, d=100, type = 'circle')
 ## This generates a new raster where each cell corresponds to the mean wetland within a 100m buffer.
 # Since it's all 1s and 0s, this is the same as the proportion of wetland surrounding the focal variable
 propwet <- focal(wet, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
@@ -168,9 +168,6 @@ ssf <- dat_all %>%
       amt::filter_min_n_burst(min_n = 3) %>%
       amt::steps_by_burst() %>% amt::random_steps(n=10) %>%
       amt::extract_covariates(land, where = "both")  %>%
-      # amt::extract_covariates(propwet, where = "both")  %>%
-      # amt::extract_covariates(propopen, where = "both")  %>%
-      # amt::extract_covariates(propclosed, where = "both")  %>%
       amt::extract_covariates(parkYN, where = "both") %>%
       amt::extract_covariates(parkbound_dist, where = "both") %>%
       amt::extract_covariates(roads, where = "both") %>%
@@ -184,13 +181,14 @@ ssf <- dat_all %>%
       amt::extract_covariates(BT_dist, where = "both") %>%
       amt::extract_covariates(GL, where = "both") %>%
       amt::extract_covariates(GL_dist, where = "both") %>%
+      amt::extract_covariates(RC, where = "both") %>%
+      amt::extract_covariates(RC_dist, where = "both") %>%
       amt::extract_covariates(SL, where = "both") %>%
       amt::extract_covariates(SL_dist, where = "both") %>%
       amt::extract_covariates(WW, where = "both") %>%
       amt::extract_covariates(WW_dist, where = "both") %>%
-     # amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
-      mutate(land_start = factor(RMNPlandcover_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
-             land_end = factor(RMNPlandcover_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
+      mutate(land_start = factor(RMNPlandcover2015_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
+             land_end = factor(RMNPlandcover2015_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              parkYN_start = factor(parkYN_start, levels = c(0, 1), labels = c("park", "out-park")),
              parkYN_end = factor(parkYN_end, levels = c(0, 1), labels = c("park", "out-park")),
              AD_kde_start = factor(AD_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
@@ -203,12 +201,12 @@ ssf <- dat_all %>%
              BT_kde_end = factor(BT_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              GL_kde_start = factor(GL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
              GL_kde_end = factor(GL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
+             RC_kde_start = factor(RC_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
+             RC_kde_end = factor(RC_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              SL_kde_start = factor(SL_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
              SL_kde_end = factor(SL_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              WW_kde_start = factor(WW_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
              WW_kde_end = factor(WW_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
-             # lnparkdist_start = log(boundary_dist_start + 1),
-             # lnparkdist_end = log(boundary_dist_end + 1),
              log_sl = log(sl_ + 1),
              cos_ta = cos(ta_))
   }))
@@ -217,12 +215,12 @@ ssf <- dat_all %>%
 
 ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 
-dat_all <- dat_all %>%
-  mutate(steps = map(trk, function(x) {
-    x %>% amt::track_resample(rate = minutes(120), tolerance = minutes(10)) %>%
-      amt::filter_min_n_burst(min_n = 3) %>%
-      amt::steps_by_burst() %>% amt::random_steps(n=10)
-  }))
+# dat_all <- dat_all %>%
+#   mutate(steps = map(trk, function(x) {
+#     x %>% amt::track_resample(rate = minutes(120), tolerance = minutes(10)) %>%
+#       amt::filter_min_n_burst(min_n = 3) %>%
+#       amt::steps_by_burst() %>% amt::random_steps(n=10)
+#   }))
 
 #### movement parmeters ####
 SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
@@ -255,21 +253,20 @@ TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta
     ta_distr_params()
 }
 
-sl <- dat_all %>% mutate(slparam = lapply(steps, sl_distr_params)) %>%
-  dplyr::select(id, slparam) %>% unnest(cols = c(slparam))
 
 
-DT.prep <- merge(dat[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
-                 by.y = c('WolfID','PackID'), all.x = T)
-DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
-DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
+
+# DT.prep <- merge(dat[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
+#                  by.y = c('WolfID','PackID'), all.x = T)
+# DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
+# DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
 
 
-slParams <- DT.prep[ttd<=61, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+slParams <- DT.prep[, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                                 sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
 
-taParams <- DT.prep[ttd<=61, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+taParams <- DT.prep[, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                                 sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
 
@@ -297,13 +294,13 @@ ssf.all[,'propurban_end'] <- raster::extract(propurban, locs_end)
 
 # adding nn and dist for step 1, also adding attributed data about death
 ssf.all <- merge(ssf.all, DT.prep, by.x = c('x1_', 'y1_', 't1_', 'id'), by.y = c('x', 'y', 't', 'id'), all.x = T)
-colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn1"
+colnames(ssf.all)[colnames(ssf.all)=="NN"] <- "nn1"
 #colnames(ssf.all)[colnames(ssf.all)=="end_date"] <- "death_date"
 
 # adding nn at step 2
-DT.nn <- dplyr::select(DT.prep, t, id, nn)
+DT.nn <- dplyr::select(DT.prep, t, id, NN)
 ssf.all <- merge(ssf.all, DT.nn, by.x = c('t2_', 'id'), by.y = c('t', 'id'), all.x = T)
-colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn2"
+colnames(ssf.all)[colnames(ssf.all)=="NN"] <- "nn2"
 
 # calc time to death (ttd)
 ssf.all[,'ttd1'] <- as.duration(ssf.all$t1_ %--% ssf.all$death_date)/ddays(1) 
