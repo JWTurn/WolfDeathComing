@@ -224,7 +224,7 @@ ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 
 #### movement parmeters ####
 SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
-  #print(ID)
+  print(ID)
   #create track from dataset
   trk <- track(x.col, y.col, date.col, ID, crs) %>%
     #function turns locs into steps
@@ -239,7 +239,7 @@ SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta
 }
 
 TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
-  #print(ID)
+  print(ID)
   #create track from dataset
   trk <- track(x.col, y.col, date.col, ID, crs) %>%
     #function turns locs into steps
@@ -261,12 +261,12 @@ TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta
 # DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
 # DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
 
-
-slParams <- DT.prep[, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+badwolf <- c('W07')
+slParams <- DT.prep[!(id %in% badwolf), SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                                 sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
 
-taParams <- DT.prep[, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+taParams <- DT.prep[!(id %in% badwolf), TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                                 sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
 
@@ -294,13 +294,13 @@ ssf.all[,'propurban_end'] <- raster::extract(propurban, locs_end)
 
 # adding nn and dist for step 1, also adding attributed data about death
 ssf.all <- merge(ssf.all, DT.prep, by.x = c('x1_', 'y1_', 't1_', 'id'), by.y = c('x', 'y', 't', 'id'), all.x = T)
-colnames(ssf.all)[colnames(ssf.all)=="NN"] <- "nn1"
+colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn1"
 #colnames(ssf.all)[colnames(ssf.all)=="end_date"] <- "death_date"
 
 # adding nn at step 2
-DT.nn <- dplyr::select(DT.prep, t, id, NN)
+DT.nn <- dplyr::select(DT.prep, t, id, nn)
 ssf.all <- merge(ssf.all, DT.nn, by.x = c('t2_', 'id'), by.y = c('t', 'id'), all.x = T)
-colnames(ssf.all)[colnames(ssf.all)=="NN"] <- "nn2"
+colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn2"
 
 # calc time to death (ttd)
 ssf.all[,'ttd1'] <- as.duration(ssf.all$t1_ %--% ssf.all$death_date)/ddays(1) 
@@ -310,6 +310,7 @@ ssf.all[,'ttd2'] <- as.duration(ssf.all$t2_  %--% ssf.all$death_date)/ddays(1)
 colnames(ssf.all)[colnames(ssf.all)=="roadall_LinFeat_dist_start"] <- "roadDist_start"
 colnames(ssf.all)[colnames(ssf.all)=="roadall_LinFeat_dist_end"] <- "roadDist_end"
 
+#saveRDS(ssf.all, 'data/derived-data/ssfRaw_RMNP.Rds')
 
 #### setting time to death ####
 ttd = 61
@@ -440,7 +441,9 @@ ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW14, ssfW15, ssfW16, ssfW19, ssfW20, ssfW22, ssfW25, ssfW26, ssfW27)
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
-# saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
+
+
+saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
 
 saveRDS(Params, 'data/derived-data/moveParams_RMNP.Rds')
 
