@@ -211,9 +211,6 @@ ssf <- dat_all %>%
       amt::filter_min_n_burst(min_n = 3) %>%
       amt::steps_by_burst() %>% amt::random_steps(n=10) %>%
       amt::extract_covariates(land, where = "both")  %>%
-      # amt::extract_covariates(propwet, where = "both")  %>%
-      # amt::extract_covariates(propopen, where = "both")  %>%
-      # amt::extract_covariates(propclosed, where = "both")  %>%
       amt::extract_covariates(roads, where = "both") %>%
       amt::extract_covariates(FM, where = "both") %>%
       amt::extract_covariates(FM_dist, where = "both") %>%
@@ -235,7 +232,6 @@ ssf <- dat_all %>%
       amt::extract_covariates(SA_dist, where = "both") %>%
       amt::extract_covariates(TU, where = "both") %>%
       amt::extract_covariates(TU_dist, where = "both") %>%
-     # amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
       mutate(land_start = factor(GHA26landcover2015_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              land_end = factor(GHA26landcover2015_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              FM_kde_start = factor(FM_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
@@ -269,7 +265,7 @@ ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 
 #### movement parmeters ####
 SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
-  #print(ID)
+  print(ID)
   #create track from dataset
   trk <- track(x.col, y.col, date.col, ID, crs) %>%
     #function turns locs into steps
@@ -284,7 +280,7 @@ SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta
 }
 
 TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
-  #print(ID)
+  print(ID)
   #create track from dataset
   trk <- track(x.col, y.col, date.col, ID, crs) %>%
     #function turns locs into steps
@@ -299,25 +295,23 @@ TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta
 }
 
 
+# 
+# DT.prep <- merge(dat.all[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
+#                  by.y = c('WolfID','PackID'), all.x = T)
+# DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
+# DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
 
-DT.prep <- merge(dat.all[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
-                 by.y = c('WolfID','PackID'), all.x = T)
-DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
-DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
 
-
-slParams <- DT.prep[ttd<=61, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+slParams <- DT.prep[, SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                      sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
 
-taParams <- DT.prep[ttd<=61, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
+taParams <- DT.prep[, TAdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                      sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
 
 Params <- merge(slParams, taParams[,.(id,kappa)], by = 'id')
 
-sl <- dat_all %>% mutate(slparam = lapply(steps, sl_distr_params)) %>%
-  dplyr::select(id, slparam) %>% unnest(cols = c(slparam))
 
 
 ## proportions didn't pull right because of layer name, don't know how to fix
@@ -357,6 +351,7 @@ ssf.all[,'ttd2'] <- as.duration(ssf.all$t2_  %--% ssf.all$death_date)/ddays(1)
 colnames(ssf.all)[colnames(ssf.all)=="GHA26_roadsPS_dist_start"] <- "roadDist_start"
 colnames(ssf.all)[colnames(ssf.all)=="GHA26_roadsPS_dist_end"] <- "roadDist_end"
 
+#saveRDS(ssf.all, 'data/derived-data/ssfRaw_GHA26.Rds')
 
 #### setting time to death ####
 ttd = 61
@@ -505,7 +500,8 @@ ssf.soc <- rbind(ssfW01, ssfW03, ssfW04, ssfW05, ssfW06, ssfW09, ssfW10, ssfW11,
                  ssfW32, ssfW34, ssfW35, ssfW36, ssfW37, ssfW38, ssfW39)
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
-# saveRDS(ssf.soc, 'data/derived-data/ssfAll_GHA26.Rds')
+
+saveRDS(ssf.soc, 'data/derived-data/ssfAll_GHA26.Rds')
 
 
 moveRMNP <- readRDS('data/derived-data/moveParams_RMNP.Rds')
