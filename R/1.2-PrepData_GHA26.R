@@ -77,33 +77,16 @@ enn <- edge_nn(
   id = 'WolfID',
   coords = c('X', 'Y'),
   timegroup = 'timegroup',
-  # returnDist = TRUE, #(not yet available)
+  returnDist = TRUE, 
   splitBy = 'PackID'
 )
 
 enn<- unique(enn)
 
-### calculating distances and original point
-edist1 <- edge_dist(
-  DT = dat.grptimes,
-  threshold = 10000000, # I don't know how to pick this
-  id = 'WolfID',
-  coords = c('X', 'Y'),
-  timegroup = 'timegroup',
-  returnDist = TRUE,
-  splitBy = 'PackID'
-)
-
-edist1 <- unique(edist1)
-
-dat.nn.dist <- merge(enn, edist1, by.x = c('ID', 'NN','PackID', 'timegroup'), 
-                by.y = c('ID1', 'ID2', 'PackID', 'timegroup'))
-
-dat.nn.u <- unique(dat.nn.dist)
 
 
 
-dat.nn <- merge(dat.grptimes,dat.nn.dist, by.x = c('WolfID','PackID', 'timegroup'), 
+dat.nn <- merge(dat.grptimes,enn, by.x = c('WolfID','PackID', 'timegroup'), 
                 by.y = c('ID','PackID', 'timegroup'), all.x = T)
 dat.nn <- dat.nn[!is.na(WolfID)]
 
@@ -145,7 +128,7 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 
 #### layers ####
 
-land <- raster(paste0(raw, 'GHA26landcover_wgs84.tif'), )
+land <- raster(paste0(raw, 'GHA26landcover2015_wgs84.tif'), )
 #cland <- fread(paste0(raw, 'rcl_cowu.csv'))
 cland2 <- fread(paste0(raw, 'rcl_fine.csv'))
 land <- raster::reclassify(land, cland2)
@@ -173,7 +156,7 @@ names(urban) <- "urban"
 # The d value is what determines the buffer size if you want to change it.
 ## If you're doing multiple landcover classes, you only need to run this line once, as long as each of the habitat variables has the same resolution
 # (e.g., the "Wetland" here could be any cover type)
-Buff100 <- focalWeight(mixed, d=100, type = 'circle')
+Buff100 <- focalWeight(land, d=100, type = 'circle')
 ## This generates a new raster where each cell corresponds to the mean wetland within a 100m buffer.
 # Since it's all 1s and 0s, this is the same as the proportion of wetland surrounding the focal variable
 propwet <- focal(wet, Buff100, na.rm = TRUE, pad = TRUE, padValue = 0)
@@ -253,8 +236,8 @@ ssf <- dat_all %>%
       amt::extract_covariates(TU, where = "both") %>%
       amt::extract_covariates(TU_dist, where = "both") %>%
      # amt::time_of_day(include.crepuscule = T, where = 'start') %>%  ####check with KK on doing this better
-      mutate(land_start = factor(GHA26landcover_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
-             land_end = factor(GHA26landcover_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
+      mutate(land_start = factor(GHA26landcover2015_wgs84_start, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
+             land_end = factor(GHA26landcover2015_wgs84_end, levels = 1:7, labels = c("coniferous", 'deciduous', "mixed", 'shrub', "open", 'wet', 'urban')),
              FM_kde_start = factor(FM_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
              FM_kde_end = factor(FM_kde_end, levels = c(1, 0), labels = c("pack", "out-pack")),
              GF_kde_start = factor(GF_kde_start, levels = c(1, 0), labels = c("pack", "out-pack")),
