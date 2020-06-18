@@ -41,24 +41,9 @@ enn <- edge_nn(
   splitBy = 'PackID'
 )
 
-### calculating distances and original point
-edist1 <- edge_dist(
-  DT = dat.grptimes,
-  threshold = 10000000, # I don't know how to pick this
-  id = 'WolfID',
-  coords = c('X', 'Y'),
-  timegroup = 'timegroup',
-  returnDist = TRUE,
-  splitBy = 'PackID'
-)
-
-dat.nn <- merge(enn, edist1, by.x = c('ID', 'NN','PackID', 'timegroup'), 
-                by.y = c('ID1', 'ID2', 'PackID', 'timegroup'))
 
 
-
-
-dat.nn <- merge(dat.grptimes,dat.nn, by.x = c('WolfID','PackID', 'timegroup'), 
+dat.nn <- merge(dat.grptimes,enn, by.x = c('WolfID','PackID', 'timegroup'), 
                 by.y = c('ID','PackID', 'timegroup'), all.x = T)
 
 dat.nn <- merge(dat.nn,dat.meta, by.x = c('WolfID','PackID'), 
@@ -78,7 +63,7 @@ crs14 <- sp::CRS("+init=epsg:32614")
 
 #### filter to those that die ####
 dat.focal <- setDT(dat.meta)[pop=='RMNP' & use!='n' & !is.na(PackID)]
-dat.focal[,'packbound'] <- ifelse(dat.focal$PackID == 'RC', 'GL', dat.focal$PackID)
+dat.focal <- setnames(dat.focal, old = 'PackID', new = 'packbound')
 dat.focal <- dat.focal[!(WolfID %chin% c('W08'))] #doesn't have enough data
 focals <- dat.focal$WolfID
 
@@ -103,7 +88,7 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 
 #### layers ####
 
-land <- raster(paste0(raw, 'RMNPlandcover_wgs84.tif'), )
+land <- raster(paste0(raw, 'RMNPlandcover2015_wgs84.tif'), )
 #cland <- fread(paste0(raw, 'rcl_cowu.csv'))
 cland2 <- fread(paste0(raw, 'rcl_fine.csv'))
 land <- raster::reclassify(land, cland2)
@@ -159,6 +144,9 @@ BT_dist <- raster(paste0(raw, 'BT_kde_dist.tif'))
 GL <- raster(paste0(raw, 'GL_kde.tif'))
 GL <- reclassify(GL, cbind(NA, 0))
 GL_dist <- raster(paste0(raw, 'GL_kde_dist.tif'))
+RC <- raster(paste0(raw, 'RC_kde.tif'))
+RC <- reclassify(RC, cbind(NA, 0))
+RC_dist <- raster(paste0(raw, 'RC_kde_dist.tif'))
 SL <- raster(paste0(raw, 'SL_kde.tif'))
 SL <- reclassify(SL, cbind(NA, 0))
 SL_dist <- raster(paste0(raw, 'SL_kde_dist.tif'))
