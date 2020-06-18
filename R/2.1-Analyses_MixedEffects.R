@@ -47,7 +47,7 @@ dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 
 dat$packDist_end <- ifelse(dat$packDistadj_end >=0, dat$packDistadj_end, 0)
 
-summary(dat$land_end)
+summary(dat[case_==TRUE,.(land_end)])
 
 # dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
 #                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous', 'forest',
