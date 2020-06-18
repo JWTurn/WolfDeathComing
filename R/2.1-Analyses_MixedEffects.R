@@ -47,17 +47,19 @@ dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
 
 dat$packDist_end <- ifelse(dat$packDistadj_end >=0, dat$packDistadj_end, 0)
 
+summary(dat[,.(land_end)])
 summary(dat[case_==TRUE,.(land_end)])
 
 # dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet', 
 #                                ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous', 'forest',
 #                                       ifelse(dat$land_end == 'coniferous', 'coniferous', 'open')))
 dat[,'land_end_adj'] <- ifelse(dat$land_end == 'wet', 'wet',
-                               ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous', 'forest','open'))
+                               ifelse(dat$land_end == 'mixed'|dat$land_end == 'deciduous'|dat$land_end == 'coniferous'|dat$land_end == 'shrub',
+                                      'forest','open'))
 
 #dat[,'forest']
-dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end
-dat[,'propopen_end_adj'] <- dat$propopen_end + dat$propurban_end #+dat$propshrub_end 
+dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end +dat$propshrub_end # remove shrub?
+dat[,'propopen_end_adj'] <- dat$propopen_end + dat$propurban_end 
 
 # 
 # dat[,mean(propwet_end), by=.(wolfID,ua)]
@@ -77,6 +79,9 @@ dat$COD[is.na(dat$COD)] <- "control"
 dat$ToD_start <- as.factor(dat$ToD_start)
 dat$land_end_adj <- as.factor(dat$land_end_adj)
 
+dat[case_ == FALSE, mean(propwet_end), by=.(wolfID)]
+dat[case_ == FALSE, mean(propforest_end_adj), by=.(wolfID)]
+dat[case_ == FALSE, mean(propopen_end_adj), by=.(wolfID)]
 
 ######
 ggplot(dat[ua == 'used'], aes(ttd1, sl_,colour = COD)) +
@@ -172,7 +177,7 @@ ggplot(dat[ttd1<=31 & ua =='avail' & COD=='cdv'], aes(land_end_adj)) +
   geom_histogram(stat = 'count') 
 
 
-dat[COD=='cdv',.(last(packDistadj_end), min(packDistadj_end), max(packDistadj_end)), by=.(wolfID)]
+dat[COD=='cdv',.(last(packDistadj_end), min(packDistadj_end, na.rm = T), max(packDistadj_end, na.rm = T)), by=.(wolfID)]
 
 
 #### full model #### 
