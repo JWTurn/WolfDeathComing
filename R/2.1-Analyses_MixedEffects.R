@@ -259,7 +259,8 @@ everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 #### by model ####
 everyone.move <- glmmTMB(case_ ~ log_sl:ToD_start +
-                              log_sl:land_end_adj +
+                           log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
+                              #log_sl:land_end_adj +
                               log_sl:COD + cos_ta:COD +
                               I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                               (1|wolf_step_id) +
@@ -619,7 +620,7 @@ ttd.hab <- ggplot(everyone.ttd[term=='forest-ttd'|term=='open-ttd'|term=='wet-tt
   ylab('beta') +
   ggtitle("Habitat") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) + ylim(-8,12)
+  scale_color_manual(values = cbPalette) #+ ylim(-8,12)
 
 
 main.hab <- ggplot(everyone.main[term=='forest'|term=='open'|term=='wet'], aes(term, (estimate), fill = COD)) +
@@ -644,7 +645,7 @@ main.hab <- ggplot(everyone.main[term=='forest'|term=='open'|term=='wet'], aes(t
   ylab('beta') +
   ggtitle("Habitat") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) + ylim(-8,12)
+  scale_color_manual(values = cbPalette) #+ ylim(-8,12)
 
 
 main.hab/ttd.hab
@@ -672,7 +673,7 @@ ttd.dist <- ggplot(everyone.ttd[term=='roadDist-ttd'|term=='nnDist-ttd'|term=='b
   ylab('beta') +
   ggtitle("Distance to Rd and Social") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) + ylim(-1,2.5)
+  scale_color_manual(values = cbPalette) #+ ylim(-1,2.5)
 
 main.dist <- ggplot(everyone.main[term=='roadDist'|term=='nnDist'|term=='boundaryDist'], aes(term, (estimate), fill = COD)) +
   geom_boxplot(aes(fill = COD),# notch = TRUE, notchwidth = 0.7,
@@ -696,7 +697,7 @@ main.dist <- ggplot(everyone.main[term=='roadDist'|term=='nnDist'|term=='boundar
   ylab('beta') +
   ggtitle("Distance to Rd and Social") +
   scale_fill_manual(values = cbPalette) +
-  scale_color_manual(values = cbPalette) + ylim(-1,2.5)
+  scale_color_manual(values = cbPalette) #+ ylim(-1,2.5)
 
 main.dist/ttd.dist
 
