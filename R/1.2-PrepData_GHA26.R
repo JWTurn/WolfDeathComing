@@ -116,8 +116,9 @@ ttd = 61
 DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
                                        status, end_date, COD, death_date)]
 DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
-DT.prep <- DT.prep[t2d<=ttd]
+DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
 
+DT.prep[,uniqueN(t), by =.(id)]
 
 
 dat_all <- DT.prep %>% group_by(id) %>% nest()
