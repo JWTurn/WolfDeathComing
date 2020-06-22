@@ -61,6 +61,9 @@ dat.nn <- merge(dat.nn,dat.meta, by.x = c('WolfID','PackID'),
 utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 crs14 <- sp::CRS("+init=epsg:32614")
 
+#### setting time to death ####
+ttd = 61
+
 #### filter to those that die ####
 dat.focal <- setDT(dat.meta)[pop=='RMNP' & use!='n' & !is.na(PackID)]
 dat.focal <- setnames(dat.focal, old = 'PackID', new = 'packbound')
@@ -72,7 +75,12 @@ DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "Wolf
   filter(id %in% focals) 
   
   
-
+# DT.prep <- merge(dat[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'),
+#                  by.y = c('WolfID','PackID'), all.x = T)
+DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
+                     status, end_date, COD, death_date)]
+DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
+DT.prep <- DT.prep[t2d<=ttd]
 
 
 dat_all <- DT.prep %>% group_by(id) %>% nest()
@@ -256,12 +264,10 @@ TAdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta
 
 
 
-# DT.prep <- merge(dat[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'), 
-#                  by.y = c('WolfID','PackID'), all.x = T)
-# DT.prep <- DT.prep[,.(x = X, y = Y, t = datetime, id = WolfID, status, COD, death_date)]
-# DT.prep[, ttd:=(as.duration(t %--% death_date)/ddays(1))]
 
-badwolf <- c('W07')
+
+#badwolf <- c('W07')
+badwolf <- c('W16')
 slParams <- DT.prep[!(id %in% badwolf), SLdistr(x.col = x, y.col = y, date.col = t, crs = utm14N, ID = id, 
                                                 sl_distr = "gamma", ta_distr = "vonmises"),
                     by = id]
@@ -312,8 +318,7 @@ colnames(ssf.all)[colnames(ssf.all)=="roadall_LinFeat_dist_end"] <- "roadDist_en
 
 #saveRDS(ssf.all, 'data/derived-data/ssfRaw_RMNP.Rds')
 
-#### setting time to death ####
-ttd = 61
+
 
 
 # Cleaning of grouptime data
@@ -438,14 +443,15 @@ ssfW25 <- createSSFnnbyFocal(ssf.all, "W25")
 ssfW26 <- createSSFnnbyFocal(ssf.all, "W26")
 ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 
-ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW14, ssfW15, ssfW16, ssfW19, ssfW20, ssfW22, ssfW25, ssfW26, ssfW27)
+# , ssfW20 removed from list, didn't run
+ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW14, ssfW15, ssfW16, ssfW19, ssfW22, ssfW25, ssfW26, ssfW27)
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID=packbound, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 
 
-saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
+saveRDS(ssf.soc, 'data/derived-data/ssfAll_2mo.Rds')
 
-saveRDS(Params, 'data/derived-data/moveParams_RMNP.Rds')
+saveRDS(Params, 'data/derived-data/moveParams_2mo_RMNP.Rds')
 
 
 
