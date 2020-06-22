@@ -21,8 +21,8 @@ derived <- 'data/derived-data/'
 
 ### SSF data with all covariates ----
 set.seed(53)
-dat.RMNP <- readRDS('data/derived-data/ssfAllCov_RMNP.Rds')
-dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_GHA26.Rds')
+dat.RMNP <- readRDS('data/derived-data/ssfAllCov_2mo_RMNP.Rds')
+dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_2mo_GHA26.Rds')
 
 
 dat.RMNP[,'pop'] <- 'RMNP'
@@ -39,7 +39,7 @@ dat<-dat[ttd1>=0 & ttd2>=0]
 dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
 dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
 
-params <- readRDS('data/derived-data/moveParams_all.Rds')
+params <- readRDS('data/derived-data/moveParams_2mo_all.Rds')
 
 dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
 
@@ -78,6 +78,17 @@ dat$COD[is.na(dat$COD)] <- "control"
 
 dat$ToD_start <- as.factor(dat$ToD_start)
 dat$land_end_adj <- as.factor(dat$land_end_adj)
+
+#### only wolves with packmates ####
+dat[,uniqueN(step_id_), by=.(wolfID)]
+dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
+dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
+dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
+
+dat.wnn.lastmo.cod[,.(N=uniqueN(wolfID)), by=.(pop, COD)]
+dat.meta[,.(N=uniqueN(wolfpop)), by=.(pop, COD)]
+
+#####
 
 dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propwet_end), by=.(wolfID)]
 dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propforest_end_adj), by=.(wolfID)]
@@ -183,13 +194,6 @@ dat[COD=='cdv',.(last(packDistadj_end), min(packDistadj_end, na.rm = T), max(pac
 
 #### full model #### 
 #### all time ####
-dat[,uniqueN(step_id_), by=.(wolfID)]
-dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
-dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
-dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-
-dat.wnn.lastmo.cod[,.(N=uniqueN(wolfID)), by=.(pop, COD)]
-dat.meta[,.(N=uniqueN(wolfpop)), by=.(pop, COD)]
 
 quantile(dat$distance2, probs = c(0, 0.05, .95, 1), na.rm = T)
 quantile(dat$distance2, na.rm = T)
@@ -205,7 +209,7 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 
 everyone <- glmmTMB(case_ ~# pop + 
                       log_sl:ToD_start +
-                      log_sl:cos_ta +
+                      #log_sl:cos_ta +
                        # log_sl:land_end_adj +
                       log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                         log_sl:COD + cos_ta:COD + 
