@@ -70,10 +70,10 @@ dat.focal <- setnames(dat.focal, old = 'PackID', new = 'packbound')
 dat.focal <- dat.focal[!(WolfID %chin% c('W08'))] #doesn't have enough data
 focals <- dat.focal$WolfID
 
-DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
-                                    'status', 'end_date', 'COD', 'death_date') %>%
-  filter(id %in% focals) 
-  
+# DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
+#                                     'status', 'end_date', 'COD', 'death_date') %>%
+#   filter(id %in% focals) 
+#   
   
 # DT.prep <- merge(dat[WolfID %in% focals],dat.meta, by.x = c('WolfID','PackID'),
 #                  by.y = c('WolfID','PackID'), all.x = T)
