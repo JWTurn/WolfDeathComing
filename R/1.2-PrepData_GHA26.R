@@ -40,6 +40,7 @@ dat <- rbind(dat2014_15, dat2016, dat2016_st, dat2017, dat2018)
 utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 crs14 <- sp::CRS("+init=epsg:32614")
 
+set.seed(57)
 
 dat[, Longitude := as.numeric(Longitude)]
 dat[, Latitude := as.numeric(Latitude)]

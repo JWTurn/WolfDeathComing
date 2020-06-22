@@ -61,6 +61,7 @@ dat.nn <- merge(dat.nn,dat.meta, by.x = c('WolfID','PackID'),
 utm14N <- "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 crs14 <- sp::CRS("+init=epsg:32614")
 
+set.seed(53)
 #### setting time to death ####
 ttd = 61
 
