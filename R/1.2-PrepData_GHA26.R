@@ -105,12 +105,17 @@ dat.focal <- setDT(dat.meta)[pop=='GHA26' & use!='n' & !is.na(PackID)]
 dat.focal[,'packbound'] <- dat.focal$PackID
 focals <- dat.focal$WolfID
 
-DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
-                                    'COD', 'death_date') %>%
-  filter(id %in% focals) 
-  
-  
+#### setting time to death ####
+ttd = 61
 
+# DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
+#                                     'COD', 'death_date') %>%
+#   filter(id %in% focals) 
+#   
+DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
+                                       status, end_date, COD, death_date)]
+DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
+DT.prep <- DT.prep[t2d<=ttd]
 
 
 
@@ -353,8 +358,7 @@ colnames(ssf.all)[colnames(ssf.all)=="GHA26_roadsPS_dist_end"] <- "roadDist_end"
 
 #saveRDS(ssf.all, 'data/derived-data/ssfRaw_GHA26.Rds')
 
-#### setting time to death ####
-ttd = 61
+
 
 
 # Cleaning of grouptime data
@@ -501,14 +505,14 @@ ssf.soc <- rbind(ssfW01, ssfW03, ssfW04, ssfW05, ssfW06, ssfW09, ssfW10, ssfW11,
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 
-saveRDS(ssf.soc, 'data/derived-data/ssfAll_GHA26.Rds')
+saveRDS(ssf.soc, 'data/derived-data/ssfAll_2mo_GHA26.Rds')
 
 
-moveRMNP <- readRDS('data/derived-data/moveParams_RMNP.Rds')
+moveRMNP <- readRDS('data/derived-data/moveParams_2mo_RMNP.Rds')
 moveRMNP[,wolfID := paste('RMNP', id, sep = '_')]
 Params[,wolfID := paste('GHA26', id, sep = '_')]
 Params <- rbind(moveRMNP, Params)
-saveRDS(Params, 'data/derived-data/moveParams_all.Rds')
+saveRDS(Params, 'data/derived-data/moveParams_2mo_all.Rds')
 
 
 
