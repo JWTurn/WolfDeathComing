@@ -57,8 +57,10 @@ dat.wide[, ttd:= list(list(seq(1,61,length.out = 100))), by=.(wolfID)]
 move <- dat.wide[, .(spd = unlist(spd), dir=unlist(dir), ttd= unlist(ttd)), by=.(wolfID,COD)]
 move[,spd_hr :=spd/500]
 
+move[spd_hr<0, unique(wolfID)]
+
 gcolors <- c("deepskyblue", "purple", "dark green")
-speed <- ggplot(data=move[wolfID != 'GHA26_W35'], aes(x=-ttd, y=spd_hr, color = COD)) + 
+speed <- ggplot(data=move, aes(x=-ttd, y=spd_hr, color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F)+
