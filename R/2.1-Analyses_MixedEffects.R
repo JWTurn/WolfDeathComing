@@ -116,9 +116,10 @@ gam.wolves <- merge(dat[case_==TRUE,.(wolfID, sl_)], params, by = c('wolfID'), a
 
 
 ggplot(gam.wolves[wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_, ..density..)) +
-  geom_histogram(binwidth = 100) +
-  #geom_line(aes( y=dgamma(sl_, shape[1], scale[1])), color="blue", size = 1) +
+  geom_histogram(binwidth = 50) +
+  geom_line(aes( y=dgamma(sl_, shape[1], scale[1])), color="blue", size = 1) +
   facet_wrap(vars(wolfID))
+
 
 ggplot(dat[ua == 'used' & pop == 'RMNP' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(sl_)) +
   geom_density(color='blue') + #geom_histogram(bins = 500) +
@@ -204,6 +205,7 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 
 everyone <- glmmTMB(case_ ~# pop + 
                       log_sl:ToD_start +
+                      log_sl:cos_ta +
                        # log_sl:land_end_adj +
                       log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                         log_sl:COD + cos_ta:COD + 
