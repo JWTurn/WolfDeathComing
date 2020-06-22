@@ -79,9 +79,9 @@ dat$COD[is.na(dat$COD)] <- "control"
 dat$ToD_start <- as.factor(dat$ToD_start)
 dat$land_end_adj <- as.factor(dat$land_end_adj)
 
-dat[case_ == FALSE, mean(propwet_end), by=.(wolfID)]
-dat[case_ == FALSE, mean(propforest_end_adj), by=.(wolfID)]
-dat[case_ == FALSE, mean(propopen_end_adj), by=.(wolfID)]
+dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propwet_end), by=.(wolfID)]
+dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propforest_end_adj), by=.(wolfID)]
+dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propopen_end_adj), by=.(wolfID)]
 
 ######
 ggplot(dat[ua == 'used'], aes(ttd1, sl_,colour = COD)) +
@@ -3574,7 +3574,7 @@ forest.1 <- ggplot(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, c
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("logRSS") + xlab("Proportion of forest") +
   ggtitle("1 day")  +
-  ylim(-0.7,1.3) +
+ # ylim(-0.7,1.3) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
@@ -3594,7 +3594,7 @@ forest.60 <- ggplot(data=logRSS.pop[var == 'forest'& ttd=='60 days'], aes(x, rss
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   ylab("logRSS") + xlab("Proportion of forest") +
   ggtitle("60 days")  +
-  ylim(-0.7,1.3) +
+ # ylim(-0.7,1.3) +
   # scale_colour_manual("", values = c("gray", "black", "gray33", 'blue'))  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
@@ -3627,7 +3627,7 @@ forest.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='1 day'], ae
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2.5) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3650,7 +3650,7 @@ forest.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& ttd=='60 days'],
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2.5) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3717,7 +3717,7 @@ open.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='1 day'], aes(x,
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2.5) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3740,7 +3740,7 @@ open.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& ttd=='60 days'], aes
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2.5) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3808,7 +3808,7 @@ wet.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='1 day'], aes(x, r
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2.5) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3831,7 +3831,7 @@ wet.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& ttd=='60 days'], aes(x
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-2,2.5)+
+  ylim(-10,10)+
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -3947,7 +3947,7 @@ road.60.model <- ggplot(data=logRSS.pop.model[var == 'road'& ttd=='60 days'], ae
 road.1.model|road.60.model
 
 
-road.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='1 day'], aes(x, -rss, colour=COD)) +
+road.1.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='1 day'], aes(x, -rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
@@ -3965,12 +3965,12 @@ road.1.b <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='1 day'], aes(x,
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,2.5) +
+  ylim(-2,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
-road.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='60 days'], aes(x, -rss, colour=COD)) +
+road.60.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='60 days'], aes(x, -rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
@@ -3988,7 +3988,7 @@ road.60.b <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& ttd=='60 days'], aes
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,2.5) +
+  ylim(-2,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -4112,7 +4112,7 @@ nn.1.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='1 day']
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-.5,6) +
+  ylim(-.5,8) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -4135,7 +4135,7 @@ nn.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& ttd=='60 day
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-.5,6) +
+  ylim(-.5,8) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
