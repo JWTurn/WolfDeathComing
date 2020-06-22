@@ -29,8 +29,8 @@ daymst.RMNP <- day.RMNP[,.(Date, TwiStartDate, SunriseDate, SunsetDate, TwiEndDa
 daymst.GHA26 <- day.GHA26[,.(Date, TwiStartDate, SunriseDate, SunsetDate, TwiEndDate)]
 
 # Read in SSF
-ssf.RMNP <- readRDS("data/derived-data/ssfAll.Rds")
-ssf.GHA26 <- readRDS("data/derived-data/ssfAll_GHA26.Rds")
+ssf.RMNP <- readRDS("data/derived-data/ssfAll_2mo.Rds")
+ssf.GHA26 <- readRDS("data/derived-data/ssfAll_2mo_GHA26.Rds")
 
 # not needed for GHA26
 ssf.RMNP[, 't1mst'] <- ssf.RMNP$t1_ - hours(6)
@@ -72,8 +72,8 @@ ssf.wolf.GHA26 <- fullmst.GHA26[,.(burst_, step_id_, case_, x1_, y1_, x2_, y2_, 
                        id, nn1, nn2, distance1, distance2, timegroup1, timegroup2, packYN_start, packYN_end, packDist_start, packDist_end, packDistadj_end,
                        ttd1, ttd2)]
 
-saveRDS(ssf.wolf.RMNP, 'data/derived-data/ssfAllCov_RMNP.Rds')
-saveRDS(ssf.wolf.GHA26, 'data/derived-data/ssfAllCov_GHA26.Rds')
+saveRDS(ssf.wolf.RMNP, 'data/derived-data/ssfAllCov_2mo_RMNP.Rds')
+saveRDS(ssf.wolf.GHA26, 'data/derived-data/ssfAllCov_2mo_GHA26.Rds')
 
 
 
