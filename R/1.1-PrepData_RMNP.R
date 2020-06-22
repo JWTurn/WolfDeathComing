@@ -81,8 +81,9 @@ focals <- dat.focal$WolfID
 DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
                      status, end_date, COD, death_date)]
 DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
-DT.prep <- DT.prep[t2d<=ttd]
+DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
 
+DT.prep[,uniqueN(t), by =.(id)]
 
 dat_all <- DT.prep %>% group_by(id) %>% nest()
 
@@ -90,6 +91,8 @@ dat_all <- dat_all %>%
   mutate(trk = map(data, function(d) {
     amt::make_track(d, x, y, t, crs = sp::CRS("+init=epsg:32614")) 
   }))  
+
+
 
 dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
   dplyr::select(id, sr) %>% unnest(cols = c(sr))
