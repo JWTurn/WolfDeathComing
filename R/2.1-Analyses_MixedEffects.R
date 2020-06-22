@@ -33,7 +33,7 @@ dat<-rbind(dat.RMNP, dat.GHA26, fill=T)
 
 dat[ttd1>=0 & ttd2>=0, unique(wolfID)]
 
-dat<-dat[ttd1>=0 & ttd2>=0]
+#dat<-dat[ttd1>=0 & ttd2>=0]
 
 #dat[,'wtd1'] <- as.integer(dat$ttd1/7)
 
@@ -210,7 +210,7 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 
 everyone <- glmmTMB(case_ ~# pop + 
                       log_sl:ToD_start +
-                      log_sl:cos_ta +
+                     # log_sl:cos_ta +
                        # log_sl:land_end_adj +
                       log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                         log_sl:COD + cos_ta:COD + 
