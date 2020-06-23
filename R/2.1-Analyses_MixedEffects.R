@@ -417,8 +417,8 @@ everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.n
                                                                                                                      "nnDist-ttd", "boundaryDist-ttd"))
 
 
-#saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_COD.Rds')
-everyone.indiv<-readRDS('data/derived-data/everyone_betas_COD.Rds')
+#saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_COD_2mo.Rds')
+everyone.indiv<-readRDS('data/derived-data/everyone_betas_COD_2mo.Rds')
 everyone.ttd <- everyone.indiv[term %like% "ttd", ]
 
 everyone.main <- everyone.indiv[!(term %like% "ttd"), ]
