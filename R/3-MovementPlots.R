@@ -22,17 +22,19 @@ derived <- 'data/derived-data/'
 dat <- readRDS('data/derived-data/everyone_betas_COD.Rds')
 dat.pop <- readRDS('data/derived-data/summarypopeveryone_COD.Rds')
 dat.pop <- setDT(dat.pop)[effect =='fixed' & (term %like% 'log_sl:COD' |term %like%  'cos_ta')]
-params <- readRDS('data/derived-data/moveParams_all.Rds')
+params <- readRDS('data/derived-data/moveParams_2mo_all.Rds')
 
+#dat <- everyone.indiv
 
-
-dat.wide <- dcast(data =dat, wolfID + COD ~ term, value.var = 'estimate')
+dat.wide <- dcast(data =everyone.indiv, wolfID + COD ~ term, value.var = 'estimate')
 
 dat.wide <- setDT(merge(dat.wide, params[,.(wolfID,shape, scale, kappa)], by = 'wolfID', all.x = T))
 
 cod.params <- dat.wide[,.(mean.shp = mean(shape, na.rm = T), se.shp = se(shape),
                           mean.scl = mean(scale, na.rm = T), se.scl = se(scale), 
                           mean.kap = mean(kappa, na.rm = T), se.kap = se(kappa)), by =.(COD)]
+
+dat.pop <- sum.everyone
 dat.pop$term <- gsub('[[:punct:]]', '', dat.pop$term)
 dat.pop$term <- gsub(' ', '', dat.pop$term)
 dat.pop$term <- gsub('1', '', dat.pop$term)
@@ -43,7 +45,7 @@ dat.pop$term <- gsub('CODhuman', '', dat.pop$term)
 dat.pop$term <- gsub('CODCDV', '', dat.pop$term)
 dat.pop$term <- gsub('Ilog', '_', dat.pop$term)
 
-dat.pop.wide <- dcast(data =dat.pop, COD ~ term, value.var = c('estimate', 'std.error'))
+dat.pop.wide <- dcast(data =setDT(dat.pop)[is.na(group)], COD ~ term, value.var = c('estimate', 'std.error'))
 dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 
 
@@ -63,7 +65,7 @@ gcolors <- c("deepskyblue", "purple", "dark green")
 speed <- ggplot(data=move, aes(x=-ttd, y=spd_hr, color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
-  geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F)+
+  geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F, method = 'lm')+
   theme_classic() +
   theme(text = element_text(size=15)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
@@ -96,15 +98,16 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move, aes(x=-ttd, y=spd_hr, color = COD)) + 
+speed2 <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
-  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F)+
+  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F, method = 'lm')+
   theme_classic() +
   theme(text = element_text(size=15)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
   theme(axis.text.x =  element_text(size = 15)) + 
   #  theme(legend.position = "none") +
+ # ylim(-1,7) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
