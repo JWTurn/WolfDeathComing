@@ -209,15 +209,16 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~# pop + 
-                      log_sl:ToD_start +
-                     # log_sl:cos_ta +
+                      #log_sl:ToD_start +
+                      log_sl:cos_ta +
                        # log_sl:land_end_adj +
                       log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                         log_sl:COD + cos_ta:COD + 
                         I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                         (1|wolf_step_id) +
                         (0 + (log_sl)|wolfID) +
-                        (0 + (cos_ta)|wolfID) +
+                        (0 + (log_sl:cos_ta)|wolfID) +
+                      (0 + (cos_ta)|wolfID) +
                         (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
                         (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
                         # COD:land_end_adj + I(log(1+roadDist_end)):COD +
@@ -238,7 +239,7 @@ everyone <- glmmTMB(case_ ~# pop +
                         (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
                       , family=poisson(),
                       data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
-                    map = list(theta=factor(c(NA,1:16))), start = list(theta=c(log(1000),seq(0,0, length.out = 16))))
+                    map = list(theta=factor(c(NA,1:17))), start = list(theta=c(log(1000),seq(0,0, length.out = 17))))
 
 # everyone$parameters$theta[1] <- log(1e3)
 # nvar_parm <- length(everyone$parameters$theta)
@@ -404,13 +405,13 @@ everyone.indiv$COD <- factor(everyone.indiv$COD, levels = c('none','human','cdv'
 everyone.indiv$COD[is.na(everyone.indiv$COD)] <- "control"
 
 unique(everyone.indiv$term)
-everyone.all.betas.names <- c("log_sl", "cos_ta", 
+everyone.all.betas.names <- c("log_sl", "cos_ta",  'log_sl:cos_ta',
                              "propforest_end_adj", "propopen_end_adj", "propwet_end", "I(log(1 + roadDist_end))",
                              "I(log(1 + distance2))", "I(log(1 + packDist_end))",
                              "I(log(ttd1 + 1)):log_sl", "I(log(ttd1 + 1)):cos_ta", 
                              "I(log(ttd1 + 1)):propforest_end_adj", "I(log(ttd1 + 1)):propopen_end_adj", "I(log(ttd1 + 1)):propwet_end", "I(log(ttd1 + 1)):I(log(1 + roadDist_end))",
                              "I(log(ttd1 + 1)):I(log(1 + distance2))", "I(log(ttd1 + 1)):I(log(1 + packDist_end))")
-everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
+everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta", 'sl_ta','forest', "open", "wet", "roadDist",
                                                                                                                      "nnDist", "boundaryDist",
                                                                                                                      "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                                      "nnDist-ttd", "boundaryDist-ttd"))
