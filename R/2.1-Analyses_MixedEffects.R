@@ -3511,24 +3511,24 @@ logRSS.indiv.model <- rbind(logRSS.forest.indiv.habitat, logRSS.open.indiv.habit
 logRSS <- rbind(logRSS.forest, logRSS.open, logRSS.wet, logRSS.road, logRSS.nn)
 logRSS.model <- rbind(logRSS.forest.habitat, logRSS.open.habitat, logRSS.wet.habitat, logRSS.road.habitat, logRSS.social)
 
-#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv2.Rds')
-#saveRDS(logRSS.indiv.model, 'data/derived-data/logRSS_indiv_model2.Rds')
+#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv_2mo.Rds')
+#saveRDS(logRSS.indiv.model, 'data/derived-data/logRSS_indiv_model_2mo.Rds')
 
 
-#saveRDS(logRSS, 'data/derived-data/logRSS2.Rds')
-#saveRDS(logRSS.model, 'data/derived-data/logRSS_model2.Rds')
+#saveRDS(logRSS, 'data/derived-data/logRSS_2mo.Rds')
+#saveRDS(logRSS.model, 'data/derived-data/logRSS_model_2mo.Rds')
 
 
 logRSS.indiv.cor <- dcast(logRSS.indiv.model, wolfID + COD + var + x ~ ttd, value.var = 'rss')
 logRSS.indiv.cor[,cor.test(`1 day`,`60 days`), by= .(COD, var)]
 
 #### GRAPHS ####
-logRSS.indiv <- readRDS('data/derived-data/logRSS_indiv2.Rds')
-logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model2.Rds')
+logRSS.indiv <- readRDS('data/derived-data/logRSS_indiv_2mo.Rds')
+logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model_2mo.Rds')
 
 
-logRSS <- readRDS('data/derived-data/logRSS2.Rds')
-logRSS.model <- readRDS('data/derived-data/logRSS_model2.Rds')
+logRSS <- readRDS('data/derived-data/logRSS_2mo.Rds')
+logRSS.model <- readRDS('data/derived-data/logRSS_model_2mo.Rds')
 
 logRSS.indiv <- setDT(logRSS.indiv)
 logRSS.indiv[,'COD'] <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
