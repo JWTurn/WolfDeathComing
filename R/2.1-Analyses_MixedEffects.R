@@ -251,9 +251,9 @@ summary(everyone)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
-#saveRDS(popeveryone, 'data/derived-data/popeveryone_COD.Rds')
+#saveRDS(popeveryone, 'data/derived-data/popeveryone_COD_2mo.Rds')
 sum.everyone<- tidy(everyone)
-#saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD.Rds')
+#saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD_2mo.Rds')
 
 everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
 # everyone.ran_pars <-tidy(everyone, effect= 'ran_pars')
@@ -268,14 +268,16 @@ everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
 #### by model ####
-everyone.move <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.move <- glmmTMB(case_ ~# log_sl:ToD_start +
                            log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                               #log_sl:land_end_adj +
                               log_sl:COD + cos_ta:COD +
+                           log_sl:cos_ta +
                               I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                               (1|wolf_step_id) +
                               (0 + (log_sl)|wolfID) +
                               (0 + (cos_ta)|wolfID) +
+                                (0 + (log_sl:cos_ta)|wolfID) +
                               (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
                               (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) # +
                               # COD:land_end_adj + I(log(1+roadDist_end)):COD +
@@ -291,7 +293,7 @@ everyone.move <- glmmTMB(case_ ~ log_sl:ToD_start +
                             # (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
                             , family=poisson(),
                             data = dat, #[wolfID %chin% dat.wnn.lastmo$wolfID], 
-                            map = list(theta=factor(c(NA,1:4))), start = list(theta=c(log(1000),seq(0,0, length.out = 4))))
+                            map = list(theta=factor(c(NA,1:5))), start = list(theta=c(log(1000),seq(0,0, length.out = 5))))
 summary(everyone.move)
 popeveryoneMove<- summary(everyone.move)$coef$cond[-1, 1:2]
 #saveRDS(popeveryoneMove, 'data/derived-data/popeveryoneMove_COD.Rds')
@@ -300,10 +302,11 @@ sum.everyoneMove<- summary(everyone.move)$coef$cond
 
 
 
-everyone.habitat <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.habitat <- glmmTMB(case_ ~ #log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                              # log_sl:COD + cos_ta:COD + 
                              # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
+                              log_sl:cos_ta +
                              (1|wolf_step_id) +
                              # (0 + (log_sl)|wolfID) +
                              # (0 + (cos_ta)|wolfID) +
@@ -331,8 +334,9 @@ popeveryoneHab<- summary(everyone.habitat)$coef$cond[-1, 1:2]
 sum.everyoneHab<- summary(everyone.habitat)$coef$cond
 #saveRDS(sum.everyoneHab, 'data/derived-data/summarypopeveryoneHab_COD.Rds')
 
-everyone.social <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.social <- glmmTMB(case_ ~ #log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
+                             log_sl:cos_ta +
                       # log_sl:COD + cos_ta:COD + 
                       # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                       (1|wolf_step_id) +
@@ -361,10 +365,11 @@ sum.everyoneSoc<- summary(everyone.social)$coef$cond
 #saveRDS(sum.everyoneSoc, 'data/derived-data/summarypopeveryoneSoc_COD.Rds')
 
 
-everyone.pack <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.pack <- glmmTMB(case_ ~# log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                              # log_sl:COD + cos_ta:COD + 
                              # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
+                           log_sl:cos_ta +
                              (1|wolf_step_id) +
                              # (0 + (log_sl)|wolfID) +
                              # (0 + (cos_ta)|wolfID) +
