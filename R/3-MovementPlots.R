@@ -52,9 +52,11 @@ dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 
 t2d <- seq(0, 61, length.out = 100)
 
-dat.wide[, spd:= list(list((shape+log_sl+(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
-dat.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
-dat.wide[, ttd:= list(list(seq(1,61,length.out = 100))), by=.(wolfID)]
+#log_sl:cos_ta = 4.668
+
+dat.wide[, spd:= list(list((shape+log_sl + 4.668 +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
+dat.wide[, dir:= list(list(kappa + cos_ta + 4.668 + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
+dat.wide[, ttd:= list(list(seq(0,61,length.out = 100))), by=.(wolfID)]
 
 move <- dat.wide[, .(spd = unlist(spd), dir=unlist(dir), ttd= unlist(ttd)), by=.(wolfID,COD)]
 move[,spd_hr :=spd/500]
@@ -62,7 +64,7 @@ move[,spd_hr :=spd/500]
 move[spd_hr<0, unique(wolfID)]
 
 gcolors <- c("deepskyblue", "purple", "dark green")
-speed <- ggplot(data=move, aes(x=-ttd, y=spd_hr, color = COD)) + 
+speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr), color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F, method = 'lm')+
@@ -98,7 +100,7 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) + 
+speed2 <- ggplot(data=move, aes(x=-ttd, y=(spd_hr+2), color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F, method = 'lm')+
