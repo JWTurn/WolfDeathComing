@@ -730,7 +730,7 @@ CDV.1day.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day'
                                                            propwet_end= mean(propwet_end, na.rm = T),      
                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
-                                                           nnDist_end = median(nnDist_end, na.rm = T),
+                                                          # nnDist_end = median(nnDist_end, na.rm = T),
                                                            packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('CDV', levels = levels(COD)),
                                                            ttd1 = 1,
