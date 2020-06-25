@@ -21,8 +21,8 @@ derived <- 'data/derived-data/'
 
 ### SSF data with all covariates ----
 set.seed(53)
-dat.RMNP <- readRDS('data/derived-data/ssfAllCov_2mo_RMNP.Rds')
-dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_2mo_GHA26.Rds')
+dat.RMNP <- readRDS('data/derived-data/ssfAllCov_RMNP.Rds')
+dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_GHA26.Rds')
 
 
 dat.RMNP[,'pop'] <- 'RMNP'
@@ -33,14 +33,14 @@ dat<-rbind(dat.RMNP, dat.GHA26, fill=T)
 
 dat[ttd1>=0 & ttd2>=0, unique(wolfID)]
 
-#dat<-dat[ttd1>=0 & ttd2>=0]
+dat<-dat[ttd1>=0 & ttd2>=0]
 
 #dat[,'wtd1'] <- as.integer(dat$ttd1/7)
 
 dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
 dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
 
-params <- readRDS('data/derived-data/moveParams_2mo_all.Rds')
+params <- readRDS('data/derived-data/moveParams_all.Rds')
 
 dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
 
@@ -209,9 +209,9 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~# pop + 
-                      #log_sl:ToD_start +
+                      log_sl:ToD_start +
                       # sl_ + 
-                      log_sl:cos_ta +
+                      #log_sl:cos_ta +
                        # log_sl:land_end_adj +
                       log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                         log_sl:COD + cos_ta:COD + 
@@ -219,7 +219,7 @@ everyone <- glmmTMB(case_ ~# pop +
                         (1|wolf_step_id) +
                         (0 + (log_sl)|wolfID) +
                      # (0 + (sl_)|wolfID) +
-                        (0 + (log_sl:cos_ta)|wolfID) +
+                     #   (0 + (log_sl:cos_ta)|wolfID) +
                       (0 + (cos_ta)|wolfID) +
                         (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
                         (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
@@ -241,7 +241,7 @@ everyone <- glmmTMB(case_ ~# pop +
                         (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
                       , family=poisson(),
                       data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
-                    map = list(theta=factor(c(NA,1:17))), start = list(theta=c(log(1000),seq(0,0, length.out = 17))))
+                    map = list(theta=factor(c(NA,1:16))), start = list(theta=c(log(1000),seq(0,0, length.out = 16))))
 
 # everyone$parameters$theta[1] <- log(1e3)
 # nvar_parm <- length(everyone$parameters$theta)
@@ -251,9 +251,9 @@ summary(everyone)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
-#saveRDS(popeveryone, 'data/derived-data/popeveryone_COD_2mo.Rds')
+#saveRDS(popeveryone, 'data/derived-data/popeveryone_COD.Rds')
 sum.everyone<- tidy(everyone)
-#saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD_2mo.Rds')
+#saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD.Rds')
 
 everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
 # everyone.ran_pars <-tidy(everyone, effect= 'ran_pars')
@@ -268,16 +268,16 @@ everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
 #### by model ####
-everyone.move <- glmmTMB(case_ ~# log_sl:ToD_start +
+everyone.move <- glmmTMB(case_ ~ log_sl:ToD_start +
                            log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                               #log_sl:land_end_adj +
                               log_sl:COD + cos_ta:COD +
-                           log_sl:cos_ta +
+                          # log_sl:cos_ta +
                               I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                               (1|wolf_step_id) +
                               (0 + (log_sl)|wolfID) +
                               (0 + (cos_ta)|wolfID) +
-                                (0 + (log_sl:cos_ta)|wolfID) +
+                             #   (0 + (log_sl:cos_ta)|wolfID) +
                               (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
                               (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) # +
                               # COD:land_end_adj + I(log(1+roadDist_end)):COD +
@@ -293,7 +293,7 @@ everyone.move <- glmmTMB(case_ ~# log_sl:ToD_start +
                             # (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
                             , family=poisson(),
                             data = dat, #[wolfID %chin% dat.wnn.lastmo$wolfID], 
-                            map = list(theta=factor(c(NA,1:5))), start = list(theta=c(log(1000),seq(0,0, length.out = 5))))
+                            map = list(theta=factor(c(NA,1:4))), start = list(theta=c(log(1000),seq(0,0, length.out = 4))))
 summary(everyone.move)
 popeveryoneMove<- summary(everyone.move)$coef$cond[-1, 1:2]
 #saveRDS(popeveryoneMove, 'data/derived-data/popeveryoneMove_COD.Rds')
@@ -302,11 +302,11 @@ sum.everyoneMove<- summary(everyone.move)$coef$cond
 
 
 
-everyone.habitat <- glmmTMB(case_ ~ #log_sl:ToD_start +
+everyone.habitat <- glmmTMB(case_ ~ log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                              # log_sl:COD + cos_ta:COD + 
                              # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
-                              log_sl:cos_ta +
+                              #log_sl:cos_ta +
                              (1|wolf_step_id) +
                              # (0 + (log_sl)|wolfID) +
                              # (0 + (cos_ta)|wolfID) +
@@ -334,9 +334,9 @@ popeveryoneHab<- summary(everyone.habitat)$coef$cond[-1, 1:2]
 sum.everyoneHab<- summary(everyone.habitat)$coef$cond
 #saveRDS(sum.everyoneHab, 'data/derived-data/summarypopeveryoneHab_COD.Rds')
 
-everyone.social <- glmmTMB(case_ ~ #log_sl:ToD_start +
+everyone.social <- glmmTMB(case_ ~ log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
-                             log_sl:cos_ta +
+                            # log_sl:cos_ta +
                       # log_sl:COD + cos_ta:COD + 
                       # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                       (1|wolf_step_id) +
@@ -365,11 +365,11 @@ sum.everyoneSoc<- summary(everyone.social)$coef$cond
 #saveRDS(sum.everyoneSoc, 'data/derived-data/summarypopeveryoneSoc_COD.Rds')
 
 
-everyone.pack <- glmmTMB(case_ ~# log_sl:ToD_start +
+everyone.pack <- glmmTMB(case_ ~ log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                              # log_sl:COD + cos_ta:COD + 
                              # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
-                           log_sl:cos_ta +
+                           #log_sl:cos_ta +
                              (1|wolf_step_id) +
                              # (0 + (log_sl)|wolfID) +
                              # (0 + (cos_ta)|wolfID) +
@@ -412,19 +412,19 @@ everyone.indiv$COD <- factor(everyone.indiv$COD, levels = c('none','human','cdv'
 everyone.indiv$COD[is.na(everyone.indiv$COD)] <- "control"
 
 unique(everyone.indiv$term)
-everyone.all.betas.names <- c("log_sl", "cos_ta",  'log_sl:cos_ta',
+everyone.all.betas.names <- c("log_sl", "cos_ta", # 'log_sl:cos_ta',
                              "propforest_end_adj", "propopen_end_adj", "propwet_end", "I(log(1 + roadDist_end))",
                              "I(log(1 + distance2))", "I(log(1 + packDist_end))",
                              "I(log(ttd1 + 1)):log_sl", "I(log(ttd1 + 1)):cos_ta", 
                              "I(log(ttd1 + 1)):propforest_end_adj", "I(log(ttd1 + 1)):propopen_end_adj", "I(log(ttd1 + 1)):propwet_end", "I(log(ttd1 + 1)):I(log(1 + roadDist_end))",
                              "I(log(ttd1 + 1)):I(log(1 + distance2))", "I(log(ttd1 + 1)):I(log(1 + packDist_end))")
-everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta", 'sl_ta','forest', "open", "wet", "roadDist",
+everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
                                                                                                                      "nnDist", "boundaryDist",
                                                                                                                      "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                                      "nnDist-ttd", "boundaryDist-ttd"))
 
 
-#saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_COD_2mo.Rds')
+#saveRDS(everyone.indiv, 'data/derived-data/everyone_betas_COD.Rds')
 everyone.indiv<-readRDS('data/derived-data/everyone_betas_COD_2mo.Rds')
 everyone.ttd <- everyone.indiv[term %like% "ttd", ]
 
