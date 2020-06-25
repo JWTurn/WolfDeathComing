@@ -268,7 +268,7 @@ everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
 #### by model ####
-everyone.move <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.move <- glmmTMB(case_ ~ #log_sl:ToD_start +
                            log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                               #log_sl:land_end_adj +
                               log_sl:COD + cos_ta:COD +
@@ -302,7 +302,7 @@ sum.everyoneMove<- summary(everyone.move)$coef$cond
 
 
 
-everyone.habitat <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.habitat <- glmmTMB(case_ ~# log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                              # log_sl:COD + cos_ta:COD + 
                              # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
@@ -334,7 +334,7 @@ popeveryoneHab<- summary(everyone.habitat)$coef$cond[-1, 1:2]
 sum.everyoneHab<- summary(everyone.habitat)$coef$cond
 #saveRDS(sum.everyoneHab, 'data/derived-data/summarypopeveryoneHab_COD.Rds')
 
-everyone.social <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.social <- glmmTMB(case_ ~# log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                             # log_sl:cos_ta +
                       # log_sl:COD + cos_ta:COD + 
@@ -365,7 +365,7 @@ sum.everyoneSoc<- summary(everyone.social)$coef$cond
 #saveRDS(sum.everyoneSoc, 'data/derived-data/summarypopeveryoneSoc_COD.Rds')
 
 
-everyone.pack <- glmmTMB(case_ ~ log_sl:ToD_start +
+everyone.pack <- glmmTMB(case_ ~ #log_sl:ToD_start +
                              log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
                              # log_sl:COD + cos_ta:COD + 
                              # I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
@@ -3511,12 +3511,12 @@ logRSS.indiv.model <- rbind(logRSS.forest.indiv.habitat, logRSS.open.indiv.habit
 logRSS <- rbind(logRSS.forest, logRSS.open, logRSS.wet, logRSS.road, logRSS.nn)
 logRSS.model <- rbind(logRSS.forest.habitat, logRSS.open.habitat, logRSS.wet.habitat, logRSS.road.habitat, logRSS.social)
 
-#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv_2mo.Rds')
-#saveRDS(logRSS.indiv.model, 'data/derived-data/logRSS_indiv_model_2mo.Rds')
+#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv.Rds')
+#saveRDS(logRSS.indiv.model, 'data/derived-data/logRSS_indiv_model.Rds')
 
 
-#saveRDS(logRSS, 'data/derived-data/logRSS_2mo.Rds')
-#saveRDS(logRSS.model, 'data/derived-data/logRSS_model_2mo.Rds')
+#saveRDS(logRSS, 'data/derived-data/logRSS.Rds')
+#saveRDS(logRSS.model, 'data/derived-data/logRSS_model.Rds')
 
 
 logRSS.indiv.cor <- dcast(logRSS.indiv.model, wolfID + COD + var + x ~ ttd, value.var = 'rss')
