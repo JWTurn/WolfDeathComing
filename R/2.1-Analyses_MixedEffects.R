@@ -3523,12 +3523,12 @@ logRSS.indiv.cor <- dcast(logRSS.indiv.model, wolfID + COD + var + x ~ ttd, valu
 logRSS.indiv.cor[,cor.test(`1 day`,`60 days`), by= .(COD, var)]
 
 #### GRAPHS ####
-logRSS.indiv <- readRDS('data/derived-data/logRSS_indiv_2mo.Rds')
-logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model_2mo.Rds')
+logRSS.indiv <- readRDS('data/derived-data/logRSS_indiv.Rds')
+logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model.Rds')
 
 
-logRSS <- readRDS('data/derived-data/logRSS_2mo.Rds')
-logRSS.model <- readRDS('data/derived-data/logRSS_model_2mo.Rds')
+logRSS <- readRDS('data/derived-data/logRSS.Rds')
+logRSS.model <- readRDS('data/derived-data/logRSS_model.Rds')
 
 logRSS.indiv <- setDT(logRSS.indiv)
 logRSS.indiv[,'COD'] <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
