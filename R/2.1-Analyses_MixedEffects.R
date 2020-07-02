@@ -3988,7 +3988,7 @@ road.1.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='1 day'], 
 road.60.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'road'& ttd=='60 days'], aes(x, -rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='dashed', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess') +
+  geom_smooth(size = 1.5, aes(fill = COD), method = 'loess', show.legend = F) +
   # geom_line(data=logRSS.pop.model[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
