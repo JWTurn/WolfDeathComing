@@ -1289,7 +1289,7 @@ p.CDV.forest25.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV',
 
 # open
 p.CDV.open75.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'open', value = 0.75)
-p.CDV.open75.1.habitat <-p.h1(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'open', value = 0.75)
+p.CDV.open75.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'open', value = 0.75)
 
 p.CDV.open25.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'open', value = 0.25)
 p.CDV.open25.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'open', value = 0.25)
@@ -1299,15 +1299,15 @@ p.CDV.wet75.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'wet', value
 p.CDV.wet75.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'wet', value = 0.75)
 
 p.CDV.wet25.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'wet', value = 0.25)
-p.CDV.wet25.1.habitat <-p.h1(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'wet', value = 0.25)
+p.CDV.wet25.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'wet', value = 0.25)
 
 
 # road 
 p.CDV.roadclose.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 250)
-p.CDV.roadclose.1.habitat <-p.h1(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 250)
+p.CDV.roadclose.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 250)
 
 p.CDV.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 1000)
-p.CDV.roadfar.1.habitat <-p.h1(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 1000)
+p.CDV.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 1000)
 
 # nn 
 p.CDV.nnclose.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 250)
