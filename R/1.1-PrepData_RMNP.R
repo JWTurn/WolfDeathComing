@@ -37,7 +37,7 @@ enn <- edge_nn(
   id = 'WolfID',
   coords = c('X', 'Y'),
   timegroup = 'timegroup',
-  returnDist = TRUE, #(not yet available)
+  returnDist = TRUE, 
   splitBy = 'PackID'
 )
 
@@ -80,8 +80,8 @@ focals <- dat.focal$WolfID
 #                  by.y = c('WolfID','PackID'), all.x = T)
 DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
                      status, end_date, COD, death_date)]
-DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
-DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
+#DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
+#DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
 
 DT.prep[,uniqueN(t), by =.(id)]
 
@@ -311,6 +311,7 @@ colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn1"
 DT.nn <- dplyr::select(DT.prep, t, id, nn)
 ssf.all <- merge(ssf.all, DT.nn, by.x = c('t2_', 'id'), by.y = c('t', 'id'), all.x = T)
 colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn2"
+ssf.all[,'nn2'] <- ifelse(!(is.na(ssf.all$nn2)), ssf.all$nn2, ifelse(!(is.na(ssf.all$nn1)), ssf.all$nn1, NA))
 
 # calc time to death (ttd)
 ssf.all[,'ttd1'] <- as.duration(ssf.all$t1_ %--% ssf.all$death_date)/ddays(1) 
@@ -342,16 +343,17 @@ DT.pack <- setDT(dat.focal)[,.(WolfID, packbound)]
 createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub <- subset(ssf.df, id == wolf)
   pack <- dat.focal[WolfID == wolf, .(packbound)]$packbound
+  ssf.sub[,'pack'] <- pack
   
-  ssf.sub[,'packYN_start'] <- ssf.sub[,paste(pack,"kde_start", sep = '_')]
-  ssf.sub[,'packYN_end'] <- ssf.sub[,paste(pack,"kde_end", sep = '_')]
+  ssf.sub[,'packYN_start'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_start", sep = '_')]
+  ssf.sub[,'packYN_end'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_end", sep = '_')]
   
-  ssf.sub[,'packDist_start'] <- ssf.sub[,paste(pack,"kde_dist_start", sep = '_')]
-  ssf.sub[,'packDist_end'] <- ssf.sub[,paste(pack,"kde_dist_end", sep = '_')]
+  ssf.sub[,'packDist_start'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_dist_start", sep = '_')]
+  ssf.sub[,'packDist_end'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_dist_end", sep = '_')]
   
   ssf.sub[,'round.t2'] <- as.POSIXct(round(ssf.sub$t2_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
-  dat.rand.sub <- merge(ssf.sub, dat.grp, by.y = c('round.t', 'WolfID'), 
-                        by.x = c('round.t2', 'id'), all =T)
+  dat.rand.sub <- merge(setDT(ssf.sub), dat.grp, by.y = c('round.t', 'WolfID'), 
+                        by.x = c('round.t2', 'id'), all.x =T)
   # use the gps pts from the track unless missing (as with all non focal indivs)
   dat.rand.sub$x2_ <- ifelse(!is.na(dat.rand.sub$x2_), dat.rand.sub$x2_, dat.rand.sub$X)
   dat.rand.sub$y2_ <- ifelse(!is.na(dat.rand.sub$y2_), dat.rand.sub$y2_, dat.rand.sub$Y)
@@ -412,7 +414,7 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.soc.sub[,'decid_end'] <- ifelse(ssf.soc.sub$land_end =='deciduous', 1,0)
   ssf.soc.sub[,'shrub_end'] <- ifelse(ssf.soc.sub$land_end =='shrub', 1,0)
   ssf.soc.sub[,'urban_end'] <- ifelse(ssf.soc.sub$land_end =='urban', 1,0)
-  ssf.soc.sub[,'packDistadj_end'] <-ifelse(ssf.soc.sub$packYN_end == 'pack', ssf.soc.sub$packDist_end, (-1)*ssf.soc.sub$packDist_end)
+  ssf.soc.sub[,'packDistadj_end'] <-ifelse(ssf.soc.sub$packYN_end == 'pack', ssf.soc.sub$packDist_end, ssf.soc.sub$packDist_end*(-1))
   ssf.soc.sub[,'parkDistadj_end'] <-ifelse(ssf.soc.sub$parkYN_end == 'park', ssf.soc.sub$boundary_dist_end, (-1)*ssf.soc.sub$boundary_dist_end)
   
   
@@ -448,14 +450,14 @@ ssfW26 <- createSSFnnbyFocal(ssf.all, "W26")
 ssfW27 <- createSSFnnbyFocal(ssf.all, "W27")
 
 # , ssfW20 removed from list, didn't run
-ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW14, ssfW15, ssfW16, ssfW19, ssfW22, ssfW25, ssfW26, ssfW27)
+ssf.soc <- rbind(ssfW02, ssfW03, ssfW04, ssfW05, ssfW06, ssfW07, ssfW09, ssfW10, ssfW11, ssfW12, ssfW14, ssfW15, ssfW16, ssfW19, ssfW20, ssfW22, ssfW25, ssfW26, ssfW27)
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID=packbound, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 
 
-saveRDS(ssf.soc, 'data/derived-data/ssfAll_2mo.Rds')
+saveRDS(ssf.soc, 'data/derived-data/ssfAll.Rds')
 
-saveRDS(Params, 'data/derived-data/moveParams_2mo_RMNP.Rds')
+#saveRDS(Params, 'data/derived-data/moveParams_2mo_RMNP.Rds')
 
 
 
