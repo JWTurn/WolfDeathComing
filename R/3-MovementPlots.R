@@ -63,7 +63,7 @@ dat.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
 dat.wide[, ttd:= list(list(seq(0,61,length.out = 100))), by=.(wolfID)]
 
 move <- dat.wide[, .(spd = unlist(spd), dir=unlist(dir), ttd= unlist(ttd)), by=.(wolfID,COD)]
-move[,spd_hr :=spd/500]
+move[,spd_hr :=spd/5000]
 
 move[spd_hr<0, unique(wolfID)]
 move[,pop:=gsub('_.*$','',wolfID)]
@@ -105,10 +105,10 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) + 
+speed2 <- ggplot(data=move[spd_hr >=0 ], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
-  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F, method = 'lm')+
+  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = T, method = 'lm')+
   theme_classic() +
   theme(text = element_text(size=15)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
@@ -118,7 +118,7 @@ speed2 <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
-  ggtitle("a)") +
+  #ggtitle("a)") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed2 
 
