@@ -53,8 +53,12 @@ dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 t2d <- seq(0, 61, length.out = 100)
 
 intercept <- 4.432
+day <- 0.09404
+forest <- -0.01039*0.7858649
+open <- 0.15*0.05676634
+wet <- 0.04176*0.1573687
 
-dat.wide[, spd:= list(list((shape+log_sl + intercept +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
+dat.wide[, spd:= list(list((shape+log_sl + intercept + day + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
 dat.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
 dat.wide[, ttd:= list(list(seq(0,61,length.out = 100))), by=.(wolfID)]
 
@@ -62,6 +66,7 @@ move <- dat.wide[, .(spd = unlist(spd), dir=unlist(dir), ttd= unlist(ttd)), by=.
 move[,spd_hr :=spd/500]
 
 move[spd_hr<0, unique(wolfID)]
+move[,pop:=gsub('_.*$','',wolfID)]
 
 gcolors <- c("deepskyblue", "purple", "dark green")
 speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr), color = COD)) + 
@@ -100,7 +105,7 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr+2), color = COD)) + 
+speed2 <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F, method = 'lm')+
@@ -136,6 +141,22 @@ direction2
 
 speed2|direction2
 
+
+ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = pop)) + 
+  #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
+  geom_smooth(size = 1.5, aes(fill = pop), se = T, show.legend = T, method = 'lm')+
+  theme_classic() +
+  theme(text = element_text(size=15)) +
+  #theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x =  element_text(size = 15)) + 
+  #  theme(legend.position = "none") +
+  # ylim(-1,7) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
+  ggtitle("a)") +
+  xlab("Time to death (days)") + ylab("Speed (km/hour)")
 
 move.pop <- move[,.(mean.spd = mean(spd, na.rm = T), se.spd = se(spd), 
                     mean.dir = mean(dir, na.rm = T), se.dir = se(dir)), by=.(ttd,COD)]
