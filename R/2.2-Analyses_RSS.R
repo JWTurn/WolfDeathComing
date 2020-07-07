@@ -2274,6 +2274,26 @@ logRSS <- rbind(logRSS.CDV.forest25, logRSS.CDV.forest75, logRSS.CDV.open25, log
                 logRSS.control.forest25, logRSS.control.forest75, logRSS.control.open25, logRSS.control.open75, logRSS.control.wet25, logRSS.control.wet75, 
                 logRSS.control.roadclose, logRSS.control.roadfar, logRSS.control.nnclose, logRSS.control.nnfar, logRSS.control.packclose, logRSS.control.packfar)
 
+logRSS.model <- rbind(logRSS.CDV.forest25.habitat, logRSS.CDV.forest75.habitat,
+                            logRSS.CDV.open25.habitat, logRSS.CDV.open75.habitat,
+                            logRSS.CDV.wet25.habitat, logRSS.CDV.wet75.habitat,
+                            logRSS.CDV.roadclose.habitat, logRSS.CDV.roadfar.habitat,
+                            logRSS.CDV.nnclose.social, logRSS.CDV.nnfar.social,
+                            logRSS.CDV.packclose.social, logRSS.CDV.packfar.social,
+                            logRSS.human.forest25.habitat, logRSS.human.forest75.habitat,
+                            logRSS.human.open25.habitat, logRSS.human.open75.habitat,
+                            logRSS.human.wet25.habitat, logRSS.human.wet75.habitat,
+                            logRSS.human.roadclose.habitat, logRSS.human.roadfar.habitat,
+                            logRSS.human.nnclose.social, logRSS.human.nnfar.social,
+                            logRSS.human.packclose.social, logRSS.human.packfar.social,
+                            logRSS.control.forest25.habitat, logRSS.control.forest75.habitat,
+                            logRSS.control.open25.habitat, logRSS.control.open75.habitat,
+                            logRSS.control.wet25.habitat, logRSS.control.wet75.habitat,
+                            logRSS.control.roadclose.habitat, logRSS.control.roadfar.habitat,
+                            logRSS.control.nnclose.social, logRSS.control.nnfar.social,
+                            logRSS.control.packclose.social, logRSS.control.packfar.social)
+
+
 logRSS.indiv <- rbind(logRSS.CDV.forest25.indiv, logRSS.CDV.forest75.indiv, logRSS.CDV.open25.indiv, logRSS.CDV.open75.indiv, logRSS.CDV.wet25.indiv, logRSS.CDV.wet75.indiv, 
                 logRSS.CDV.roadclose.indiv, logRSS.CDV.roadfar.indiv, logRSS.CDV.nnclose.indiv, logRSS.CDV.nnfar.indiv, logRSS.CDV.packclose.indiv, logRSS.CDV.packfar.indiv,
                 logRSS.human.forest25.indiv, logRSS.human.forest75.indiv, logRSS.human.open25.indiv, logRSS.human.open75.indiv, logRSS.human.wet25.indiv, logRSS.human.wet75.indiv, 
@@ -2299,6 +2319,13 @@ logRSS.indiv.model <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest
                       logRSS.control.roadclose.indiv.habitat, logRSS.control.roadfar.indiv.habitat,
                       logRSS.control.nnclose.indiv.social, logRSS.control.nnfar.indiv.social,
                       logRSS.control.packclose.indiv.social, logRSS.control.packfar.indiv.social)
+
+
+#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv_ttd.Rds')
+#saveRDS(logRSS.indiv.model, 'data/derived-data/logRSS_indiv_model_ttd.Rds')
+
+#saveRDS(logRSS, 'data/derived-data/logRSS_ttd.Rds')
+#saveRDS(logRSS.model, 'data/derived-data/logRSS_model_ttd.Rds')
 
 #### graph colors ####
 
