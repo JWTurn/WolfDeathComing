@@ -2268,28 +2268,37 @@ logRSS.control.packfar.indiv.pack[,'rss'] <- logRSS.control.packfar.indiv.pack$h
 
 #### gather RSSs ####
 logRSS <- rbind(logRSS.CDV.forest25, logRSS.CDV.forest75, logRSS.CDV.open25, logRSS.CDV.open75, logRSS.CDV.wet25, logRSS.CDV.wet75, 
-                logRSS.CDV.roadclose, logRSS.CDV.roadfar, logRSS.CDV.nnclose, logRSS.CDV.nnfar, logRSS.CDV.packclose, logRSS.CDV.packfar)
+                logRSS.CDV.roadclose, logRSS.CDV.roadfar, logRSS.CDV.nnclose, logRSS.CDV.nnfar, logRSS.CDV.packclose, logRSS.CDV.packfar,
+                logRSS.human.forest25, logRSS.human.forest75, logRSS.human.open25, logRSS.human.open75, logRSS.human.wet25, logRSS.human.wet75, 
+                logRSS.human.roadclose, logRSS.human.roadfar, logRSS.human.nnclose, logRSS.human.nnfar, logRSS.human.packclose, logRSS.human.packfar,
+                logRSS.control.forest25, logRSS.control.forest75, logRSS.control.open25, logRSS.control.open75, logRSS.control.wet25, logRSS.control.wet75, 
+                logRSS.control.roadclose, logRSS.control.roadfar, logRSS.control.nnclose, logRSS.control.nnfar, logRSS.control.packclose, logRSS.control.packfar)
 
 logRSS.indiv <- rbind(logRSS.CDV.forest25.indiv, logRSS.CDV.forest75.indiv, logRSS.CDV.open25.indiv, logRSS.CDV.open75.indiv, logRSS.CDV.wet25.indiv, logRSS.CDV.wet75.indiv, 
-                logRSS.CDV.roadclose.indiv, logRSS.CDV.roadfar.indiv, logRSS.CDV.nnclose.indiv, logRSS.CDV.nnfar.indiv, logRSS.CDV.packclose.indiv, logRSS.CDV.packfar.indiv)
+                logRSS.CDV.roadclose.indiv, logRSS.CDV.roadfar.indiv, logRSS.CDV.nnclose.indiv, logRSS.CDV.nnfar.indiv, logRSS.CDV.packclose.indiv, logRSS.CDV.packfar.indiv,
+                logRSS.human.forest25.indiv, logRSS.human.forest75.indiv, logRSS.human.open25.indiv, logRSS.human.open75.indiv, logRSS.human.wet25.indiv, logRSS.human.wet75.indiv, 
+                logRSS.human.roadclose.indiv, logRSS.human.roadfar.indiv, logRSS.human.nnclose.indiv, logRSS.human.nnfar.indiv, logRSS.human.packclose.indiv, logRSS.human.packfar.indiv,
+                logRSS.control.forest25.indiv, logRSS.control.forest75.indiv, logRSS.control.open25.indiv, logRSS.control.open75.indiv, logRSS.control.wet25.indiv, logRSS.control.wet75.indiv, 
+                logRSS.control.roadclose.indiv, logRSS.control.roadfar.indiv, logRSS.control.nnclose.indiv, logRSS.control.nnfar.indiv, logRSS.control.packclose.indiv, logRSS.control.packfar.indiv)
 
-logRSS.indiv <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest75.indiv.habitat, 
-                      logRSS.CDV.open25.indiv.habitat, logRSS.CDV.open75.indiv.habitat, 
-                      logRSS.CDV.wet25.indiv.habitat, logRSS.CDV.wet75.indiv.habitat, 
-                      logRSS.CDV.roadclose.indiv.habitat, logRSS.CDV.roadfar.indiv.habitat, 
-                      logRSS.CDV.nnclose.indiv.social, logRSS.CDV.nnfar.indiv.social, 
-                      logRSS.CDV.packclose.indiv, logRSS.CDV.packfar.indiv) ## CHECK WORKING MODEL
+# logRSS.indiv.model <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest75.indiv.habitat, 
+#                       logRSS.CDV.open25.indiv.habitat, logRSS.CDV.open75.indiv.habitat, 
+#                       logRSS.CDV.wet25.indiv.habitat, logRSS.CDV.wet75.indiv.habitat, 
+#                       logRSS.CDV.roadclose.indiv.habitat, logRSS.CDV.roadfar.indiv.habitat, 
+#                       logRSS.CDV.nnclose.indiv.social, logRSS.CDV.nnfar.indiv.social, 
+#                       logRSS.CDV.packclose.indiv, logRSS.CDV.packfar.indiv) ## CHECK WORKING MODEL
 
 #### graph colors ####
 
 cbPalette = c("#A95AA1", "#85C0F9", "#0F2080")
 gcolors <- c("deepskyblue", "purple", "dark green")
 
+logRSS.indiv$COD <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
 #### GRAPHS ####
 forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
@@ -2309,13 +2318,13 @@ forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
-
+forest.75
 
 
 open.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
@@ -2335,12 +2344,12 @@ open.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-tt
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
-
+open.75
 
 wet.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.25], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
@@ -2360,12 +2369,12 @@ wet.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.25], aes(-ttd,
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
-
+wet.75
 
 road.close <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& value ==250], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
@@ -2385,12 +2394,12 @@ road.close <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& value ==250], aes(-
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
-
+road.close
 
 nn.close <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==250], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
@@ -2410,12 +2419,12 @@ nn.close <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==250], aes(-ttd,
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
-
+nn.close
 
 pack.close <- ggplot(data=setDT(logRSS.indiv)[var == 'pack'& value ==250], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), method = 'glm') +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'pack'& ttd=='1 day'], aes(x, rss, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
@@ -2435,4 +2444,5 @@ pack.close <- ggplot(data=setDT(logRSS.indiv)[var == 'pack'& value ==250], aes(-
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+pack.close
 
