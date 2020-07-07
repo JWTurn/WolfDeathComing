@@ -59,7 +59,9 @@ dat$COD[is.na(dat$COD)] <- "control"
 
 dat$ToD_start <- as.factor(dat$ToD_start)
 
-
+dat[wolfID %in% dat.wnn.lastmo$wolfID,median(distance2, na.rm = T), by = .(COD)]
+dat[is.na(distance2) & wolfID %in% dat.wnn.lastmo$wolfID,.N, by = .(wolfID)]
+View(dat[wolfID %in% dat.wnn.lastmo$wolfID])
 #### only wolves with packmates ####
 dat[,uniqueN(step_id_), by=.(wolfID)]
 dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
@@ -2339,7 +2341,7 @@ gcolors <- c("deepskyblue", "purple", "dark green")
 
 
 #### GRAPHS ####
-forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes(-ttd, rss, colour=COD)) +
+forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.75], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2365,7 +2367,7 @@ forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes
 forest.75
 
 
-open.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-ttd, rss, colour=COD)) +
+open.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.75], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2390,7 +2392,7 @@ open.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-tt
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 open.75
 
-wet.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.25], aes(-ttd, rss, colour=COD)) +
+wet.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.75], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2491,12 +2493,164 @@ pack.close <- ggplot(data=setDT(logRSS.indiv.model)[var == 'pack'& value ==250],
 pack.close
 
 
-forest.75
-open.75
-wet.75
-road.close
-nn.close
-pack.close
+forest.25 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes(-ttd, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
+  # geom_line(data=logRSS.pop[var == 'forest'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Time to Death") +
+  ggtitle("Low proportion of forest") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-10,8) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+forest.25
+
+
+open.25 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-ttd, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
+  # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Time to Death") +
+  ggtitle("Low proportion of open") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-10,8) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+open.25
+
+wet.25 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.25], aes(-ttd, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Time to Death") +
+  ggtitle("Low proportion of wet") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-10,8) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+wet.25
+
+road.far <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& value ==1000], aes(-ttd, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
+  # geom_line(data=logRSS.pop[var == 'road'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Time to Death") +
+  ggtitle("far to road") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-10,8) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+road.far
+
+nn.far <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==1000], aes(-ttd, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
+  # geom_line(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Time to Death") +
+  ggtitle("far to nearest neighbor") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-10,8) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+nn.far
+
+pack.far <- ggplot(data=setDT(logRSS.indiv)[var == 'pack'& value ==1000], aes(-ttd, rss, colour=COD)) +
+  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD)) +
+  # geom_line(data=logRSS.pop[var == 'pack'& ttd=='1 day'], aes(x, rss, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  #geom_ribbon(aes(x, ymin = (rss - 1.96*se), ymax = (rss + 1.96*se), fill=COD, alpha = .2))+
+  ylab("logRSS") + xlab("Time to Death") +
+  ggtitle("far to pack boundary") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-10,8) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+pack.far
+
+
+forest.25|forest.75
+open.25|open.75
+wet.25|wet.75
+road.close|road.far
+nn.close|nn.far
+pack.close|pack.far
 
 means.pop <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean(propopen_end_adj, na.rm = T), wet=mean(propwet_end, na.rm = T),
                            road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T), sl = mean(sl_)), by =.(pop)]
