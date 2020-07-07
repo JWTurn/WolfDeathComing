@@ -2298,7 +2298,7 @@ logRSS.indiv.model <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest
                       logRSS.control.wet25.indiv.habitat, logRSS.control.wet75.indiv.habitat,
                       logRSS.control.roadclose.indiv.habitat, logRSS.control.roadfar.indiv.habitat,
                       logRSS.control.nnclose.indiv.social, logRSS.control.nnfar.indiv.social,
-                      logRSS.control.packclose.indiv.social, logRSS.control.packfar.indiv.social) ## CHECK WORKING MODEL
+                      logRSS.control.packclose.indiv.social, logRSS.control.packfar.indiv.social)
 
 #### graph colors ####
 
@@ -2306,6 +2306,7 @@ cbPalette = c("#A95AA1", "#85C0F9", "#0F2080")
 gcolors <- c("deepskyblue", "purple", "dark green")
 
 logRSS.indiv$COD <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
+logRSS.indiv.model$COD <- factor(logRSS.indiv.model$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
 #### GRAPHS ####
 forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
@@ -2433,7 +2434,7 @@ nn.close <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==250], aes(-ttd,
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 nn.close
 
-pack.close <- ggplot(data=setDT(logRSS.indiv)[var == 'pack'& value ==250], aes(-ttd, rss, colour=COD)) +
+pack.close <- ggplot(data=setDT(logRSS.indiv.model)[var == 'pack'& value ==250], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2467,5 +2468,5 @@ nn.close
 pack.close
 
 
-
+#(forest.75|open.75)/(wet.75|road.close)/(nn.close|pack.close)
 
