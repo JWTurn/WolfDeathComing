@@ -69,7 +69,7 @@ move[spd_hr<0, unique(wolfID)]
 move[,pop:=gsub('_.*$','',wolfID)]
 
 gcolors <- c("deepskyblue", "purple", "dark green")
-speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr), color = COD)) + 
+speed <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F, method = 'lm')+
