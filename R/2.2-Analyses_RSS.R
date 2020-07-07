@@ -2499,7 +2499,7 @@ nn.close
 pack.close
 
 means.pop <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean(propopen_end_adj, na.rm = T), wet=mean(propwet_end, na.rm = T),
-                           road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T)), by =.(pop)]
+                           road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T), sl = mean(sl_)), by =.(pop)]
 
 means <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean(propopen_end_adj, na.rm = T), wet=mean(propwet_end, na.rm = T),
                                road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T))]
