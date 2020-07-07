@@ -2281,12 +2281,24 @@ logRSS.indiv <- rbind(logRSS.CDV.forest25.indiv, logRSS.CDV.forest75.indiv, logR
                 logRSS.control.forest25.indiv, logRSS.control.forest75.indiv, logRSS.control.open25.indiv, logRSS.control.open75.indiv, logRSS.control.wet25.indiv, logRSS.control.wet75.indiv, 
                 logRSS.control.roadclose.indiv, logRSS.control.roadfar.indiv, logRSS.control.nnclose.indiv, logRSS.control.nnfar.indiv, logRSS.control.packclose.indiv, logRSS.control.packfar.indiv)
 
-# logRSS.indiv.model <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest75.indiv.habitat, 
-#                       logRSS.CDV.open25.indiv.habitat, logRSS.CDV.open75.indiv.habitat, 
-#                       logRSS.CDV.wet25.indiv.habitat, logRSS.CDV.wet75.indiv.habitat, 
-#                       logRSS.CDV.roadclose.indiv.habitat, logRSS.CDV.roadfar.indiv.habitat, 
-#                       logRSS.CDV.nnclose.indiv.social, logRSS.CDV.nnfar.indiv.social, 
-#                       logRSS.CDV.packclose.indiv, logRSS.CDV.packfar.indiv) ## CHECK WORKING MODEL
+logRSS.indiv.model <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest75.indiv.habitat,
+                      logRSS.CDV.open25.indiv.habitat, logRSS.CDV.open75.indiv.habitat,
+                      logRSS.CDV.wet25.indiv.habitat, logRSS.CDV.wet75.indiv.habitat,
+                      logRSS.CDV.roadclose.indiv.habitat, logRSS.CDV.roadfar.indiv.habitat,
+                      logRSS.CDV.nnclose.indiv.social, logRSS.CDV.nnfar.indiv.social,
+                      logRSS.CDV.packclose.indiv.social, logRSS.CDV.packfar.indiv.social,
+                      logRSS.human.forest25.indiv.habitat, logRSS.human.forest75.indiv.habitat,
+                      logRSS.human.open25.indiv.habitat, logRSS.human.open75.indiv.habitat,
+                      logRSS.human.wet25.indiv.habitat, logRSS.human.wet75.indiv.habitat,
+                      logRSS.human.roadclose.indiv.habitat, logRSS.human.roadfar.indiv.habitat,
+                      logRSS.human.nnclose.indiv.social, logRSS.human.nnfar.indiv.social,
+                      logRSS.human.packclose.indiv.social, logRSS.human.packfar.indiv.social,
+                      logRSS.control.forest25.indiv.habitat, logRSS.control.forest75.indiv.habitat,
+                      logRSS.control.open25.indiv.habitat, logRSS.control.open75.indiv.habitat,
+                      logRSS.control.wet25.indiv.habitat, logRSS.control.wet75.indiv.habitat,
+                      logRSS.control.roadclose.indiv.habitat, logRSS.control.roadfar.indiv.habitat,
+                      logRSS.control.nnclose.indiv.social, logRSS.control.nnfar.indiv.social,
+                      logRSS.control.packclose.indiv.social, logRSS.control.packfar.indiv.social) ## CHECK WORKING MODEL
 
 #### graph colors ####
 
@@ -2445,4 +2457,15 @@ pack.close <- ggplot(data=setDT(logRSS.indiv)[var == 'pack'& value ==250], aes(-
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 pack.close
+
+
+forest.75
+open.75
+wet.75
+road.close
+nn.close
+pack.close
+
+
+
 
