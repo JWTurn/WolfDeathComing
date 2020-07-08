@@ -352,8 +352,8 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub[,'packDist_end'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_dist_end", sep = '_')]
   
   ssf.sub[,'round.t2'] <- as.POSIXct(round(ssf.sub$t2_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
-  dat.rand.sub <- merge(setDT(ssf.sub), dat.grp, by.y = c('round.t', 'WolfID'), 
-                        by.x = c('round.t2', 'id'), all.x =T)
+  dat.rand.sub <- merge(ssf.sub, dat.grp[PackID == pack], by.y = c('round.t', 'WolfID'), 
+                        by.x = c('round.t2', 'id'), all = T)
   # use the gps pts from the track unless missing (as with all non focal indivs)
   dat.rand.sub$x2_ <- ifelse(!is.na(dat.rand.sub$x2_), dat.rand.sub$x2_, dat.rand.sub$X)
   dat.rand.sub$y2_ <- ifelse(!is.na(dat.rand.sub$y2_), dat.rand.sub$y2_, dat.rand.sub$Y)
@@ -376,7 +376,7 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   upper.date <- dat.focal[WolfID== wolf, death_date]
   edist2.sub <- DT.rand.sub[round.t2>=lower.date & round.t2 <= upper.date, edge_dist(
     DT = .SD,
-    threshold = 1000000, # I don't know how to pick this
+    threshold = 10000000, # I don't know how to pick this
     id = 'id.step.t',
     coords = c('x2_', 'y2_'),
     timegroup = 'timegroup',
