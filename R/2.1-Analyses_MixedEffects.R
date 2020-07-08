@@ -209,7 +209,7 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~# pop + 
-                      log_sl:ToD_start +
+                     # log_sl:ToD_start +
                       # sl_ + 
                       #log_sl:cos_ta +
                        # log_sl:land_end_adj +
