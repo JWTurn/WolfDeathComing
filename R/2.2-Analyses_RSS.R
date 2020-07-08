@@ -61,7 +61,7 @@ dat$ToD_start <- as.factor(dat$ToD_start)
 
 dat[wolfID %in% dat.wnn.lastmo$wolfID,median(distance2, na.rm = T), by = .(COD)]
 dat[is.na(distance2) & wolfID %in% dat.wnn.lastmo$wolfID,.N, by = .(wolfID)]
-View(dat[wolfID %in% dat.wnn.lastmo$wolfID])
+#View(dat[wolfID %in% dat.wnn.lastmo$wolfID])
 #### only wolves with packmates ####
 dat[,uniqueN(step_id_), by=.(wolfID)]
 dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
@@ -77,7 +77,7 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~# pop + 
-                      log_sl:ToD_start +
+                      #log_sl:ToD_start +
                       # sl_ + 
                       #log_sl:cos_ta +
                       # log_sl:land_end_adj +
