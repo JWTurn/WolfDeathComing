@@ -115,8 +115,8 @@ ttd = 61
 #   
 DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
                                        status, end_date, COD, death_date)]
-DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
-DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
+#DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
+#DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
 
 DT.prep[,uniqueN(t), by =.(id)]
 
@@ -343,6 +343,7 @@ ssf.all[,'propurban_end'] <- raster::extract(propurban, locs_end)
 # adding nn and dist for step 1, also adding attributed data about death
 ssf.all <- merge(ssf.all, DT.prep, by.x = c('x1_', 'y1_', 't1_', 'id'), by.y = c('x', 'y', 't', 'id'), all.x = T)
 colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn1"
+ssf.all[,'nn2'] <- ifelse(!(is.na(ssf.all$nn2)), ssf.all$nn2, ifelse(!(is.na(ssf.all$nn1)), ssf.all$nn1, NA))
 #colnames(ssf.all)[colnames(ssf.all)=="end_date"] <- "death_date"
 
 # adding nn at step 2
@@ -381,16 +382,18 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub <- as.data.frame(subset(ssf.df, id == wolf))
   pack <- dat.focal[WolfID == wolf, .(packbound)]$packbound
   pack_kde_start <-paste(pack,"kde_start", sep = '_')
+  ssf.sub[,'pack'] <- pack
   
-  ssf.sub[,'packYN_start'] <- ssf.sub[,(paste(pack,"kde_start", sep = '_'))]
-  ssf.sub[,'packYN_end'] <- ssf.sub[,(paste(pack,"kde_end", sep = '_'))]
+  ssf.sub[,'packYN_start'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_start", sep = '_')]
+  ssf.sub[,'packYN_end'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_end", sep = '_')]
   
-  ssf.sub[,'packDist_start'] <- ssf.sub[,paste(pack,"kde_dist_start", sep = '_')]
-  ssf.sub[,'packDist_end'] <- ssf.sub[,paste(pack,"kde_dist_end", sep = '_')]
+  ssf.sub[,'packDist_start'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_dist_start", sep = '_')]
+  ssf.sub[,'packDist_end'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_dist_end", sep = '_')]
   
   ssf.sub[,'round.t2'] <- as.POSIXct(round(ssf.sub$t2_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
-  dat.rand.sub <- merge(ssf.sub, dat.grp, by.y = c('round.t', 'WolfID'), 
-                        by.x = c('round.t2', 'id'), all =T)
+  dat.rand.sub <- merge(ssf.sub, dat.grp[PackID == pack], by.y = c('round.t', 'WolfID'), 
+                        by.x = c('round.t2', 'id'), all = T)
+  
   # use the gps pts from the track unless missing (as with all non focal indivs)
   dat.rand.sub$x2_ <- ifelse(!is.na(dat.rand.sub$x2_), dat.rand.sub$x2_, dat.rand.sub$X)
   dat.rand.sub$y2_ <- ifelse(!is.na(dat.rand.sub$y2_), dat.rand.sub$y2_, dat.rand.sub$Y)
@@ -413,7 +416,7 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   upper.date <- dat.focal[WolfID== wolf, death_date]
   edist2.sub <- DT.rand.sub[round.t2>=lower.date & round.t2 <= upper.date, edge_dist(
     DT = .SD,
-    threshold = 1000000, # I don't know how to pick this
+    threshold = 10000000, # I don't know how to pick this
     id = 'id.step.t',
     coords = c('x2_', 'y2_'),
     timegroup = 'timegroup',
