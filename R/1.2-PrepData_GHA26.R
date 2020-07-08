@@ -70,32 +70,6 @@ dat.all <- dat.all[!is.na(WolfID)]
 
 # range <- dat.all[,.(min=min(datetime), max=max(datetime)), by=.(WolfID)]  
 # range <- range[,.(min, max, len=max-min), .(WolfID)]
-#### determining nearest neighbor (nn) at orginal point ####
-dat.grptimes <- group_times(DT=dat.all, datetime = "datetime", threshold = "2 hours")
-
-enn <- edge_nn(
-  DT = dat.grptimes,
-  id = 'WolfID',
-  coords = c('X', 'Y'),
-  timegroup = 'timegroup',
-  returnDist = TRUE, 
-  splitBy = 'PackID'
-)
-
-enn<- unique(enn)
-
-
-
-
-dat.nn <- merge(dat.grptimes,enn, by.x = c('WolfID','PackID', 'timegroup'), 
-                by.y = c('ID','PackID', 'timegroup'), all.x = T)
-dat.nn <- dat.nn[!is.na(WolfID)]
-
-dat.nn <- merge(dat.nn,dat.meta, by.x = c('WolfID','PackID'), 
-                by.y = c('WolfID','PackID'), all.x = T)
-dat.nn <- dat.nn[,year.y:=NULL]
-colnames(dat.nn)[colnames(dat.nn)=="year.x"] <- "year"
-
 
 ### OBJECTIVE: determine nn first from actual data, then create (random) steps
 ### determine nn dist only from actual data, not who may be nearest at new random step
@@ -109,16 +83,63 @@ focals <- dat.focal$WolfID
 #### setting time to death ####
 ttd = 61
 
-# DT.prep <- dat.nn %>% dplyr::select(x = "X", y = "Y", t = 'datetime', id = "WolfID", nn = 'NN', distance1 = 'distance',
-#                                     'COD', 'death_date') %>%
-#   filter(id %in% focals) 
-#   
-DT.prep <- dat.nn[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID, nn = NN, distance1 = distance,
-                                       status, end_date, COD, death_date)]
+#### filtering to only 2 hour points ####
+dat.prep <- dat.all[WolfID %in% focals,.(x = X, y = Y, t = datetime, id = WolfID)]
 #DT.prep[, t2d:=(as.duration(t %--% death_date)/ddays(1))]
 #DT.prep <- DT.prep[t2d >=0 & t2d<=ttd]
 
-DT.prep[,uniqueN(t), by =.(id)]
+dat.prep[,uniqueN(t), by =.(id)]
+
+dat.all <- dat.prep %>% group_by(id) %>% nest()
+
+dat.all <- dat.all %>%
+  mutate(trk = map(data, function(d) {
+    amt::make_track(d, x, y, t, crs = sp::CRS("+init=epsg:32614")) 
+  }))  
+
+
+
+dat_trk <- dat.all %>%
+  mutate(steps = map(trk, function(x) {
+    x %>% amt::track_resample(rate = minutes(120), tolerance = minutes(10)) %>%
+      amt::filter_min_n_burst(min_n = 3)
+}))
+
+dat_steps <- dat_trk %>% unnest(cols = c(steps))
+dat_steps <- dplyr::select(dat_steps, id, x_, y_, t_)
+dat_steps <- merge(setDT(dat_steps), dat.meta[pop =='GHA26',.(WolfID,PackID)], by.x ='id', by.y = 'WolfID', all.x = T)  
+
+
+#### determining nearest neighbor (nn) at orginal point ####
+dat.grptimes <- group_times(DT=dat_steps, datetime = "t_", threshold = "2 hours")
+
+enn <- edge_nn(
+  DT = dat.grptimes,
+  id = 'id',
+  coords = c('x_', 'y_'),
+  timegroup = 'timegroup',
+  returnDist = TRUE, 
+  splitBy = 'PackID'
+)
+
+enn<- unique(enn)
+
+
+
+
+dat.nn <- merge(dat.grptimes,enn, by.x = c('id','PackID', 'timegroup'), 
+                by.y = c('ID','PackID', 'timegroup'), all.x = T)
+dat.nn <- dat.nn[!is.na(id)]
+
+dat.nn <- merge(dat.nn,dat.meta, by.x = c('id','PackID'), 
+                by.y = c('WolfID','PackID'), all.x = T)
+#dat.nn <- dat.nn[,year.y:=NULL]
+#colnames(dat.nn)[colnames(dat.nn)=="year.x"] <- "year"
+
+
+#### make track ####
+DT.prep <- dat.nn[WolfID %in% focals,.(x = x_, y = y_, t = t_, id , nn = NN, distance1 = distance,
+                                       status, end_date, COD, death_date)]
 
 
 dat_all <- DT.prep %>% group_by(id) %>% nest()
@@ -127,6 +148,7 @@ dat_all <- dat_all %>%
   mutate(trk = map(data, function(d) {
     amt::make_track(d, x, y, t, crs = sp::CRS("+init=epsg:32614")) 
   }))  
+
 
 dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
   dplyr::select(id, sr) %>% unnest(cols = c(sr))
@@ -343,13 +365,13 @@ ssf.all[,'propurban_end'] <- raster::extract(propurban, locs_end)
 # adding nn and dist for step 1, also adding attributed data about death
 ssf.all <- merge(ssf.all, DT.prep, by.x = c('x1_', 'y1_', 't1_', 'id'), by.y = c('x', 'y', 't', 'id'), all.x = T)
 colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn1"
-ssf.all[,'nn2'] <- ifelse(!(is.na(ssf.all$nn2)), ssf.all$nn2, ifelse(!(is.na(ssf.all$nn1)), ssf.all$nn1, NA))
 #colnames(ssf.all)[colnames(ssf.all)=="end_date"] <- "death_date"
 
 # adding nn at step 2
 DT.nn <- dplyr::select(DT.prep, t, id, nn)
 ssf.all <- merge(ssf.all, DT.nn, by.x = c('t2_', 'id'), by.y = c('t', 'id'), all.x = T)
 colnames(ssf.all)[colnames(ssf.all)=="nn"] <- "nn2"
+ssf.all[,'nn2'] <- ifelse(!(is.na(ssf.all$nn2)), ssf.all$nn2, ifelse(!(is.na(ssf.all$nn1)), ssf.all$nn1, NA))
 
 # calc time to death (ttd)
 ssf.all[,'ttd1'] <- as.duration(ssf.all$t1_ %--% ssf.all$death_date)/ddays(1) 
@@ -365,8 +387,8 @@ colnames(ssf.all)[colnames(ssf.all)=="GHA26_roadsPS_dist_end"] <- "roadDist_end"
 
 
 # Cleaning of grouptime data
-dat.grp <- dplyr::select(dat.grptimes, WolfID, PackID, X, Y, datetime, timegroup)
-dat.grp[,'round.t'] <- as.POSIXct(round(dat.grp$datetime, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
+dat.grp <- dplyr::select(dat.grptimes, id, PackID, x_, y_, t_, timegroup)
+dat.grp[,'round.t'] <- as.POSIXct(round(dat.grp$t_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
 
 # getting a list of all timegroups and associated times to help match points correctly
 DT.grp <- dplyr::select(dat.grp, round.t, timegroup)
@@ -375,8 +397,8 @@ DT.grp2 <- unique(DT.grp)
 DT.pack <- setDT(dat.focal)[,.(WolfID, packbound)]
 
 
-#ssf.df = as.data.frame(ssf.all)
-#wolf = 'W01'
+#ssf.df = ssf.all
+#wolf = 'W04'
 
 createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub <- as.data.frame(subset(ssf.df, id == wolf))
@@ -391,12 +413,12 @@ createSSFnnbyFocal <- function(ssf.df, wolf){
   ssf.sub[,'packDist_end'] <- as.data.frame(ssf.sub)[,paste(pack,"kde_dist_end", sep = '_')]
   
   ssf.sub[,'round.t2'] <- as.POSIXct(round(ssf.sub$t2_, units = 'mins'), tz = 'UTC', "%Y-%m-%d %H:%M:%S")
-  dat.rand.sub <- merge(ssf.sub, dat.grp[PackID == pack], by.y = c('round.t', 'WolfID'), 
+  dat.rand.sub <- merge(ssf.sub, dat.grp[PackID == pack], by.y = c('round.t', 'id'), 
                         by.x = c('round.t2', 'id'), all = T)
   
   # use the gps pts from the track unless missing (as with all non focal indivs)
-  dat.rand.sub$x2_ <- ifelse(!is.na(dat.rand.sub$x2_), dat.rand.sub$x2_, dat.rand.sub$X)
-  dat.rand.sub$y2_ <- ifelse(!is.na(dat.rand.sub$y2_), dat.rand.sub$y2_, dat.rand.sub$Y)
+  dat.rand.sub$x2_ <- ifelse(!is.na(dat.rand.sub$x2_), dat.rand.sub$x2_, dat.rand.sub$x_)
+  dat.rand.sub$y2_ <- ifelse(!is.na(dat.rand.sub$y2_), dat.rand.sub$y2_, dat.rand.sub$y_)
 
   # enumerating each random step so can pair distances correctly
   DT.rand.sub <- setDT(dat.rand.sub)[, step_id_rank:= 1:.N, by=.(step_id_)]
@@ -510,7 +532,7 @@ ssf.soc <- rbind(ssfW01, ssfW03, ssfW04, ssfW05, ssfW06, ssfW09, ssfW10, ssfW11,
 ssf.soc <- merge(ssf.soc, dat.focal[,.(WolfID, PackID, COD)], by.x = 'id', by.y = 'WolfID', all.x = T)
 
 
-saveRDS(ssf.soc, 'data/derived-data/ssfAll_2mo_GHA26.Rds')
+saveRDS(ssf.soc, 'data/derived-data/ssfAll_GHA26.Rds')
 
 
 moveRMNP <- readRDS('data/derived-data/moveParams_2mo_RMNP.Rds')
