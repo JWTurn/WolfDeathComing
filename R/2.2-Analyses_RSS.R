@@ -431,7 +431,7 @@ CDV.roadfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('d
                                                           propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                           propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                           propwet_end= mean(propwet_end, na.rm = T),      
-                                                          roadDist_end = 1000,
+                                                          roadDist_end = 3000,
                                                           distance2 = median(distance2, na.rm = T),
                                                           nnDist_end = median(nnDist_end, na.rm = T),
                                                           packDist_end = median(packDist_end, na.rm = T),
@@ -474,7 +474,7 @@ CDV.nnfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('day
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),      
                                                            roadDist_end = median(roadDist_end, na.rm = T),
-                                                           distance2 = 1000,
+                                                           distance2 = 3000,
                                                            nnDist_end = median(nnDist_end, na.rm = T),
                                                            packDist_end = median(packDist_end, na.rm = T),
                                                            COD = factor('CDV', levels = levels(COD)),
@@ -519,7 +519,7 @@ CDV.packfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('d
                                                          roadDist_end = median(roadDist_end, na.rm = T),
                                                          distance2 = median(distance2, na.rm = T),
                                                          nnDist_end = median(nnDist_end, na.rm = T),
-                                                         packDist_end = 1000,
+                                                         packDist_end = 3000,
                                                          COD = factor('CDV', levels = levels(COD)),
                                                          ttd1 = 60,
                                                          wolf_step_id = NA, wolfID= NA)]
@@ -687,7 +687,7 @@ human.roadfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),      
-                                                           roadDist_end = 1000,
+                                                           roadDist_end = 3000,
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
                                                            packDist_end = median(packDist_end, na.rm = T),
@@ -730,7 +730,7 @@ human.nnfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor('d
                                                          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                          propwet_end= mean(propwet_end, na.rm = T),      
                                                          roadDist_end = median(roadDist_end, na.rm = T),
-                                                         distance2 = 1000,
+                                                         distance2 = 3000,
                                                          nnDist_end = median(nnDist_end, na.rm = T),
                                                          packDist_end = median(packDist_end, na.rm = T),
                                                          COD = factor('human', levels = levels(COD)),
@@ -775,7 +775,7 @@ human.packfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
-                                                           packDist_end = 1000,
+                                                           packDist_end = 3000,
                                                            COD = factor('human', levels = levels(COD)),
                                                            ttd1 = 60,
                                                            wolf_step_id = NA, wolfID= NA)]
@@ -942,7 +942,7 @@ control.roadfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                            propforest_end_adj = mean(propforest_end_adj, na.rm = T),
                                                            propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                            propwet_end= mean(propwet_end, na.rm = T),      
-                                                           roadDist_end = 1000,
+                                                           roadDist_end = 3000,
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
                                                            packDist_end = median(packDist_end, na.rm = T),
@@ -985,7 +985,7 @@ control.nnfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = factor(
                                                          propopen_end_adj = mean(propopen_end_adj, na.rm = T),
                                                          propwet_end= mean(propwet_end, na.rm = T),      
                                                          roadDist_end = median(roadDist_end, na.rm = T),
-                                                         distance2 = 1000,
+                                                         distance2 = 3000,
                                                          nnDist_end = median(nnDist_end, na.rm = T),
                                                          packDist_end = median(packDist_end, na.rm = T),
                                                          COD = factor('control', levels = levels(COD)),
@@ -1030,7 +1030,7 @@ control.packfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                            roadDist_end = median(roadDist_end, na.rm = T),
                                                            distance2 = median(distance2, na.rm = T),
                                                            nnDist_end = median(nnDist_end, na.rm = T),
-                                                           packDist_end = 1000,
+                                                           packDist_end = 3000,
                                                            COD = factor('control', levels = levels(COD)),
                                                            ttd1 = 60,
                                                            wolf_step_id = NA, wolfID= NA)]
@@ -1308,15 +1308,15 @@ p.CDV.wet25.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', va
 p.CDV.roadclose.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 250)
 p.CDV.roadclose.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 250)
 
-p.CDV.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 1000)
-p.CDV.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 1000)
+p.CDV.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 3000)
+p.CDV.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 3000)
 
 # nn 
 p.CDV.nnclose.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 250)
 p.CDV.nnclose.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'CDV', var = 'nn', value = 250)
 
-p.CDV.nnfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 1000)
-p.CDV.nnfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'CDV', var = 'nn', value = 1000)
+p.CDV.nnfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 3000)
+p.CDV.nnfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'CDV', var = 'nn', value = 3000)
 
 
 # pack 
@@ -1324,9 +1324,9 @@ p.CDV.packclose.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'pack', 
 p.CDV.packclose.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'CDV', var = 'pack', value = 250)
 p.CDV.packclose.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'CDV', var = 'pack', value = 250)
 
-p.CDV.packfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'pack', value = 1000)
-p.CDV.packfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'CDV', var = 'pack', value = 1000)
-p.CDV.packfar.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'CDV', var = 'pack', value = 1000)
+p.CDV.packfar.1 <-p.h1(DT = dat, mod = everyone, death = 'CDV', var = 'pack', value = 3000)
+p.CDV.packfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'CDV', var = 'pack', value = 3000)
+p.CDV.packfar.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'CDV', var = 'pack', value = 3000)
 
 
 ### human ####
@@ -1356,15 +1356,15 @@ p.human.wet25.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'human'
 p.human.roadclose.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'road', value = 250)
 p.human.roadclose.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'human', var = 'road', value = 250)
 
-p.human.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'road', value = 1000)
-p.human.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'human', var = 'road', value = 1000)
+p.human.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'road', value = 3000)
+p.human.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'human', var = 'road', value = 3000)
 
 # nn 
 p.human.nnclose.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'nn', value = 250)
 p.human.nnclose.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'human', var = 'nn', value = 250)
 
-p.human.nnfar.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'nn', value = 1000)
-p.human.nnfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'human', var = 'nn', value = 1000)
+p.human.nnfar.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'nn', value = 3000)
+p.human.nnfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'human', var = 'nn', value = 3000)
 
 
 # pack 
@@ -1372,9 +1372,9 @@ p.human.packclose.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'pac
 p.human.packclose.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'human', var = 'pack', value = 250)
 p.human.packclose.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'human', var = 'pack', value = 250)
 
-p.human.packfar.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'pack', value = 1000)
-p.human.packfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'human', var = 'pack', value = 1000)
-p.human.packfar.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'human', var = 'pack', value = 1000)
+p.human.packfar.1 <-p.h1(DT = dat, mod = everyone, death = 'human', var = 'pack', value = 3000)
+p.human.packfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'human', var = 'pack', value = 3000)
+p.human.packfar.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'human', var = 'pack', value = 3000)
 
 
 ### control ####
@@ -1404,15 +1404,15 @@ p.control.wet25.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'cont
 p.control.roadclose.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'road', value = 250)
 p.control.roadclose.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'control', var = 'road', value = 250)
 
-p.control.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'road', value = 1000)
-p.control.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'control', var = 'road', value = 1000)
+p.control.roadfar.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'road', value = 3000)
+p.control.roadfar.1.habitat <-p.h1(DT = dat, mod = everyone.habitat, death = 'control', var = 'road', value = 3000)
 
 # nn 
 p.control.nnclose.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'nn', value = 250)
 p.control.nnclose.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'control', var = 'nn', value = 250)
 
-p.control.nnfar.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'nn', value = 1000)
-p.control.nnfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'control', var = 'nn', value = 1000)
+p.control.nnfar.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'nn', value = 3000)
+p.control.nnfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'control', var = 'nn', value = 3000)
 
 
 # pack 
@@ -1420,9 +1420,9 @@ p.control.packclose.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 
 p.control.packclose.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'control', var = 'pack', value = 250)
 p.control.packclose.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'control', var = 'pack', value = 250)
 
-p.control.packfar.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'pack', value = 1000)
-p.control.packfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'control', var = 'pack', value = 1000)
-p.control.packfar.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'control', var = 'pack', value = 1000)
+p.control.packfar.1 <-p.h1(DT = dat, mod = everyone, death = 'control', var = 'pack', value = 3000)
+p.control.packfar.1.social <-p.h1(DT = dat, mod = everyone.social, death = 'control', var = 'pack', value = 3000)
+p.control.packfar.1.pack <-p.h1(DT = dat, mod = everyone.pack, death = 'control', var = 'pack', value = 3000)
 
 
 
