@@ -1454,15 +1454,15 @@ p.CDV.wet25.1.indiv.habitat <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = every
 p.CDV.roadclose.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 250)
 p.CDV.roadclose.1.indiv.habitat <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 250)
 
-p.CDV.roadfar.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 1000)
-p.CDV.roadfar.1.indiv.habitat <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 1000)
+p.CDV.roadfar.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'road', value = 3000)
+p.CDV.roadfar.1.indiv.habitat <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.habitat, death = 'CDV', var = 'road', value = 3000)
 
 # nn 
 p.CDV.nnclose.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 250)
 p.CDV.nnclose.1.indiv.social <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', var = 'nn', value = 250)
 
-p.CDV.nnfar.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 1000)
-p.CDV.nnfar.1.indiv.social <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', var = 'nn', value = 1000)
+p.CDV.nnfar.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'nn', value = 3000)
+p.CDV.nnfar.1.indiv.social <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', var = 'nn', value = 3000)
 
 
 # pack 
@@ -1470,9 +1470,9 @@ p.CDV.packclose.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone,
 p.CDV.packclose.1.indiv.social <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', var = 'pack', value = 250)
 p.CDV.packclose.1.indiv.pack <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', var = 'pack', value = 250)
 
-p.CDV.packfar.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'pack', value = 1000)
-p.CDV.packfar.1.indiv.social <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', var = 'pack', value = 1000)
-p.CDV.packfar.1.indiv.pack <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', var = 'pack', value = 1000)
+p.CDV.packfar.1.indiv <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'pack', value = 3000)
+p.CDV.packfar.1.indiv.social <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.social, death = 'CDV', var = 'pack', value = 3000)
+p.CDV.packfar.1.indiv.pack <-p.h1.indiv(ids = CDV.wolfID, DT = dat, mod = everyone.pack, death = 'CDV', var = 'pack', value = 3000)
 
 
 ### human ####
@@ -1504,15 +1504,15 @@ p.human.wet25.1.indiv.habitat <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = e
 p.human.roadclose.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'road', value = 250)
 p.human.roadclose.1.indiv.habitat <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', var = 'road', value = 250)
 
-p.human.roadfar.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'road', value = 1000)
-p.human.roadfar.1.indiv.habitat <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', var = 'road', value = 1000)
+p.human.roadfar.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'road', value = 3000)
+p.human.roadfar.1.indiv.habitat <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.habitat, death = 'human', var = 'road', value = 3000)
 
 # nn 
 p.human.nnclose.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'nn', value = 250)
 p.human.nnclose.1.indiv.social <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', var = 'nn', value = 250)
 
-p.human.nnfar.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'nn', value = 1000)
-p.human.nnfar.1.indiv.social <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', var = 'nn', value = 1000)
+p.human.nnfar.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'nn', value = 3000)
+p.human.nnfar.1.indiv.social <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', var = 'nn', value = 3000)
 
 
 # pack 
@@ -1520,9 +1520,9 @@ p.human.packclose.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = every
 p.human.packclose.1.indiv.social <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', var = 'pack', value = 250)
 p.human.packclose.1.indiv.pack <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', var = 'pack', value = 250)
 
-p.human.packfar.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'pack', value = 1000)
-p.human.packfar.1.indiv.social <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', var = 'pack', value = 1000)
-p.human.packfar.1.indiv.pack <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', var = 'pack', value = 1000)
+p.human.packfar.1.indiv <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'pack', value = 3000)
+p.human.packfar.1.indiv.social <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.social, death = 'human', var = 'pack', value = 3000)
+p.human.packfar.1.indiv.pack <-p.h1.indiv(ids = human.wolfID, DT = dat, mod = everyone.pack, death = 'human', var = 'pack', value = 3000)
 
 
 ### control ####
@@ -1554,15 +1554,15 @@ p.control.wet25.1.indiv.habitat <-p.h1.indiv(ids = control.wolfID, DT = dat, mod
 p.control.roadclose.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'road', value = 250)
 p.control.roadclose.1.indiv.habitat <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', var = 'road', value = 250)
 
-p.control.roadfar.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'road', value = 1000)
-p.control.roadfar.1.indiv.habitat <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', var = 'road', value = 1000)
+p.control.roadfar.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'road', value = 3000)
+p.control.roadfar.1.indiv.habitat <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.habitat, death = 'control', var = 'road', value = 3000)
 
 # nn 
 p.control.nnclose.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'nn', value = 250)
 p.control.nnclose.1.indiv.social <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', var = 'nn', value = 250)
 
-p.control.nnfar.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'nn', value = 1000)
-p.control.nnfar.1.indiv.social <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', var = 'nn', value = 1000)
+p.control.nnfar.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'nn', value = 3000)
+p.control.nnfar.1.indiv.social <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', var = 'nn', value = 3000)
 
 
 # pack 
@@ -1570,9 +1570,9 @@ p.control.packclose.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = e
 p.control.packclose.1.indiv.social <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', var = 'pack', value = 250)
 p.control.packclose.1.indiv.pack <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', var = 'pack', value = 250)
 
-p.control.packfar.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'pack', value = 1000)
-p.control.packfar.1.indiv.social <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', var = 'pack', value = 1000)
-p.control.packfar.1.indiv.pack <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', var = 'pack', value = 1000)
+p.control.packfar.1.indiv <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'pack', value = 3000)
+p.control.packfar.1.indiv.social <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.social, death = 'control', var = 'pack', value = 3000)
+p.control.packfar.1.indiv.pack <-p.h1.indiv(ids = control.wolfID, DT = dat, mod = everyone.pack, death = 'control', var = 'pack', value = 3000)
 
 
 
@@ -2320,7 +2320,7 @@ logRSS.indiv.model <- rbind(logRSS.CDV.forest25.indiv.habitat, logRSS.CDV.forest
                       logRSS.control.wet25.indiv.habitat, logRSS.control.wet75.indiv.habitat,
                       logRSS.control.roadclose.indiv.habitat, logRSS.control.roadfar.indiv.habitat,
                       logRSS.control.nnclose.indiv.social, logRSS.control.nnfar.indiv.social,
-                      logRSS.control.packclose.indiv.social, logRSS.control.packfar.indiv.social)
+                      logRSS.control.packclose.indiv.pack, logRSS.control.packfar.indiv.pack)
 
 logRSS.indiv$COD <- factor(logRSS.indiv$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
 logRSS.indiv.model$COD <- factor(logRSS.indiv.model$COD, levels = c('control','human','CDV'), labels = c('control','human','CDV'))
@@ -2360,7 +2360,7 @@ forest.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.75], aes
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-6,15) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -2386,7 +2386,7 @@ open.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.75], aes(-tt
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-6,15) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -2411,7 +2411,7 @@ wet.75 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.75], aes(-ttd,
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-6,15) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -2436,13 +2436,13 @@ road.close <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& value ==250], aes(-
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-10,8) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 road.close
 
-nn.close <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==250], aes(-ttd, rss, colour=COD)) +
+nn.close <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& value ==250], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2512,7 +2512,7 @@ forest.25 <- ggplot(data=setDT(logRSS.indiv)[var == 'forest'& value ==0.25], aes
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-6,15) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -2538,7 +2538,7 @@ open.25 <- ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-tt
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-6,15) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -2563,7 +2563,7 @@ wet.25 <- ggplot(data=setDT(logRSS.indiv)[var == 'wet'& value ==0.25], aes(-ttd,
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-10,8) +
+  ylim(-6,15) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -2594,7 +2594,7 @@ road.far <- ggplot(data=setDT(logRSS.indiv)[var == 'road'& value ==1000], aes(-t
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 road.far
 
-nn.far <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==1000], aes(-ttd, rss, colour=COD)) +
+nn.far <- ggplot(data=setDT(logRSS.indiv.model)[var == 'nn'& value ==1000], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2619,7 +2619,7 @@ nn.far <- ggplot(data=setDT(logRSS.indiv)[var == 'nn'& value ==1000], aes(-ttd, 
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 nn.far
 
-pack.far <- ggplot(data=setDT(logRSS.indiv)[var == 'pack'& value ==1000], aes(-ttd, rss, colour=COD)) +
+pack.far <- ggplot(data=setDT(logRSS.indiv.model)[var == 'pack'& value ==1000], aes(-ttd, rss, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
@@ -2659,7 +2659,7 @@ means <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean
                                road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T))]
 
 #(forest.75|open.75)/(wet.75|road.close)/(nn.close|pack.close)
-
+################
 
 ggplot(data=setDT(logRSS.indiv)[var == 'open'& value ==0.25], aes(-ttd, rss, colour=pop)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
