@@ -96,6 +96,8 @@ dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propforest_end_ad
 dat[case_ == FALSE & wolfID %chin% dat.wnn.lastmo$wolfID, mean(propopen_end_adj), by=.(wolfID)]
 
 ######
+
+
 ggplot(dat[ua == 'used'], aes(ttd1, sl_,colour = COD)) +
  # geom_point() +
   geom_smooth() 
@@ -4311,4 +4313,42 @@ pack.60.model.b <- ggplot(data=setDT(logRSS.indiv.model)[var == 'boundary'& ttd=
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
 pack.60.model.b|pack.1.model.b
+
+
+ggplot(dat[ua == 'used' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(-ttd1, packDistadj_end,colour = COD)) +
+  # geom_line(aes(group=wolfID)) +
+  geom_smooth(aes(fill = COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  ylab("Distance from boundary edge (m)") + xlab("Time to death") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-8,1) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
+
+ggplot(dat[ua == 'used' & COD=='human' &wolfID %chin% dat.wnn.lastmo$wolfID], aes(-ttd1, packDistadj_end, color = wolfID)) +
+   geom_line(aes(group=wolfID)) +
+  #geom_smooth(aes(fill = COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
+  ylab("Distance from boundary edge (m)") + xlab("Time to death") +
+  theme_bw()  + theme(
+    #panel.background =element_rect(colour = "black", fill=NA, size=1),
+    panel.border = element_blank(), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black", size = .7)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  #ylim(-8,1) +
+  theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 
