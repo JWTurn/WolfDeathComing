@@ -26,7 +26,7 @@ params <- readRDS('data/derived-data/moveParams_all.Rds')
 
 #dat <- everyone.indiv
 
-dat.wide <- dcast(data =dat, wolfID + COD ~ term, value.var = 'estimate')
+dat.wide <- dcast(data =everyone.indiv, wolfID + COD ~ term, value.var = 'estimate')
 
 dat.wide <- setDT(merge(dat.wide, params[,.(wolfID,shape, scale, kappa)], by = 'wolfID', all.x = T))
 
@@ -52,13 +52,12 @@ dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 
 t2d <- seq(0, 61, length.out = 100)
 
-intercept <- 4.432
-day <- 0.09404
-forest <- -0.01039*0.7858649
-open <- 0.15*0.05676634
-wet <- 0.04176*0.1573687
+intercept <- 6.576
+forest <- 0.059931*0.7858649
+open <- 0.245925*0.05676634
+wet <- 0.125641*0.1573687
 
-dat.wide[, spd:= list(list((shape+log_sl + intercept + day + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
+dat.wide[, spd:= list(list((shape+log_sl + intercept + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
 dat.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
 dat.wide[, ttd:= list(list(seq(0,61,length.out = 100))), by=.(wolfID)]
 
@@ -108,7 +107,7 @@ speed|direction
 speed2 <- ggplot(data=move[spd_hr >=0 ], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
-  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = T, method = 'lm')+
+  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F, method = 'lm')+
   theme_classic() +
   theme(text = element_text(size=15)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
