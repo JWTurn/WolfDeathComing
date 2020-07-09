@@ -4336,7 +4336,7 @@ ggplot(dat[ua == 'used' & wolfID %chin% dat.wnn.lastmo$wolfID], aes(-ttd1, packD
 
 
 ggplot(dat[ua == 'used' & COD=='human' &wolfID %chin% dat.wnn.lastmo$wolfID], aes(-ttd1, packDistadj_end, color = wolfID)) +
-   geom_line(aes(group=wolfID)) +
+   geom_smooth(aes(group=wolfID)) +
   #geom_smooth(aes(fill = COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   ylab("Distance from boundary edge (m)") + xlab("Time to death") +
