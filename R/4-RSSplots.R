@@ -385,13 +385,6 @@ nn.close|nn.far
 forest.25|forest.75
 pack.close|pack.far
 
-means.pop <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean(propopen_end_adj, na.rm = T), wet=mean(propwet_end, na.rm = T),
-                               road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T), sl = mean(sl_)), by =.(pop)]
-
-means <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean(propopen_end_adj, na.rm = T), wet=mean(propwet_end, na.rm = T),
-                           road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T))]
-
-#(forest.75|open.75)/(wet.75|road.close)/(nn.close|pack.close)
 ################
 
 ggplot(data=setDT(logRSS)[var == 'open'& value ==0.25], aes(-ttd, rss.ttd, colour=pop)) +
@@ -489,3 +482,4 @@ ggplot(data=setDT(logRSS)[var == 'nn'& value ==250], aes(-ttd, rss.ttd, colour=p
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+
