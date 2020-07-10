@@ -372,15 +372,18 @@ pack.far <- ggplot(data=setDT(logRSS)[var == 'pack'& value ==3000], aes(-ttd, rs
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 pack.far
 
+# to show
+open.75|road.close
+wet.75|nn.close
 
+### others 
 open.25|open.75
-wet.25|wet.75
 road.close|road.far
+wet.25|wet.75
 nn.close|nn.far
-pack.close|pack.far
-
 
 forest.25|forest.75
+pack.close|pack.far
 
 means.pop <- dat[case_==TRUE,.(forest=mean(propforest_end_adj, na.rm = T), open=mean(propopen_end_adj, na.rm = T), wet=mean(propwet_end, na.rm = T),
                                road=mean(roadDist_end, na.rm = T), nn=mean(distance2, na.rm = T), sl = mean(sl_)), by =.(pop)]
