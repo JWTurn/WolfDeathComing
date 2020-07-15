@@ -111,13 +111,16 @@ speed2 <- ggplot(data=move[spd_hr >=0 ], aes(x=-ttd, y=(spd_hr), color = COD)) +
   theme_classic() +
   theme(text = element_text(size=15)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
-  theme(axis.text.x =  element_text(size = 15)) + 
+  #theme(axis.text.x =  element_text(size = 15)) +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   #  theme(legend.position = "none") +
  # ylim(-1,7) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
-  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
-  ggtitle("Speed") +
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
+  ggtitle("a) Speed") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed2 
 
