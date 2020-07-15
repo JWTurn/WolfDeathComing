@@ -26,7 +26,7 @@ params <- readRDS('data/derived-data/moveParams_all.Rds')
 
 #dat <- everyone.indiv
 
-dat.wide <- dcast(data =everyone.indiv, wolfID + COD ~ term, value.var = 'estimate')
+dat.wide <- dcast(data =dat, wolfID + COD ~ term, value.var = 'estimate')
 
 dat.wide <- setDT(merge(dat.wide, params[,.(wolfID,shape, scale, kappa)], by = 'wolfID', all.x = T))
 
@@ -117,7 +117,7 @@ speed2 <- ggplot(data=move[spd_hr >=0 ], aes(x=-ttd, y=(spd_hr), color = COD)) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
-  #ggtitle("a)") +
+  ggtitle("Speed") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed2 
 
