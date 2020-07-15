@@ -145,12 +145,12 @@ open.25
 open.75 <- ggplot(data=setDT(logRSS)[var == 'open'& value ==0.75], aes(-ttd, rss.ttd, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD)) +
+  geom_smooth(size = 1.5, aes(fill = COD), show.legend = F) +
   # geom_line(data=logRSS.pop[var == 'open'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Time to Death") +
-  ggtitle("High proportion of open") + 
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("a) High proportion of open areas") + 
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
@@ -196,12 +196,12 @@ wet.25
 wet.75 <- ggplot(data=setDT(logRSS)[var == 'wet'& value ==0.75], aes(-ttd, rss.ttd, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD)) +
+  geom_smooth(size = 1.5, aes(fill = COD), show.legend = F) +
   # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Time to Death") +
-  ggtitle("High proportion of wet") + 
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("b) High proportion of wet areas") + 
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
@@ -227,8 +227,8 @@ road.close <- ggplot(data=setDT(logRSS)[var == 'road'& value ==250], aes(-ttd, r
   # geom_line(data=logRSS.pop[var == 'road'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Time to Death") +
-  ggtitle("Close to road") + 
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("c) Close to road") + 
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
@@ -278,8 +278,8 @@ nn.close <- ggplot(data=setDT(logRSS)[var == 'nn'& value ==250], aes(-ttd, rss.t
   # geom_line(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
-  ylab("logRSS") + xlab("Time to Death") +
-  ggtitle("Close to nearest neighbor") + 
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("b) Close to nearest neighbor") + 
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()  + theme(
     #panel.background =element_rect(colour = "black", fill=NA, size=1),
@@ -373,8 +373,8 @@ pack.far <- ggplot(data=setDT(logRSS)[var == 'pack'& value ==3000], aes(-ttd, rs
 pack.far
 
 # to show
-open.75|road.close
-wet.75|nn.close
+open.75|wet.75|road.close
+speed2|nn.close
 
 ### others 
 open.25|open.75
