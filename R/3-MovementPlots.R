@@ -84,6 +84,22 @@ speed <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed 
 
+speed.disease <- ggplot(data=move[spd_hr >=0 & COD != 'human'], aes(x=-ttd, y=(spd_hr), color = COD)) + 
+  geom_line(aes(group = wolfID),alpha = .5, linetype ='twodash', show.legend = F) +
+  #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
+  geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = T, method = 'lm')+
+  theme_classic() +
+  theme(text = element_text(size=15)) +
+  #theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x =  element_text(size = 15)) + 
+  #  theme(legend.position = "none") +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  +  
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
+ # ggtitle("a)") +
+  xlab("Time to death (days)") + ylab("Speed (km/hour)")
+speed.disease 
+
 
 direction <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
