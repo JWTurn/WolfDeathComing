@@ -387,9 +387,9 @@ pack.close|pack.far
 
 ##### Disease graphs ###########
 wet.disease <- ggplot(data=setDT(logRSS)[var == 'wet'& value ==0.75 & COD != 'human'], aes(-ttd, rss.ttd, colour=COD)) +
-  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  geom_line(aes(group = wolfID),alpha = 0.5, linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD), show.legend = T) +
   # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
@@ -412,7 +412,7 @@ wet.disease <- ggplot(data=setDT(logRSS)[var == 'wet'& value ==0.75 & COD != 'hu
 wet.disease
 
 nn.disease <- ggplot(data=setDT(logRSS)[var == 'nn'& value ==250 & COD != 'human'], aes(-ttd, rss.ttd, colour=COD)) +
-  geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
+  geom_line(aes(group = wolfID),alpha = .5, linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = COD)) +
   # geom_line(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
