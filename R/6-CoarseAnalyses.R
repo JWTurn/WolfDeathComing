@@ -70,12 +70,12 @@ DT[,propout:=inout/.N, by = .(wolfID)]
 DT.sub <- unique(DT[wolfID!='GHA26_W38',.( propout=sum(inout)/.N), by =.(wolfID,pop,COD)])
 
 #### ANALYSES ----
-ssa<-glmmTMB(inout~COD + (1|wolf_step_id), data = dat[wolfID %in% dat.wnn.lastmo$wolfID], family = 'poisson',
+ssa <- glmmTMB(inout~COD + (1|wolf_step_id), data = dat[wolfID %in% dat.wnn.lastmo$wolfID], family = 'poisson',
              map = list(theta=factor(c(NA))), start = list(theta=c(log(1000))))
 tidy(ssa)
 
 
-binom<-glmer(inout~COD +ttd1 + (1|wolfID), data = DT, family = 'binomial')
+binom <- glmer(inout~COD +log(ttd1+1) + (1|wolfID), data = DT, family = 'binomial')
 tidy(binom)
 performance(binom)
 check_model(binom)
