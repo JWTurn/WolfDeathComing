@@ -374,7 +374,7 @@ pack.far
 
 # to show
 open.75|wet.75|road.close
-speed2|nn.close
+speed|nn.close
 
 ### others 
 open.25|open.75

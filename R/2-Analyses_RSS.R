@@ -59,8 +59,7 @@ dat$COD[is.na(dat$COD)] <- "control"
 
 dat$ToD_start <- as.factor(dat$ToD_start)
 
-dat[wolfID %in% dat.wnn.lastmo$wolfID,median(distance2, na.rm = T), by = .(COD)]
-dat[is.na(distance2) & wolfID %in% dat.wnn.lastmo$wolfID,.N, by = .(wolfID)]
+
 #View(dat[wolfID %in% dat.wnn.lastmo$wolfID])
 #### only wolves with packmates ####
 dat[,uniqueN(step_id_), by=.(wolfID)]
@@ -71,6 +70,8 @@ dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.
 dat.wnn.lastmo.cod[,.(N=uniqueN(wolfID)), by=.(pop, COD)]
 dat.meta[,.(N=uniqueN(wolfpop)), by=.(pop, COD)]
 
+dat[wolfID %in% dat.wnn.lastmo$wolfID,median(distance2, na.rm = T), by = .(COD)]
+dat[is.na(distance2) & wolfID %in% dat.wnn.lastmo$wolfID,.N, by = .(wolfID)]
 dat[,'nnDist_end'] <- ifelse(dat$distance2<=30000, dat$distance2, NA)
 dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 

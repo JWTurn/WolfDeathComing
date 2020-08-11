@@ -53,9 +53,9 @@ dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 t2d <- seq(0, 61, length.out = 100)
 
 intercept <- 6.576
-forest <- 0.059931*0.7858649
-open <- 0.245925*0.05676634
-wet <- 0.125641*0.1573687
+forest <- 0.060*0.7858649
+open <- 0.246*0.05676634
+wet <- 0.126*0.1573687
 
 dat.wide[, spd:= list(list((shape+log_sl + intercept + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
 dat.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
@@ -73,14 +73,13 @@ speed <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F, method = 'lm')+
   theme_classic() +
-  theme(text = element_text(size=15)) +
-  #theme(plot.title = element_text(hjust = 0.5)) +
-  theme(axis.text.x =  element_text(size = 15)) + 
-  #  theme(legend.position = "none") +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
-  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
-  ggtitle("a)") +
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
+  ggtitle("a) Speed") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed 
 
