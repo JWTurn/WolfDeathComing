@@ -68,19 +68,20 @@ DT <- dat[wolfID %in% dat.wnn.lastmo$wolfID & case_==TRUE]
 DT[,propout:=inout/.N, by = .(wolfID)]
 
 DT.sub <- unique(DT[wolfID!='GHA26_W38',.( propout=sum(inout)/.N), by =.(wolfID,pop,COD)])
+DT.sub[, mean(propout), COD]
 
 #### ANALYSES ----
-ssa <- glmmTMB(inout~COD + (1|wolf_step_id), data = dat[wolfID %in% dat.wnn.lastmo$wolfID], family = 'poisson',
+ssa <- glmmTMB(inout~COD + COD:log(ttd1+1) + (1|wolf_step_id), data = dat[wolfID %in% dat.wnn.lastmo$wolfID], family = 'poisson',
              map = list(theta=factor(c(NA))), start = list(theta=c(log(1000))))
 tidy(ssa)
 
 
-binom <- glmer(inout~COD +log(ttd1+1) + (1|wolfID), data = DT, family = 'binomial')
+binom <- glmer(inout~COD + COD:log(ttd1+1) + (1|wolfID), data = DT, family = 'binomial')
 tidy(binom)
 performance(binom)
 check_model(binom)
 
-prop <- glm(propout~COD, data = DT.sub, family = 'binomial')
+prop <- glm(propout~COD , data = DT.sub, family = 'binomial')
 tidy(prop)
 model_performance(prop)
 check_model(prop)
