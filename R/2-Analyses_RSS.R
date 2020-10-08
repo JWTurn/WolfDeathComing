@@ -75,6 +75,12 @@ dat[is.na(distance2) & wolfID %in% dat.wnn.lastmo$wolfID,.N, by = .(wolfID)]
 dat[,'nnDist_end'] <- ifelse(dat$distance2<=30000, dat$distance2, NA)
 dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 
+
+#### MEANS ####
+dat[wolfID %chin% dat.wnn.lastmo$wolfID, uniqueN(wolfID), by =.(COD)]
+params[wolfID %chin% dat.wnn.lastmo$wolfID, .(meanShp = mean(shape), meanScl = mean(scale), meanKap = mean(kappa))]
+params[wolfID %chin% dat.wnn.lastmo$wolfID, .(sdShp = sd(shape), sdScl = sd(scale), sdKap = sd(kappa))]
+
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~# pop + 
