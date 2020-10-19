@@ -136,10 +136,28 @@ everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
-# everyone.all.indiv <- coef(everyone)$cond$wolfID %>% rownames_to_column("wolfID") %>% 
-#   pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>% 
-#   mutate(method = "ME")
+everyone.all.indiv <- coef(everyone)$cond$wolfID %>% rownames_to_column("wolfID") %>%
+  pivot_longer(-wolfID, names_to = "term", values_to = "estimate") %>%
+  mutate(method = "ME")
 
+everyone.all.indiv <- merge(setDT(everyone.all.indiv), setDT(everyone.se)[,.(wolfID = level, term, se = std.error)], by = c('wolfID', 'term'))
+everyone.indiv<- merge(setDT(everyone.all.indiv)[,.(wolfID, term, estimate, se)], dat.meta[,.(wolfpop, COD)], by.x ='wolfID', by.y= 'wolfpop', all.x=T)
+everyone.indiv$COD <- factor(everyone.indiv$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+everyone.indiv$COD[is.na(everyone.indiv$COD)] <- "control"
+
+unique(everyone.indiv$term)
+everyone.all.betas.names <- c("log_sl", "cos_ta", # 'log_sl:cos_ta',
+                              "propforest_end_adj", "propopen_end_adj", "propwet_end", "I(log(1 + roadDist_end))",
+                              "I(log(1 + distance2))", "I(log(1 + packDist_end))",
+                              "I(log(ttd1 + 1)):log_sl", "I(log(ttd1 + 1)):cos_ta", 
+                              "I(log(ttd1 + 1)):propforest_end_adj", "I(log(ttd1 + 1)):propopen_end_adj", "I(log(ttd1 + 1)):propwet_end", "I(log(ttd1 + 1)):I(log(1 + roadDist_end))",
+                              "I(log(ttd1 + 1)):I(log(1 + distance2))", "I(log(ttd1 + 1)):I(log(1 + packDist_end))")
+everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
+                                                                                                 "nnDist", "boundaryDist",
+                                                                                                 "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
+                                                                                                 "nnDist-ttd", "boundaryDist-ttd"))
+
+# saveRDS(everyone.indiv, 'data/derived-data/indiveveryone_COD.Rds')
 
 
 
