@@ -78,6 +78,7 @@ dat[,'packDist_end_5'] <- ifelse(dat$packDist_end<=50000, dat$packDist_end, NA)
 
 #### MEANS ####
 dat[wolfID %chin% dat.wnn.lastmo$wolfID, uniqueN(wolfID), by =.(COD)]
+dat[wolfID %chin% dat.wnn.lastmo$wolfID, uniqueN(wolfID), by =.(pop)]
 params[wolfID %chin% dat.wnn.lastmo$wolfID, .(meanShp = mean(shape), meanScl = mean(scale), meanKap = mean(kappa))]
 params[wolfID %chin% dat.wnn.lastmo$wolfID, .(sdShp = sd(shape), sdScl = sd(scale), sdKap = sd(kappa))]
 
