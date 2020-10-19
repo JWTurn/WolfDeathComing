@@ -19,7 +19,8 @@ se <- function(x){
 raw <- 'data/raw-data/'
 derived <- 'data/derived-data/'
 
-dat <- readRDS('data/derived-data/everyone_betas_COD.Rds')
+# dat <- readRDS('data/derived-data/everyone_betas_COD.Rds')
+dat <- readRDS('data/derived-data/indiveveryone_COD.Rds')
 dat.pop <- readRDS('data/derived-data/summarypopeveryone_COD.Rds')
 dat.pop <- setDT(dat.pop)[effect =='fixed' & (term %like% 'log_sl:COD' |term %like%  'cos_ta')]
 params <- readRDS('data/derived-data/moveParams_all.Rds')
@@ -53,11 +54,11 @@ dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 t2d <- seq(0, 61, length.out = 100)
 
 intercept <- 6.576
-forest <- 0.060*0.7858649
+forest <- 0.060*0.7858649 # beta * mean hab
 open <- 0.246*0.05676634
 wet <- 0.126*0.1573687
 
-dat.wide[, spd:= list(list((shape+log_sl + intercept + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
+dat.wide[, spd:= list(list((shape+log_sl + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
 dat.wide[, dir:= list(list(kappa + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
 dat.wide[, ttd:= list(list(seq(0,61,length.out = 100))), by=.(wolfID)]
 
@@ -66,9 +67,10 @@ move[,spd_hr :=spd/5000]
 
 move[spd_hr<0, unique(wolfID)]
 move[,pop:=gsub('_.*$','',wolfID)]
+move[,spd_hr_adj := ifelse(spd_hr>=0, spd_hr, 0)]
 
 gcolors <- c("deepskyblue", "purple", "dark green")
-speed <- ggplot(data=move[spd_hr >=0], aes(x=-ttd, y=(spd_hr), color = COD)) + 
+speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = F, method = 'lm')+
@@ -119,7 +121,7 @@ direction
 speed|direction
 
 
-speed2 <- ggplot(data=move[spd_hr >=0 ], aes(x=-ttd, y=(spd_hr), color = COD)) + 
+speed2 <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = COD)) + 
   #geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = F, method = 'lm')+
