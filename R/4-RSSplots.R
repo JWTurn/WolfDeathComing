@@ -161,7 +161,7 @@ open.75 <- ggplot(data=setDT(logRSS)[var == 'open'& value ==0.75], aes(-ttd, rss
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
- # ylim(-6,15) +
+  ylim(-10,6) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -212,7 +212,7 @@ wet.75 <- ggplot(data=setDT(logRSS)[var == 'wet'& value ==0.75], aes(-ttd, rss.t
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-6,15) +
+  ylim(-10,6) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -239,7 +239,7 @@ road.close <- ggplot(data=setDT(logRSS)[var == 'road'& value ==250], aes(-ttd, r
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  #ylim(-5,6) +
+  ylim(-10,6) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -274,7 +274,7 @@ road.far
 nn.close <- ggplot(data=setDT(logRSS)[var == 'nn'& value ==250], aes(-ttd, rss.ttd, colour=COD)) +
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
-  geom_smooth(size = 1.5, aes(fill = COD)) +
+  geom_smooth(size = 1.5, aes(fill = COD), se = F) +
   # geom_line(data=logRSS.pop[var == 'nn'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
