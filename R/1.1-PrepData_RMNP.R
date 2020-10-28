@@ -234,7 +234,7 @@ ssf.all <- ssf %>% dplyr::select(id, steps) %>% unnest(cols = c(steps))
 #       amt::steps_by_burst() %>% amt::random_steps(n=10)
 #   }))
 
-#### movement parmeters ####
+#### movement parameters ####
 SLdistr <- function(x.col, y.col, date.col, crs, ID, NumbRandSteps, sl_distr, ta_distr) {
   print(ID)
   #create track from dataset
