@@ -84,15 +84,16 @@ params[wolfID %chin% dat.wnn.lastmo$wolfID, .(sdShp = sd(shape), sdScl = sd(scal
 
 #### everyone ####
 
-everyone <- glmmTMB(case_ ~# pop + 
-                      #log_sl:ToD_start +
-                      # sl_ + 
-                      #log_sl:cos_ta +
-                      # log_sl:land_end_adj +
-                      log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end +
+everyone <- glmmTMB(case_ ~
+                     # log_sl:ToD_start +
+                      log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end+
                       log_sl:COD + cos_ta:COD + 
                       I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                       (1|wolf_step_id) +
+                      
+                     # (0+log_sl:ToD_start|PackID) +
+                     # (0+log_sl:propforest_end_adj|PackID) + (0+log_sl:propopen_end_adj|PackID) + (0+log_sl:propwet_end|PackID) +
+                      
                       (0 + (log_sl)|wolfID) +
                       # (0 + (sl_)|wolfID) +
                       #   (0 + (log_sl:cos_ta)|wolfID) +
