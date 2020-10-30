@@ -57,6 +57,7 @@ intercept <- 6.576
 forest <- 0.060*0.7858649 # beta * mean hab
 open <- 0.246*0.05676634
 wet <- 0.126*0.1573687
+logslttdpop <- dat.pop.wide[COD=='control',.(estimate_logsl_ttd)]
 
 dat.wide[, spd:= list(list((shape+ intercept +log_sl + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
 dat.wide[, dir:= list(list(kappa+ intercept + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
