@@ -19,37 +19,50 @@ se <- function(x){
 raw <- 'data/raw-data/'
 derived <- 'data/derived-data/'
 
-logRSS.prop <- readRDS('data/derived-data/logRSS_indiv.Rds')
-logRSS.model.prop <- readRDS('data/derived-data/logRSS_indiv_model.Rds')
+logRSS.prop <- readRDS('data/derived-data/logRSS_indiv_scaled.Rds')
+#logRSS.model.prop <- readRDS('data/derived-data/logRSS_indiv_model.Rds')
 
-logRSS.hab <- logRSS.prop[ttd == '60 days' & (var == 'forest'|var=='open'|var=='wet'|var=='road')]
-logRSS.hab <- logRSS.hab[CJ(wolfID = wolfID, var, x = c(0.25, 0.75, 250, 3000), unique = TRUE)
-   , on = .(wolfID, var, x)
-   , .(wolfID, var, value = x.x, rss)
-   , roll = "nearest"]
-logRSS.hab<-logRSS.hab[value!= 0 & value !=1]
-logRSS.hab$value[logRSS.hab$value%like%0.25] <- 0.25
-logRSS.hab$value[logRSS.hab$value%like%0.7] <- 0.75
-logRSS.hab$value[logRSS.hab$value%like%242] <- 250
-logRSS.hab$value[logRSS.hab$value%like%3000] <- 3000
-
-logRSS.dist <- logRSS.model.prop[ttd == '60 days' & (var == 'nn'|var=='boundary')]
-logRSS.dist <- logRSS.dist[CJ(wolfID = wolfID, var, x = c(250, 3000), unique = TRUE)
+logRSS.indiv <- logRSS.prop[ttd == '60 days']
+logRSS.indiv <- logRSS.indiv[CJ(wolfID = wolfID, var, x = c(0.25, 0.75, 250, 3000), unique = TRUE)
                          , on = .(wolfID, var, x)
                          , .(wolfID, var, value = x.x, rss)
                          , roll = "nearest"]
-logRSS.dist$value[logRSS.dist$value<500] <- 250
-logRSS.dist$value[logRSS.dist$value>500] <- 3000
-logRSS.dist$var[logRSS.dist$var %like% 'boundary'] <- 'pack'
-unique(logRSS.dist$var)
+logRSS.indiv<-logRSS.indiv[value!= 0 & value !=1]
+logRSS.indiv$value[logRSS.indiv$value%like%0.25] <- 0.25
+logRSS.indiv$value[logRSS.indiv$value%like%0.7] <- 0.75
+logRSS.indiv$var[logRSS.indiv$var %like% 'boundary'] <- 'pack'
 
-logRSS.60 <- rbind(logRSS.hab, logRSS.dist)
+
+# 
+# logRSS.hab <- logRSS.prop[ttd == '60 days' & (var == 'forest'|var=='open'|var=='wet'|var=='road')]
+# logRSS.hab <- logRSS.hab[CJ(wolfID = wolfID, var, x = c(0.25, 0.75, 250, 3000), unique = TRUE)
+#    , on = .(wolfID, var, x)
+#    , .(wolfID, var, value = x.x, rss)
+#    , roll = "nearest"]
+# logRSS.hab<-logRSS.hab[value!= 0 & value !=1]
+# logRSS.hab$value[logRSS.hab$value%like%0.25] <- 0.25
+# logRSS.hab$value[logRSS.hab$value%like%0.7] <- 0.75
+# logRSS.hab$value[logRSS.hab$value%like%242] <- 250
+# logRSS.hab$value[logRSS.hab$value%like%3000] <- 3000
+# 
+# logRSS.dist <- logRSS.model.prop[ttd == '60 days' & (var == 'nn'|var=='boundary')]
+# logRSS.dist <- logRSS.dist[CJ(wolfID = wolfID, var, x = c(250, 3000), unique = TRUE)
+#                          , on = .(wolfID, var, x)
+#                          , .(wolfID, var, value = x.x, rss)
+#                          , roll = "nearest"]
+# logRSS.dist$value[logRSS.dist$value<500] <- 250
+# logRSS.dist$value[logRSS.dist$value>500] <- 3000
+# logRSS.dist$var[logRSS.dist$var %like% 'boundary'] <- 'pack'
+# unique(logRSS.dist$var)
+
+#logRSS.60 <- rbind(logRSS.hab, logRSS.dist)
+logRSS.60 <-logRSS.indiv
 names(logRSS.60)[names(logRSS.60)=="rss"] <- "rss.60"
 
-logRSS.indiv <- readRDS('data/derived-data/logRSS_indiv_ttd.Rds')
-logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model_ttd.Rds')
+logRSS <- readRDS('data/derived-data/logRSS_indiv_ttd_scaled.Rds')
+#logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model_ttd.Rds')
 
-logRSS <- rbind(logRSS.indiv[var != 'nn' & var != 'pack'], logRSS.indiv.model[var == 'nn' | var == 'pack'])
+#logRSS <- rbind(logRSS.indiv[var != 'nn' & var != 'pack'], logRSS.indiv.model[var == 'nn' | var == 'pack'])
 
 logRSS.60$value <- as.numeric(logRSS.60$value)
 
