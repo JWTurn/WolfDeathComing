@@ -6,7 +6,9 @@
 ### Packages ----
 # remotes::install_github('bbolker/broom.mixed')
 # remotes::install_github('ropensci/spatsoc')
-libs <- c('data.table', 'dplyr', 'amt', 'lubridate', 'tidyr', 'ggplot2','survival','forcats', 'glmmTMB', 'tibble', 'bbmle', 'patchwork', 'broom.mixed')
+libs <- c('data.table', 'dplyr', 'amt', 'lubridate', 'tidyr', 'ggplot2',
+          'survival','forcats', 'glmmTMB', 'tibble', 'bbmle', 'patchwork',
+          'broom.mixed', 'ggthemes')
 lapply(libs, require, character.only = TRUE)
 
 ### Function ----
@@ -70,6 +72,11 @@ move[spd_hr<0, unique(wolfID)]
 move[,pop:=gsub('_.*$','',wolfID)]
 move[,spd_hr_adj := ifelse(spd_hr>=0, spd_hr, 0)]
 
+dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
+dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
+
+move <- merge(move, dat.meta[,.(wolfpop, PackID)], by.x = 'wolfID', by.y = 'wolfpop')
+
 gcolors <- c("deepskyblue", "purple", "dark green")
 speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = COD)) + 
   geom_line(aes(group = wolfID,alpha = .0001), linetype ='twodash', show.legend = F) +
@@ -85,6 +92,23 @@ speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = COD)) +
   ggtitle("a) Speed") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed 
+
+
+speed.pack <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = PackID)) + 
+  geom_line(aes(group = wolfID, linetype = COD, colour = PackID), alpha = 0.5, show.legend = T) +
+  #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
+  geom_smooth(size = 1.5, aes(fill = PackID), se = FALSE, show.legend = F, method = 'lm')+
+  theme_classic() +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  # scale_colour_colorblind()  +  
+  # scale_fill_colorblind()  +  
+  scale_linetype_manual(values=c("twodash", "dotted", 'longdash'))+
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
+  ggtitle('') +
+  xlab("Time to death (days)") + ylab("Speed (km/hour)")
+speed.pack
 
 speed.disease <- ggplot(data=move[spd_hr >=0 & COD != 'human' & pop == 'RMNP'], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   geom_line(aes(group = wolfID),alpha = .5, linetype ='twodash', show.legend = F) +
