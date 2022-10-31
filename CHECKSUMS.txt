@@ -1,0 +1,6 @@
+"file" "checksum" "filesize" "algorithm"
+"WBI Study Area.dbf" "638b7b263bfd3e79" "76" "xxhash64"
+"WBI Study Area.prj" "81067ab777f9c91c" "453" "xxhash64"
+"WBI Study Area.shp" "0b03f089969ad27b" "587048" "xxhash64"
+"WBI Study Area.shx" "ac428b55e32f226b" "108" "xxhash64"
+"WBI Study Area.zip" "9ccd36e6ef192316" "468926" "xxhash64"

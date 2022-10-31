@@ -8,7 +8,7 @@
 # remotes::install_github('ropensci/spatsoc')
 libs <- c('data.table', 'dplyr', 'amt', 'lubridate', 'tidyr', 'ggplot2',
           'survival','forcats', 'glmmTMB', 'tibble', 'bbmle', 'patchwork',
-          'broom.mixed', 'ggthemes')
+          'broom.mixed', 'ggthemes', 'viridis')
 lapply(libs, require, character.only = TRUE)
 
 ### Function ----
@@ -76,6 +76,10 @@ dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
 dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
 
 move <- merge(move, dat.meta[,.(wolfpop, PackID)], by.x = 'wolfID', by.y = 'wolfpop')
+move[, COD2 := ifelse(COD == 'human', 'human-associated', as.character(COD))]
+move$COD2 <- factor(move$COD2, 
+                      levels = c('control', 'human-associated', 'CDV'))
+summary(move$COD2)
 
 gcolors <- c("deepskyblue", "purple", "dark green")
 
@@ -83,7 +87,7 @@ speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = pop)) +
   geom_line(aes(group = wolfID), alpha = 1, linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
   geom_smooth(size = 1.5, aes(fill = pop), se = T, show.legend = T, method = 'lm')+
-  facet_wrap(~COD) +
+  facet_wrap(~COD2) +
   theme_classic() +
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
@@ -124,6 +128,7 @@ speed.pack <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = PackID)) +
   # scale_colour_colorblind()  +  
   # scale_fill_colorblind()  +  
   scale_linetype_manual(values=c("twodash", "dotted", 'longdash'))+
+  scale_colour_viridis(discrete = T)+
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
   ggtitle('') +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")

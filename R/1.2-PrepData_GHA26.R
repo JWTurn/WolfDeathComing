@@ -157,7 +157,7 @@ dat_all %>% mutate(sr = lapply(trk, summarize_sampling_rate)) %>%
 
 #### layers ####
 
-land <- raster(paste0(raw, 'GHA26landcover2015_wgs84.tif'), )
+land <- raster(paste0(raw, 'GHA26landcover2015_wgs84.tif'), resolution = c(30, 30))
 #cland <- fread(paste0(raw, 'rcl_cowu.csv'))
 cland2 <- fread(paste0(raw, 'rcl_fine.csv'))
 land <- raster::reclassify(land, cland2)

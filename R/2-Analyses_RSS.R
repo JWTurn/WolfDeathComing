@@ -94,16 +94,38 @@ everyone <- glmmTMB(case_ ~
                     data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
                     map = list(theta=factor(c(NA,1:16))), start = list(theta=c(log(1000),seq(0,0, length.out = 16))))
 
+everyone.t <- glmmTMB(case_ ~
+                      #log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end+
+                      log_sl:COD + cos_ta:COD + 
+                      I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
+                      (1|wolf_step_id) + (1|pop)  + (1|PackID) +
+                      (0 + (log_sl)|wolfID) +
+                      (0 + (cos_ta)|wolfID) +
+                      (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
+                      (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
+                      COD:propforest_end_adj + COD:propopen_end_adj + COD:propwet_end + I(log(1+roadDist_end)):COD +
+                      COD:I(log(ttd1 + 1)):propforest_end_adj +  COD:I(log(ttd1 + 1)):propopen_end_adj +  COD:I(log(ttd1 + 1)):propwet_end +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
+                      (0 + propforest_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):propforest_end_adj)|wolfID) +
+                      (0 + propopen_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):propopen_end_adj)|wolfID) +
+                      (0 + propwet_end|wolfID) + (0 + (I(log(ttd1 + 1)):propwet_end)|wolfID) +
+                      (0 + I(log(1+roadDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+roadDist_end)))|wolfID) +
+                      I(log(1+distance2)):COD + I(log(1+packDist_end)):COD +
+                      I(log(ttd1 + 1)):scale(distance2):COD + I(log(ttd1 + 1)):I(log(1+packDist_end)):COD +
+                      (0 + I(log(1+distance2))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+distance2)))|wolfID) +
+                      (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
+                    , family=poisson(),
+                    data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
+                    map = list(theta=factor(c(NA,1:18))), start = list(theta=c(log(1000),seq(0,0, length.out = 18))))
 
-summary(everyone)
+summary(everyone.t)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
 #saveRDS(popeveryone, 'data/derived-data/popeveryone_COD.Rds')
-sum.everyone<- tidy(everyone)
+sum.everyone<- tidy(everyone.t)
 #saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD.Rds')
 
-everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
+everyone.ran_vals <-tidy(everyone.t, effect= 'ran_vals')
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
