@@ -63,6 +63,13 @@ dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid
 dat[,'propopen_end_adj'] <- dat$propopen_end + dat$propurban_end 
 
 # 
+dat[,mean(propwet_end), by=.(pop,ua)]
+dat[,mean(propconif_end), by=.(pop,ua)]
+dat[,mean(propdecid_end), by=.(pop,ua)]
+dat[,mean(propmixed_end), by=.(pop,ua)]
+dat[,mean(propshrub_end), by=.(pop,ua)]
+dat[,mean(propurban_end), by=.(pop,ua)]
+
 # dat[,mean(propwet_end), by=.(wolfID,ua)]
 # dat[,mean(propforest_end_adj), by=.(wolfID,ua)]
 # dat[,mean(propopen_end_adj), by=.(wolfID,ua)]
