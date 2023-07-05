@@ -22,8 +22,8 @@ raw <- 'data/raw-data/'
 derived <- 'data/derived-data/'
 
 # dat <- readRDS('data/derived-data/everyone_betas_COD.Rds')
-dat <- readRDS('data/derived-data/indiveveryone_COD.Rds')
-dat.pop <- readRDS('data/derived-data/summarypopeveryone_COD.Rds')
+dat <- readRDS('data/derived-data/indiveveryone_COD_scaled.Rds')
+dat.pop <- readRDS('data/derived-data/summarypopeveryone_COD_scaled.Rds')
 dat.pop <- setDT(dat.pop)[effect =='fixed' & (term %like% 'log_sl:COD' |term %like%  'cos_ta')]
 params <- readRDS('data/derived-data/moveParams_all.Rds')
 
@@ -55,14 +55,14 @@ dat.pop.wide <- setDT(merge(dat.pop.wide, cod.params, by = 'COD', all.x = T))
 
 t2d <- seq(0, 61, length.out = 100)
 
-intercept <- 6.576
+intercept <-  6.438 #6.576
 forest <- 0.060*0.7858649 # beta * mean hab
 open <- 0.246*0.05676634
 wet <- 0.126*0.1573687
 logslttdpop <- dat.pop.wide[COD=='control',.(estimate_logsl_ttd)]
 
-dat.wide[, spd:= list(list((shape+ intercept +log_sl + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
-dat.wide[, dir:= list(list(kappa+ intercept + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
+dat.wide[, spd:= list(list((shape + intercept +log_sl + forest + open + wet +(`log_sl-ttd`*t2d))*(scale))), by=.(wolfID)]
+dat.wide[, dir:= list(list(kappa + intercept + cos_ta + (`cos_ta-ttd`*t2d))), by=.(wolfID)]
 dat.wide[, ttd:= list(list(seq(0,61,length.out = 100))), by=.(wolfID)]
 
 move <- dat.wide[, .(spd = unlist(spd), dir=unlist(dir), ttd= unlist(ttd)), by=.(wolfID,COD)]
@@ -82,6 +82,7 @@ move$COD2 <- factor(move$COD2,
 summary(move$COD2)
 
 gcolors <- c("deepskyblue", "purple", "dark green")
+gcolors2 <- c("dark green", "deepskyblue", "purple")
 
 speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = pop)) + 
   geom_line(aes(group = wolfID), alpha = 1, linetype ='twodash', show.legend = F) +
@@ -137,7 +138,7 @@ speed.pack
 speed.disease <- ggplot(data=move[spd_hr >=0 & COD != 'human' & pop == 'RMNP'], aes(x=-ttd, y=(spd_hr), color = COD)) + 
   geom_line(aes(group = wolfID),alpha = .5, linetype ='twodash', show.legend = F) +
   #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
-  geom_smooth(size = 1.5, aes(fill = COD), se = FALSE, show.legend = T, method = 'lm')+
+  geom_smooth(size = 1.5, aes(fill = COD), se = T, show.legend = T, method = 'lm')+
   theme_classic() +
   theme(text = element_text(size=15)) +
   #theme(plot.title = element_text(hjust = 0.5)) +
@@ -149,6 +150,26 @@ speed.disease <- ggplot(data=move[spd_hr >=0 & COD != 'human' & pop == 'RMNP'], 
  # ggtitle("a)") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed.disease 
+
+move[,COD3:=ifelse(COD == 'control' & pop == 'GHA26', 'control-noCDV', as.character(COD))]
+move$COD3 <- factor(move$COD3, 
+                    levels = c('control-noCDV', 'control', 'human', 'CDV'))
+
+speed.disease2 <- ggplot(data=move[spd_hr >=0 & COD3 != 'human'], aes(x=-ttd, y=(spd_hr), color = COD3)) + 
+  geom_line(aes(group = wolfID),alpha = .5, linetype ='twodash', show.legend = F) +
+  #geom_hline(yintercept=790.9842, linetype='dashed', size = 1) +
+  geom_smooth(linewidth = 1.5, aes(fill = COD3), se = T, show.legend = T, method = 'lm')+
+  theme_classic() +
+  theme(text = element_text(size=15)) +
+  #theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x =  element_text(size = 15)) + 
+  #  theme(legend.position = "none") +
+  scale_colour_manual("", values = gcolors2)  +  
+  scale_fill_manual("", values = gcolors2)  +  
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) +
+  # ggtitle("a)") +
+  xlab("Time to death (days)") + ylab("Speed (km/hour)")
+speed.disease2 
 
 
 direction <- ggplot(data=move, aes(x=-ttd, y=dir, color = COD)) + 

@@ -87,37 +87,26 @@ hist(dat[wolfID %chin% dat.wnn.lastmo$wolfID & case_==TRUE, log(distance2+1) ])
 #### everyone ####
 
 everyone <- glmmTMB(case_ ~
-                      log_sl:ToD_start +
-                      #log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end+
+                      log_sl:propforest_end_adj + log_sl:propopen_end_adj + log_sl:propwet_end+
                       log_sl:COD + cos_ta:COD + 
                       I(log(ttd1 + 1)):log_sl:COD + I(log(ttd1 + 1)):cos_ta:COD +
                       (1|wolf_step_id) +
-                      
-                     # (0+log_sl:ToD_start|PackID) +
-                     # (0+log_sl:propforest_end_adj|PackID) + (0+log_sl:propopen_end_adj|PackID) + (0+log_sl:propwet_end|PackID) +
-                      
                       (0 + (log_sl)|wolfID) +
-                      # (0 + (sl_)|wolfID) +
-                      #   (0 + (log_sl:cos_ta)|wolfID) +
                       (0 + (cos_ta)|wolfID) +
                       (0 + (I(log(ttd1 + 1)):log_sl)|wolfID) +
                       (0 + (I(log(ttd1 + 1)):cos_ta)|wolfID) +
-                      # COD:land_end_adj + I(log(1+roadDist_end)):COD +
-                      # COD:I(log(ttd1 + 1)):land_end_adj +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
-                      COD:propforest_end_adj + COD:propopen_end_adj + COD:propwet_end + I(log(1+roadDist_end)):COD +
-                      COD:I(log(ttd1 + 1)):propforest_end_adj +  COD:I(log(ttd1 + 1)):propopen_end_adj +  COD:I(log(ttd1 + 1)):propwet_end +  I(log(ttd1 + 1)):I(log(1+roadDist_end)):COD +
-                      
-                      # (0 + land_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):land_end_adj)|wolfID) +
+                      COD:propforest_end_adj + COD:propopen_end_adj + COD:propwet_end + 
+                      scale(I(log(1+roadDist_end))):COD +
+                      COD:I(log(ttd1 + 1)):propforest_end_adj +  COD:I(log(ttd1 + 1)):propopen_end_adj +  COD:I(log(ttd1 + 1)):propwet_end +  
+                      I(log(ttd1 + 1)):scale(I(log(1+roadDist_end))):COD +
                       (0 + propforest_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):propforest_end_adj)|wolfID) +
                       (0 + propopen_end_adj|wolfID) + (0 + (I(log(ttd1 + 1)):propopen_end_adj)|wolfID) +
                       (0 + propwet_end|wolfID) + (0 + (I(log(ttd1 + 1)):propwet_end)|wolfID) +
-                      (0 + I(log(1+roadDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+roadDist_end)))|wolfID) +
-                      
-                      scale(distance2):COD + I(log(1+packDist_end)):COD +
-                      I(log(ttd1 + 1)):scale(distance2):COD + I(log(ttd1 + 1)):I(log(1+packDist_end)):COD +
-                      
-                      (0 + scale(distance2)|wolfID) + (0 + (I(log(ttd1 + 1)):scale(distance2))|wolfID) +
-                      (0 + I(log(1+packDist_end))|wolfID) + (0 + (I(log(ttd1 + 1)):I(log(1+packDist_end)))|wolfID)
+                      (0 + scale(I(log(1+roadDist_end)))|wolfID) + (0 + (I(log(ttd1 + 1)):scale(I(log(1+roadDist_end))))|wolfID) +
+                      scale(I(log(1+distance2))):COD + scale(I(log(1+packDist_end))):COD +
+                      I(log(ttd1 + 1)):scale(I(log(1+distance2))):COD + I(log(ttd1 + 1)):scale(I(log(1+packDist_end))):COD +
+                      (0 + scale(I(log(1+distance2)))|wolfID) + (0 + (I(log(ttd1 + 1)):scale(I(log(1+distance2))))|wolfID) +
+                      (0 + scale(I(log(1+packDist_end)))|wolfID) + (0 + (I(log(ttd1 + 1)):scale(I(log(1+packDist_end))))|wolfID)
                     , family=poisson(),
                     data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
                     map = list(theta=factor(c(NA,1:16))), start = list(theta=c(log(1000),seq(0,0, length.out = 16))))
@@ -130,9 +119,9 @@ summary(everyone)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
 popeveryone<- summary(everyone)$coef$cond[-1, 1:2]
-#saveRDS(popeveryone, 'data/derived-data/popeveryone_COD.Rds')
+#saveRDS(popeveryone, 'data/derived-data/popeveryone_COD_scaled.Rds')
 sum.everyone<- tidy(everyone)
-#saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD.Rds')
+#saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD_scaled.Rds')
 
 everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
 # everyone.ran_pars <-tidy(everyone, effect= 'ran_pars')
@@ -150,15 +139,19 @@ everyone.indiv$COD[is.na(everyone.indiv$COD)] <- "control"
 
 unique(everyone.indiv$term)
 everyone.all.betas.names <- c("log_sl", "cos_ta", # 'log_sl:cos_ta',
-                              "propforest_end_adj", "propopen_end_adj", "propwet_end", "I(log(1 + roadDist_end))",
-                              "scale(distance2)", "I(log(1 + packDist_end))",
+                              "propforest_end_adj", "propopen_end_adj", "propwet_end",
+                              "scale(I(log(1 + roadDist_end)))",
+                              "scale(I(log(1 + distance2)))", "scale(I(log(1 + packDist_end)))",
                               "I(log(ttd1 + 1)):log_sl", "I(log(ttd1 + 1)):cos_ta", 
-                              "I(log(ttd1 + 1)):propforest_end_adj", "I(log(ttd1 + 1)):propopen_end_adj", "I(log(ttd1 + 1)):propwet_end", "I(log(ttd1 + 1)):I(log(1 + roadDist_end))",
-                              "I(log(ttd1 + 1)):scale(distance2)", "I(log(ttd1 + 1)):I(log(1 + packDist_end))")
+                              "I(log(ttd1 + 1)):propforest_end_adj", "I(log(ttd1 + 1)):propopen_end_adj", "I(log(ttd1 + 1)):propwet_end", 
+                              "I(log(ttd1 + 1)):scale(I(log(1 + roadDist_end)))",
+                              "I(log(ttd1 + 1)):scale(I(log(1 + distance2)))", "I(log(ttd1 + 1)):scale(I(log(1 + packDist_end)))")
 everyone.indiv$term <- factor(everyone.indiv$term, levels = everyone.all.betas.names, labels = c("log_sl", "cos_ta",'forest', "open", "wet", "roadDist",
                                                                                                  "nnDist", "boundaryDist",
                                                                                                  "log_sl-ttd", "cos_ta-ttd", "forest-ttd", "open-ttd", "wet-ttd", "roadDist-ttd",
                                                                                                  "nnDist-ttd", "boundaryDist-ttd"))
+
+summary(everyone.indiv$term)   
 
 # saveRDS(everyone.indiv, 'data/derived-data/indiveveryone_COD_scaled.Rds')
 
@@ -823,8 +816,9 @@ control.packfar.2 <- dat[wolfID %chin% dat.wnn.lastmo$wolfID,.(ToD_start = facto
                                                            wolf_step_id = NA, wolfID= NA)]
 p.control.packfar.2 <- predict(everyone, newdata = control.packfar.2, type='link', re.form = NA)
 
-### INDIVs ###
+### INDIVs ####
 p.h2.indiv <- function(ids, DT, mod, death, var, value){
+  if(!is.null(var) & !is.null(value)){
   lapply(ids, function(i) {
     unique(
       DT[#wolfID == i,
@@ -851,10 +845,44 @@ p.h2.indiv <- function(ids, DT, mod, death, var, value){
           re.form = NULL
         ), wolfID = i)]
     )
-  })}
+  })
+    } else{
+      lapply(ids, function(i) {
+        unique(
+          DT[#wolfID == i,
+            ,.(h2 = predict(
+              mod,
+              newdata = .SD[, .(
+                ToD_start = factor('day', levels = levels(ToD_start)),
+                log_sl = mean(log_sl),
+                cos_ta = mean(cos_ta),
+                # land_end_adj = factor('forest', levels = levels(land_end_adj)),
+                propforest_end_adj = mean(propforest_end_adj, na.rm = T),
+                propopen_end_adj = mean(propopen_end_adj, na.rm = T),
+                propwet_end= mean(propwet_end, na.rm = T), 
+                roadDist_end = median(roadDist_end, na.rm = T),
+                distance2 = median(distance2, na.rm = T),
+                nnDist_end = median(nnDist_end, na.rm = T),
+                packDist_end = median(packDist_end, na.rm = T),
+                COD = factor(death, levels = levels(COD)),
+                ttd1 = 60,
+                wolf_step_id = NA,
+                wolfID = i
+              )],
+              type = "link",
+              re.form = NULL
+            ), wolfID = i)]
+        )
+      })}
+  }
+
+
 
 ### CDV ####
 CDV.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='CDV', wolfID])
+
+# all median
+p.CDV.2.indiv <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = NULL, value = NULL)
 
 # forest 
 p.CDV.forest75.2.indiv <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, death = 'CDV', var = 'forest', value = 0.75)
@@ -892,6 +920,9 @@ p.CDV.packfar.2.indiv <-p.h2.indiv(ids = CDV.wolfID, DT = dat, mod = everyone, d
 ### human ####
 human.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='human', wolfID])
 
+# all median
+p.human.2.indiv <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = NULL, value = NULL)
+
 # forest 
 p.human.forest75.2.indiv <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyone, death = 'human', var = 'forest', value = 0.75)
 
@@ -927,6 +958,9 @@ p.human.packfar.2.indiv <-p.h2.indiv(ids = human.wolfID, DT = dat, mod = everyon
 
 ### control ####
 control.wolfID <- unique(dat[wolfID %chin% dat.wnn.lastmo$wolfID & COD=='control', wolfID])
+
+# all median
+p.control.2.indiv <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = NULL, value = NULL)
 
 # forest 
 p.control.forest75.2.indiv <-p.h2.indiv(ids = control.wolfID, DT = dat, mod = everyone, death = 'control', var = 'forest', value = 0.75)
@@ -1601,8 +1635,13 @@ logRSS.indiv$COD <- factor(logRSS.indiv$COD, levels = c('control','human','CDV')
 
 logRSS.indiv[,pop:=gsub('_.*$','',wolfID)]
 
-#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv_ttd_scaled.Rds')
 
+#saveRDS(logRSS.indiv, 'data/derived-data/logRSS_indiv_ttd_scaled.Rds')
+gen.h2.indiv <- rbind(rbindlist(p.CDV.2.indiv), rbindlist(p.human.2.indiv), rbindlist(p.control.2.indiv))
+
+
+setnames(gen.h2.indiv, "h2", "h2.60")
+#saveRDS(gen.h2.indiv, 'data/derived-data/genh2_indiv_ttd_scaled.Rds')
 
 #saveRDS(logRSS, 'data/derived-data/logRSS_ttd_scaled.Rds')
 

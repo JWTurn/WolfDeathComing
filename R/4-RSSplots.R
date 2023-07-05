@@ -19,53 +19,14 @@ se <- function(x){
 raw <- 'data/raw-data/'
 derived <- 'data/derived-data/'
 
-logRSS.prop <- readRDS('data/derived-data/logRSS_indiv_scaled.Rds')
-#logRSS.model.prop <- readRDS('data/derived-data/logRSS_indiv_model.Rds')
+gen.h2.indiv <- readRDS('data/derived-data/genh2_indiv_ttd_scaled.Rds')
 
-logRSS.indiv <- logRSS.prop[ttd == '60 days']
-logRSS.indiv <- logRSS.indiv[CJ(wolfID = wolfID, var, x = c(0.25, 0.75, 250, 3000), unique = TRUE)
-                         , on = .(wolfID, var, x)
-                         , .(wolfID, var, value = x.x, rss)
-                         , roll = "nearest"]
-logRSS.indiv<-logRSS.indiv[value!= 0 & value !=1]
-logRSS.indiv$value[logRSS.indiv$value%like%0.25] <- 0.25
-logRSS.indiv$value[logRSS.indiv$value%like%0.7] <- 0.75
-logRSS.indiv$var[logRSS.indiv$var %like% 'boundary'] <- 'pack'
 
-# 
-# logRSS.hab <- logRSS.prop[ttd == '60 days' & (var == 'forest'|var=='open'|var=='wet'|var=='road')]
-# logRSS.hab <- logRSS.hab[CJ(wolfID = wolfID, var, x = c(0.25, 0.75, 250, 3000), unique = TRUE)
-#    , on = .(wolfID, var, x)
-#    , .(wolfID, var, value = x.x, rss)
-#    , roll = "nearest"]
-# logRSS.hab<-logRSS.hab[value!= 0 & value !=1]
-# logRSS.hab$value[logRSS.hab$value%like%0.25] <- 0.25
-# logRSS.hab$value[logRSS.hab$value%like%0.7] <- 0.75
-# logRSS.hab$value[logRSS.hab$value%like%242] <- 250
-# logRSS.hab$value[logRSS.hab$value%like%3000] <- 3000
-# 
-# logRSS.dist <- logRSS.model.prop[ttd == '60 days' & (var == 'nn'|var=='boundary')]
-# logRSS.dist <- logRSS.dist[CJ(wolfID = wolfID, var, x = c(250, 3000), unique = TRUE)
-#                          , on = .(wolfID, var, x)
-#                          , .(wolfID, var, value = x.x, rss)
-#                          , roll = "nearest"]
-# logRSS.dist$value[logRSS.dist$value<500] <- 250
-# logRSS.dist$value[logRSS.dist$value>500] <- 3000
-# logRSS.dist$var[logRSS.dist$var %like% 'boundary'] <- 'pack'
-# unique(logRSS.dist$var)
+logRSS <- readRDS('data/derived-data/logRSS_indiv_ttd.Rds')
+logRSS <- merge(logRSS, gen.h2.indiv, by = 'wolfID')
+logRSS[, rss.60 := h2 - h2.60]
 
-#logRSS.60 <- rbind(logRSS.hab, logRSS.dist)
-logRSS.60 <-logRSS.indiv
-names(logRSS.60)[names(logRSS.60)=="rss"] <- "rss.60"
 
-logRSS <- readRDS('data/derived-data/logRSS_indiv_ttd_scaled.Rds')
-#logRSS.indiv.model <- readRDS('data/derived-data/logRSS_indiv_model_ttd.Rds')
-
-#logRSS <- rbind(logRSS.indiv[var != 'nn' & var != 'pack'], logRSS.indiv.model[var == 'nn' | var == 'pack'])
-
-logRSS.60$value <- as.numeric(logRSS.60$value)
-
-logRSS <- merge(logRSS, logRSS.60, by = c('wolfID','var', 'value'))
 logRSS[,rss.ttd := rss + rss.60]
 
 dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
@@ -100,7 +61,7 @@ open.75 <- ggplot(data=setDT(logRSS)[var == 'open'& value ==0.75], aes(-ttd, rss
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,6) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  #+  
   #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -121,7 +82,7 @@ wet.75 <- ggplot(data=setDT(logRSS)[var == 'wet'& value ==0.75], aes(-ttd, rss.t
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
-  ylim(-10,6) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  #+  
   #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
@@ -131,7 +92,7 @@ road.close <- ggplot(data=setDT(logRSS)[var == 'road'& value ==250], aes(-ttd, r
   geom_line(aes(group = wolfID),alpha = .95, linetype ='twodash', show.legend = F) +
   #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
   geom_smooth(size = 1.5, aes(fill = pop), show.legend = F) +
-  # geom_line(data=logRSS.pop[var == 'road'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
   geom_hline(yintercept = 0,colour = "black",lty = 2, size = .7) +
   #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
   facet_wrap(~COD2) +
@@ -141,11 +102,13 @@ road.close <- ggplot(data=setDT(logRSS)[var == 'road'& value ==250], aes(-ttd, r
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,6) +
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
+  ylim(-10,10) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  #+  
-  #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+#theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 road.close
+
 
 nn.close <- ggplot(data=setDT(logRSS)[var == 'nn'& value ==250], aes(-ttd, rss.ttd, colour=pop)) +
   geom_line(aes(group = wolfID),alpha = .95, linetype ='twodash', show.legend = F) +
@@ -187,7 +150,7 @@ open.75.pack <- ggplot(data=setDT(logRSS)[var == 'open'& value ==0.75], aes(-ttd
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,6) +
+  ylim(-10,10) +
   scale_colour_viridis(discrete = T)  #+  
 #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 open.75.pack
@@ -206,7 +169,7 @@ wet.75.pack <- ggplot(data=setDT(logRSS)[var == 'wet'& value ==0.75], aes(-ttd, 
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,6) +
+  ylim(-10,10) +
   scale_colour_viridis(discrete = T)  #+  
 #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 wet.75.pack
@@ -225,7 +188,7 @@ road.close.pack <- ggplot(data=setDT(logRSS)[var == 'road'& value ==250], aes(-t
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,6) +
+  ylim(-10,10) +
   scale_colour_viridis(discrete = T)  #+  
 #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 road.close.pack
@@ -244,12 +207,102 @@ nn.close.pack <- ggplot(data=setDT(logRSS)[var == 'nn'& value ==250], aes(-ttd, 
   theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
   theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
         axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
-  ylim(-10,6) +
+  ylim(-10,10) +
   scale_colour_viridis(discrete = T)  #+  
 #theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
 nn.close.pack
 
 open.75.pack + wet.75.pack + road.close.pack + nn.close.pack
+
+
+#### RMNP only ----
+#logRSS.rmnp <- setDT(logRSS)[pop == 'RMNP' & COD != 'human']
+logRSS.rmnp <- setDT(logRSS)[COD != 'human']
+logRSS.rmnp[,COD3:=ifelse(COD == 'control' & pop == 'GHA26', 'control-noCDV', as.character(COD))]
+logRSS.rmnp$COD3 <- factor(logRSS.rmnp$COD3, 
+                    levels = c('control-noCDV', 'control', 'CDV'))
+
+wet.75.rmnp <- ggplot(data=logRSS.rmnp[var == 'wet'& value ==0.75], aes(-ttd, rss.ttd, color = COD2)) +
+  geom_line(aes(group = wolfID),alpha = .95, linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD2), show.legend = T) +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, linewidth = .7) +
+  #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
+ # facet_wrap(~COD2) +
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("High proportion of wet areas") + 
+  theme_classic() +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
+  ylim(-10,6) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors)  #+  
+#theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+wet.75.rmnp
+
+nn.close <- ggplot(data=logRSS.rmnp[var == 'nn'& value ==250], aes(-ttd, rss.ttd, colour=COD2)) +
+  geom_line(aes(group = wolfID),alpha = .95, linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD2), show.legend = T) +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, linewidth = .7) +
+  #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
+  #facet_wrap(~COD2) +
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("Proximity to nearest neighbor") + 
+  theme_classic() +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  # ylim(-3,6) +
+  scale_colour_manual("", values = gcolors)  +  
+  scale_fill_manual("", values = gcolors) # +  
+#theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+nn.close
+
+nn.close2 <- ggplot(data=logRSS.rmnp[var == 'nn'& value ==250], aes(-ttd, rss.ttd, colour=COD3)) +
+  geom_line(aes(group = wolfID),alpha = .95, linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD3), show.legend = T) +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, linewidth = .7) +
+  #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
+  #facet_wrap(~COD2) +
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("Proximity to nearest neighbor") + 
+  theme_classic() +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  # ylim(-3,6) +
+  scale_colour_manual("", values = gcolors2)  +  
+  scale_fill_manual("", values = gcolors2) # +  
+#theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+nn.close2
+
+wet.75.rmnp2 <- ggplot(data=logRSS.rmnp[var == 'wet'& value ==0.75], aes(-ttd, rss.ttd, color = COD3)) +
+  geom_line(aes(group = wolfID),alpha = .95, linetype ='twodash', show.legend = F) +
+  #geom_point(shape = 1, aes(alpha = .001), show.legend = F) +
+  geom_smooth(size = 1.5, aes(fill = COD3), show.legend = T) +
+  # geom_line(data=logRSS.pop[var == 'wet'& ttd=='1 day'], aes(x, rss.ttd, colour=COD)) +
+  geom_hline(yintercept = 0,colour = "black",lty = 2, linewidth = .7) +
+  #geom_ribbon(aes(x, ymin = (rss.ttd - 1.96*se), ymax = (rss.ttd + 1.96*se), fill=COD, alpha = .2))+
+  # facet_wrap(~COD2) +
+  ylab("logRSS") + xlab("Time to death (days)") +
+  ggtitle("High proportion of wet areas") + 
+  theme_classic() +
+  theme(plot.title=element_text(size=12,hjust = 0.05),axis.text.x = element_text(size=12), axis.title = element_text(size=15),axis.text.y = element_text(size=12)) +
+  theme(axis.text.x = element_text(margin=margin(10,10,10,10,"pt")),
+        axis.text.y = element_text(margin=margin(10,10,10,10,"pt")))+ theme(axis.ticks.length = unit(-0.25, "cm")) +
+  theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
+  ylim(-10,6) +
+  scale_colour_manual("", values = gcolors2)  +  
+  scale_fill_manual("", values = gcolors2)  #+  
+#theme(legend.key = element_blank()) + theme(legend.position = 'right') + theme(legend.text = element_text(size = 10))
+wet.75.rmnp2
 
 ####
 forest.25 <- ggplot(data=setDT(logRSS)[var == 'forest'& value ==0.25], aes(-ttd, rss.ttd, colour=COD)) +
