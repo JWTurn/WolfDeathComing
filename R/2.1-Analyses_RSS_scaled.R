@@ -29,7 +29,7 @@ dat.RMNP[,'pop'] <- 'RMNP'
 dat.RMNP$wolfID <- paste(dat.RMNP$pop, dat.RMNP$id, sep = '_')
 dat.GHA26[,'pop'] <- 'GHA26'
 dat.GHA26$wolfID <- paste(dat.GHA26$pop, dat.GHA26$id, sep = '_')
-dat<-rbind(dat.RMNP, dat.GHA26, fill=T)
+dat <-rbind(dat.RMNP, dat.GHA26, fill=T)
 
 dat[ttd1>=0 & ttd2>=0, unique(wolfID)]
 
