@@ -8,4 +8,5 @@ data/
 \.DS_Store
 plots/
 R/ForOthers/
+R/FromOthers/
 R/OLD/
