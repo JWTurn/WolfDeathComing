@@ -1,0 +1,47 @@
+---
+output: github_document
+---
+
+## Death comes for us all: relating movement-integrated habitat selection and social behavior to human-associated and disease-related mortality among grey wolves
+
+<!-- [![DOI](https://zenodo.org/badge/268907300.svg)](https://zenodo.org/badge/latestdoi/268907300) -->
+
+* Authors:
+    + [Julie W. Turner](https://www.julwturner.com)
+    + [Christina M. Prokopenko](https://www.researchgate.net/profile/Christina-Prokopenko)
+    + Katrien A. Kingdon
+    + Daniel L. J. Dupont
+    + Sana Zabihi-Seissan
+    + [Eric Vander Wal](https://weel.gitlab.io)
+    
+
+This repository contains the data and code accompanying the paper "Death comes for us all: relating movement-integrated habitat selection and social behavior to human-associated and disease-related mortality among grey wolves". 
+
+
+## Abstract
+Avoiding death affects biological processes, including behavior. Habitat selection, movement, and sociality are highly flexible behaviors that influence the mortality risks and subsequent fitness of individuals. In the Anthropocene, animals are experiencing increased risks from direct human causes and increased spread of infectious diseases. Using integrated step selection analysis, we tested how the habitat selection, movement, and social behaviors of grey wolves vary in the two months prior to death due to humans (being shot or trapped) or canine distemper virus (CDV). We further tested how those behaviors vary as a prelude to death. We studied populations of wolves that occurred under two different management schemes: a national park managed for conservation and a provincially managed multi-use area. Behaviors that changed prior to death were strongly related to how an animal eventually died. Wolves killed by humans moved slower than wolves that survived and selected to be nearer roads closer in time to their death. Wolves that died due to CDV moved progressively slower as they neared death and reduced their avoidance of wet habitats. All animals, regardless of dying or living, maintained selection to be near packmates across time, which seemingly contributed to disease dynamics in the packs infected with CDV. There were no noticeable differences in behavior between the two management areas. Overall, habitat selection, movement, and sociality interact to put individuals and groups at greater risks, influencing their cause-specific mortality.
+
+## Data
+Data included are the calculated movement parameters (steps and turn angles) and extracted covariates for each step used in ananlyses (scripts 2-6). Descriptions of the variables in the data for analysis are below.
+
+
+
+| variable          | description                                                                                           |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| wolfID              |  individual wolf ID by study site                                                                           |
+| wolf_step_id           |  unique step ID by individual                                                                                   |
+| pop  |  study site: Riding Mountain National Park (`RMNP`) or provincial game management area (`GHA26`)                                                                        |
+| PackID              |  pack to which individual belongs                                                                                        |
+| COD        |  cause of death: `control`, `human`, or canine distemper virus (`CDV`)                                  |
+| case_          |  observed step (`TRUE`) vs random step (`FALSE`)                                        |
+| log_sl            |  natural log transformed step length                                                                                          |
+| cos_ta       |  cosine transformed turn angle|
+| propforest_end_adj      |  proportion of forest (coniferous, deciduous, or mixed) within 100m of the location at the end of a step         |
+| propopen_end_adj      |  proportion of open habitats (open or urban) within 100m of the location at the end of a step         |
+| propwet_end   |  proportion of wet habitats (wetland or water) within 100m of the location at the end of a step      |
+| roadDist_end    |  distance from nearest road in m at the end of a step                  |
+| distance2     |  distance from nearest neighbor in m at the end of a step                  |
+| packDist_end  |  distance outside of pack boundary in m at the end of a step                            |
+| packYN_end   |  was the individual within their pack boundary (`pack`) or not (`out-pack`) at the end of a step                             |
+| ttd1  |  time to death in days at the start of a step                            |
+| ToD_start   |  time of day (`day`, `night`, or `twilight`) at the start of a step             |

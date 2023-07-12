@@ -21,54 +21,57 @@ derived <- 'data/derived-data/'
 
 ### SSF data with all covariates ----
 set.seed(53)
-dat.RMNP <- readRDS('data/derived-data/ssfAllCov_RMNP.Rds')
-dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_GHA26.Rds')
 
-
-dat.RMNP[,'pop'] <- 'RMNP'
-dat.RMNP$wolfID <- paste(dat.RMNP$pop, dat.RMNP$id, sep = '_')
-dat.GHA26[,'pop'] <- 'GHA26'
-dat.GHA26$wolfID <- paste(dat.GHA26$pop, dat.GHA26$id, sep = '_')
-dat <-rbind(dat.RMNP, dat.GHA26, fill=T)
-
-dat[ttd1>=0 & ttd2>=0, unique(wolfID)]
-
-dat<-dat[ttd1>=0 & ttd2>=0]
-
-#dat[,'wtd1'] <- as.integer(dat$ttd1/7)
-
-dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
-dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
-
+# movement parameters by individual
 params <- readRDS('data/derived-data/moveParams_all.Rds')
 
-dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
+### Prep done for published data ----
+# dat.RMNP <- readRDS('data/derived-data/ssfAllCov_RMNP.Rds')
+# dat.GHA26 <- readRDS('data/derived-data/ssfAllCov_GHA26.Rds')
 
-dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
+# dat.RMNP[,'pop'] <- 'RMNP'
+# dat.RMNP$wolfID <- paste(dat.RMNP$pop, dat.RMNP$id, sep = '_')
+# dat.GHA26[,'pop'] <- 'GHA26'
+# dat.GHA26$wolfID <- paste(dat.GHA26$pop, dat.GHA26$id, sep = '_')
+# dat <-rbind(dat.RMNP, dat.GHA26, fill=T)
+# 
+# dat[ttd1>=0 & ttd2>=0, unique(wolfID)]
+# 
+# dat<-dat[ttd1>=0 & ttd2>=0]
+# 
+# 
+# dat.meta <- fread(paste0(raw, 'wolf_metadata_all.csv'))
+# dat.meta[,'wolfpop'] <- paste(dat.meta$pop, dat.meta$WolfID, sep = '_')
+# 
+# dat[,'ua'] <- ifelse(dat$case_ == T, 'used', 'avail')
+# 
+# dat<- merge(dat, dat.meta, by.x = c('id', 'pop'), by.y = c('WolfID', 'pop'))
+# 
+# dat$packDist_end <- ifelse(dat$packDistadj_end >=0, dat$packDistadj_end, 0)
+# 
+# 
+# dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end +dat$propshrub_end # remove shrub?
+# dat[,'propopen_end_adj'] <- dat$propopen_end + dat$propurban_end 
+# 
+# dat[,'wolf_step_id'] <- paste(dat$wolfID, dat$step_id_, sep = '_')
+# 
+# dat$COD <- factor(dat$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
+# dat$COD[is.na(dat$COD)] <- "control"
+# 
+# dat$ToD_start <- as.factor(dat$ToD_start)
 
-dat$packDist_end <- ifelse(dat$packDistadj_end >=0, dat$packDistadj_end, 0)
+# dat.pub <- dat[,.(wolfID, wolf_step_id, pop, PackID, COD, case_, log_sl, cos_ta, 
+#                   propforest_end_adj, propopen_end_adj, propwet_end, roadDist_end,
+#                   distance2, packDist_end, packYN_end, ttd1, ToD_start)]
+# saveRDS(dat.pub, file.path('data', 'derived-data', 'ssfAllCov_pub.Rds'))
+
+dat <- readRDS('data/derived-data/ssfAllCov_pub.Rds')
 
 
-dat[,'propforest_end_adj'] <- dat$propconif_end+dat$propmixed_end +dat$propdecid_end +dat$propshrub_end # remove shrub?
-dat[,'propopen_end_adj'] <- dat$propopen_end + dat$propurban_end 
-
-dat[,'wolf_step_id'] <- paste(dat$wolfID, dat$step_id_, sep = '_')
-
-dat$COD <- factor(dat$COD, levels = c('none','human','cdv'), labels = c('control','human','CDV'))
-dat$COD[is.na(dat$COD)] <- "control"
-
-dat$ToD_start <- as.factor(dat$ToD_start)
-
-
-#View(dat[wolfID %in% dat.wnn.lastmo$wolfID])
 #### only wolves with packmates ####
 dat[,uniqueN(step_id_), by=.(wolfID)]
 dat.wnn <- dat[!is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
 dat.wnn.lastmo <- dat[ttd1<=31 & !is.na(distance2),uniqueN(step_id_), by=.(wolfID)]
-dat.wnn.lastmo.cod <- merge(dat.wnn.lastmo, dat.meta[,.(wolfpop, pop, COD)], by.x = 'wolfID', by.y = 'wolfpop', all.x = T)
-
-dat.wnn.lastmo.cod[,.(N=uniqueN(wolfID)), by=.(pop, COD)]
-dat.meta[,.(N=uniqueN(wolfpop)), by=.(pop, COD)]
 
 dat[wolfID %in% dat.wnn.lastmo$wolfID,median(distance2, na.rm = T), by = .(COD)]
 dat[is.na(distance2) & wolfID %in% dat.wnn.lastmo$wolfID,.N, by = .(wolfID)]
@@ -111,10 +114,7 @@ everyone <- glmmTMB(case_ ~
                     data = dat[wolfID %chin% dat.wnn.lastmo$wolfID], 
                     map = list(theta=factor(c(NA,1:16))), start = list(theta=c(log(1000),seq(0,0, length.out = 16))))
 
-# everyone$parameters$theta[1] <- log(1e3)
-# nvar_parm <- length(everyone$parameters$theta)
-# everyone$mapArg <- list(theta = factor(c(NA, 1:(nvar_parm - 1))))
-# everyone <- glmmTMB:::fitTMB(everyone)
+
 summary(everyone)
 
 summary(everyone)$coef$cond[-1, "Estimate"]
@@ -124,7 +124,7 @@ sum.everyone<- tidy(everyone)
 #saveRDS(sum.everyone, 'data/derived-data/summarypopeveryone_COD_scaled.Rds')
 
 everyone.ran_vals <-tidy(everyone, effect= 'ran_vals')
-# everyone.ran_pars <-tidy(everyone, effect= 'ran_pars')
+
 everyone.se <-setDT(everyone.ran_vals)[group=='wolfID']
 
 
