@@ -96,7 +96,7 @@ speed <- ggplot(data=move, aes(x=-ttd, y=(spd_hr_adj), color = pop)) +
   scale_colour_manual("", values = gcolors)  +  
   scale_fill_manual("", values = gcolors)  +  
   theme(plot.margin = margin(0.1, 1, .1, .1, "cm")) + theme(legend.text = element_text(size = 10)) +
-  ggtitle("a) Speed") +
+  ggtitle("(a) Speed") +
   xlab("Time to death (days)") + ylab("Speed (km/hour)")
 speed
 
