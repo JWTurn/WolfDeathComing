@@ -1,7 +1,7 @@
 
 ## Death comes for us all: relating movement-integrated habitat selection and social behavior to human-associated and disease-related mortality among grey wolves
 
-![DOI](https://zenodo.org/badge/666564642.svg)
+[![DOI](https://zenodo.org/badge/666564642.svg)](https://zenodo.org/badge/latestdoi/666564642)
 
 - Authors:
   - [Julie W. Turner](https://www.julwturner.com)
